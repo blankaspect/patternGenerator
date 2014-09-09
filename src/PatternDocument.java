@@ -1,0 +1,2584 @@
+/*====================================================================*\
+
+PatternDocument.java
+
+Pattern document class.
+
+\*====================================================================*/
+
+
+// IMPORTS
+
+
+import java.awt.Dimension;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import java.awt.image.BufferedImage;
+
+import java.beans.PropertyChangeListener;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import uk.org.blankaspect.exception.AppException;
+import uk.org.blankaspect.exception.FileException;
+import uk.org.blankaspect.exception.TempFileException;
+import uk.org.blankaspect.exception.UnexpectedRuntimeException;
+
+import uk.org.blankaspect.gui.ProgressView;
+
+import uk.org.blankaspect.util.FileWritingMode;
+import uk.org.blankaspect.util.NumberUtilities;
+import uk.org.blankaspect.util.PngOutputFile;
+import uk.org.blankaspect.util.StringUtilities;
+
+import uk.org.blankaspect.xml.Attribute;
+import uk.org.blankaspect.xml.XmlConstants;
+import uk.org.blankaspect.xml.XmlFile;
+import uk.org.blankaspect.xml.XmlParseException;
+import uk.org.blankaspect.xml.XmlUtilities;
+import uk.org.blankaspect.xml.XmlWriter;
+
+//----------------------------------------------------------------------
+
+
+// PATTERN DOCUMENT CLASS
+
+
+abstract class PatternDocument
+{
+
+////////////////////////////////////////////////////////////////////////
+//  Constants
+////////////////////////////////////////////////////////////////////////
+
+    public static final     int MIN_MAX_EDIT_LIST_LENGTH        = 1;
+    public static final     int MAX_MAX_EDIT_LIST_LENGTH        = 9999;
+    public static final     int DEFAULT_MAX_EDIT_LIST_LENGTH    = 100;
+
+    public static final     int MIN_NUM_SLIDE_SHOW_THREADS      = 0;
+    public static final     int MAX_NUM_SLIDE_SHOW_THREADS      = 32;
+    public static final     int DEFAULT_NUM_SLIDE_SHOW_THREADS  = 0;
+
+    public static final     int MIN_SLIDE_SHOW_INTERVAL     = 500;
+    public static final     int MAX_SLIDE_SHOW_INTERVAL     = 60000;
+    public static final     int DEFAULT_SLIDE_SHOW_INTERVAL = 3000;
+
+    protected static final  String  GENERATE_STR    = "Generate ";
+    protected static final  String  RENDERING_STR   = "Rendering image " + AppConstants.ELLIPSIS_STR;
+    protected static final  String  WRITING_STR     = "Writing";
+
+    private static final    int MIN_SUPPORTED_VERSION   = 0;
+    private static final    int MAX_SUPPORTED_VERSION   = 0;
+    private static final    int VERSION                 = 0;
+
+    private static final    String  NAMESPACE_PREFIX    =
+                                                "http://ns.blankaspect.org.uk/patternGenerator-definition/";
+
+    private static final    String  UNNAMED_STR         = "Unnamed";
+    private static final    String  CLEAR_EDIT_LIST_STR = "Do you want to clear all the undo/redo actions?";
+
+    private static final    String  SVG_SYSTEM_ID       = "http://www.w3.org/Graphics/SVG/1.1/DTD/" +
+                                                            "svg11.dtd";
+    private static final    String  SVG_PUBLIC_ID       = "-//W3C//DTD SVG 1.1//EN";
+    private static final    String  SVG_NAMESPACE_NAME  = "http://www.w3.org/2000/svg";
+    private static final    String  SVG_VERSION_STR     = "1.1";
+
+    private interface ElementName
+    {
+        String  PATTERN_GENERATOR   = "patternGenerator";
+    }
+
+    private interface AttrName
+    {
+        String  VERSION = "version";
+        String  XMLNS   = "xmlns";
+    }
+
+////////////////////////////////////////////////////////////////////////
+//  Enumerated types
+////////////////////////////////////////////////////////////////////////
+
+
+    // COMMANDS
+
+
+    enum Command
+        implements Action
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        // Commands
+
+        UNDO
+        (
+            "undo",
+            "Undo",
+            KeyStroke.getKeyStroke( KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK )
+        ),
+
+        REDO
+        (
+            "redo",
+            "Redo",
+            KeyStroke.getKeyStroke( KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK )
+        ),
+
+        CLEAR_EDIT_LIST
+        (
+            "clearEditList",
+            "Clear edit history" + AppConstants.ELLIPSIS_STR
+        ),
+
+        EDIT_PATTERN_PARAMETERS
+        (
+            "editPatternParameters",
+            "Edit pattern parameters" + AppConstants.ELLIPSIS_STR,
+            KeyStroke.getKeyStroke( KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK )
+        ),
+
+        EDIT_DESCRIPTION
+        (
+            "editDescription",
+            "Edit description" + AppConstants.ELLIPSIS_STR,
+            KeyStroke.getKeyStroke( KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK )
+        ),
+
+        REGENERATE_PATTERN_WITH_NEW_SEED
+        (
+            "regeneratePatternWithNewSeed",
+            "Regenerate pattern with new seed",
+            KeyStroke.getKeyStroke( KeyEvent.VK_F5, 0 )
+        ),
+
+        SHOW_IMAGE_RENDERING_TIME
+        (
+            "showImageRenderingTime",
+            "Show image rendering time",
+            KeyStroke.getKeyStroke( KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK )
+        ),
+
+        START_SLIDE_SHOW
+        (
+            "startSlideShow",
+            "Start slide show" + AppConstants.ELLIPSIS_STR,
+            KeyStroke.getKeyStroke( KeyEvent.VK_F6, 0 )
+        ),
+
+        START_ANIMATION
+        (
+            "startAnimation",
+            "Start animation" + AppConstants.ELLIPSIS_STR,
+            KeyStroke.getKeyStroke( KeyEvent.VK_F7, 0 )
+        ),
+
+        OPTIMISE_ANIMATION
+        (
+            "optimiseAnimation",
+            "Optimise animation" + AppConstants.ELLIPSIS_STR,
+            KeyStroke.getKeyStroke( KeyEvent.VK_F7, KeyEvent.CTRL_DOWN_MASK )
+        ),
+
+        RESIZE_WINDOW_TO_IMAGE
+        (
+            "resizeWindowToImage",
+            "Resize window to image",
+            KeyStroke.getKeyStroke( KeyEvent.VK_F12, 0 )
+        );
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private Command( String key )
+        {
+            command = new uk.org.blankaspect.util.Command( this );
+            putValue( Action.ACTION_COMMAND_KEY, key );
+        }
+
+        //--------------------------------------------------------------
+
+        private Command( String key,
+                         String name )
+        {
+            this( key );
+            putValue( Action.NAME, name );
+        }
+
+        //--------------------------------------------------------------
+
+        private Command( String    key,
+                         String    name,
+                         KeyStroke acceleratorKey )
+        {
+            this( key, name );
+            putValue( Action.ACCELERATOR_KEY, acceleratorKey );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Class methods
+    ////////////////////////////////////////////////////////////////////
+
+        public static void setAllEnabled( boolean enabled )
+        {
+            for ( Command command : values( ) )
+                command.setEnabled( enabled );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : Action interface
+    ////////////////////////////////////////////////////////////////////
+
+        public void addPropertyChangeListener( PropertyChangeListener listener )
+        {
+            command.addPropertyChangeListener( listener );
+        }
+
+        //--------------------------------------------------------------
+
+        public Object getValue( String key )
+        {
+            return command.getValue( key );
+        }
+
+        //--------------------------------------------------------------
+
+        public boolean isEnabled( )
+        {
+            return command.isEnabled( );
+        }
+
+        //--------------------------------------------------------------
+
+        public void putValue( String key,
+                              Object value )
+        {
+            command.putValue( key, value );
+        }
+
+        //--------------------------------------------------------------
+
+        public void removePropertyChangeListener( PropertyChangeListener listener )
+        {
+            command.removePropertyChangeListener( listener );
+        }
+
+        //--------------------------------------------------------------
+
+        public void setEnabled( boolean enabled )
+        {
+            command.setEnabled( enabled );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : ActionListener interface
+    ////////////////////////////////////////////////////////////////////
+
+        public void actionPerformed( ActionEvent event )
+        {
+            PatternDocument document = App.getInstance( ).getDocument( );
+            if ( document != null )
+                document.executeCommand( this );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods
+    ////////////////////////////////////////////////////////////////////
+
+        public void execute( )
+        {
+            actionPerformed( null );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private uk.org.blankaspect.util.Command command;
+
+    }
+
+    //==================================================================
+
+
+    // ERROR IDENTIFIERS
+
+
+    private enum ErrorId
+        implements AppException.Id
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        FAILED_TO_OPEN_FILE
+        ( "Failed to open the file." ),
+
+        FAILED_TO_CLOSE_FILE
+        ( "Failed to close the file." ),
+
+        ERROR_WRITING_FILE
+        ( "An error occurred when writing the file." ),
+
+        FILE_ACCESS_NOT_PERMITTED
+        ( "Access to the file was not permitted." ),
+
+        FAILED_TO_CREATE_TEMPORARY_FILE
+        ( "Failed to create a temporary file." ),
+
+        FAILED_TO_DELETE_FILE
+        ( "Failed to delete the existing file." ),
+
+        FAILED_TO_RENAME_FILE
+        ( "Failed to rename the temporary file to the specified filename." ),
+
+        FAILED_TO_CREATE_DIRECTORY
+        ( "Failed to create the directory." ),
+
+        UNEXPECTED_DOCUMENT_FORMAT
+        ( "The document does not have the expected format." ),
+
+        NO_VERSION_NUMBER
+        ( "The document does not have a version number." ),
+
+        INVALID_VERSION_NUMBER
+        ( "The version number of the document is invalid." ),
+
+        UNSUPPORTED_DOCUMENT_VERSION
+        ( "The version of the document (%1) is not supported by this version of " + App.SHORT_NAME + "." ),
+
+        NO_ATTRIBUTE
+        ( "The required attribute is missing." ),
+
+        INVALID_ATTRIBUTE
+        ( "The attribute is invalid." ),
+
+        NO_PATTERN_ELEMENT
+        ( "The document has no pattern element." ),
+
+        MULTIPLE_PATTERN_ELEMENTS
+        ( "The document has more than one pattern element." ),
+
+        NO_PARAMETERS
+        ( "The document has no parameters." ),
+
+        NOT_ENOUGH_MEMORY_TO_PERFORM_COMMAND
+        ( "There was not enough memory to perform the command.\n" +
+            "Clearing the list of undo/redo actions may make more memory available." );
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private ErrorId( String message )
+        {
+            this.message = message;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : AppException.Id interface
+    ////////////////////////////////////////////////////////////////////
+
+        public String getMessage( )
+        {
+            return message;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private String  message;
+
+    }
+
+    //==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+    // FILE INFORMATION CLASS
+
+
+    public static class FileInfo
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        public FileInfo( File         file,
+                         DocumentKind documentKind )
+        {
+            this.file = file;
+            this.documentKind = documentKind;
+        }
+
+        //--------------------------------------------------------------
+
+        public FileInfo( File         file,
+                         DocumentKind documentKind,
+                         boolean      hasParameters )
+        {
+            this( file, documentKind );
+            this.hasParameters = hasParameters;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        File            file;
+        DocumentKind    documentKind;
+        boolean         hasParameters;
+
+    }
+
+    //==================================================================
+
+
+    // ANIMATION PARAMETERS CLASS
+
+
+    public static class AnimationParams
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        public AnimationParams( int animationKind )
+        {
+            this.animationKind = animationKind;
+        }
+
+        //--------------------------------------------------------------
+
+        public AnimationParams( int    animationKind,
+                                double frameRate,
+                                int    startFrameIndex )
+        {
+            this.animationKind = animationKind;
+            this.frameRate = frameRate;
+            this.startFrameIndex = startFrameIndex;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        int     animationKind;
+        double  frameRate;
+        int     startFrameIndex;
+
+    }
+
+    //==================================================================
+
+
+    // EDIT CLASS
+
+
+    private static abstract class Edit
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Member classes : non-inner classes
+    ////////////////////////////////////////////////////////////////////
+
+
+        // DESCRIPTION EDIT CLASS
+
+
+        private static class Description
+            extends Edit
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private Description( String oldDescription,
+                                 String newDescription )
+            {
+                this.oldDescription = oldDescription;
+                this.newDescription = newDescription;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            protected void undo( PatternDocument document )
+            {
+                document.setDescription( oldDescription );
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected void redo( PatternDocument document )
+            {
+                document.setDescription( newDescription );
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private String  oldDescription;
+            private String  newDescription;
+
+        }
+
+        //==============================================================
+
+
+        // SEED EDIT CLASS
+
+
+        private static class Seed
+            extends Edit
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private Seed( long oldSeed,
+                          long newSeed )
+            {
+                this.oldSeed = oldSeed;
+                this.newSeed = newSeed;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            protected void undo( PatternDocument document )
+            {
+                try
+                {
+                    document.setSeed( oldSeed );
+                }
+                catch ( AppException e )
+                {
+                    App.getInstance( ).showErrorMessage( App.SHORT_NAME, e );
+                }
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected void redo( PatternDocument document )
+            {
+                try
+                {
+                    document.setSeed( newSeed );
+                }
+                catch ( AppException e )
+                {
+                    App.getInstance( ).showErrorMessage( App.SHORT_NAME, e );
+                }
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private long    oldSeed;
+            private long    newSeed;
+
+        }
+
+        //==============================================================
+
+
+        // PARAMETERS EDIT CLASS
+
+
+        private static class Parameters
+            extends Edit
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private Parameters( PatternParams oldParams,
+                                PatternParams newParams )
+            {
+                this.oldParams = oldParams;
+                this.newParams = newParams;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            protected void undo( PatternDocument document )
+            {
+                try
+                {
+                    document.setParameters( oldParams );
+                }
+                catch ( AppException e )
+                {
+                    App.getInstance( ).showErrorMessage( App.SHORT_NAME, e );
+                }
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected void redo( PatternDocument document )
+            {
+                try
+                {
+                    document.setParameters( newParams );
+                }
+                catch ( AppException e )
+                {
+                    App.getInstance( ).showErrorMessage( App.SHORT_NAME, e );
+                }
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private PatternParams   oldParams;
+            private PatternParams   newParams;
+
+        }
+
+        //==============================================================
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private Edit( )
+        {
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Abstract methods
+    ////////////////////////////////////////////////////////////////////
+
+        protected abstract void undo( PatternDocument document );
+
+        //--------------------------------------------------------------
+
+        protected abstract void redo( PatternDocument document );
+
+        //--------------------------------------------------------------
+
+    }
+
+    //==================================================================
+
+
+    // EDIT LIST CLASS
+
+
+    private static class EditList
+        extends LinkedList<Edit>
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private EditList( )
+        {
+            maxLength = AppConfig.getInstance( ).getMaxEditListLength( );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : overriding methods
+    ////////////////////////////////////////////////////////////////////
+
+        @Override
+        public void clear( )
+        {
+            super.clear( );
+            unchangedIndex = currentIndex = 0;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods
+    ////////////////////////////////////////////////////////////////////
+
+        private Edit removeUndo( )
+        {
+            return ( canUndo( ) ? get( --currentIndex ) : null );
+        }
+
+        //--------------------------------------------------------------
+
+        private Edit removeRedo( )
+        {
+            return ( canRedo( ) ? get( currentIndex++ ) : null );
+        }
+
+        //--------------------------------------------------------------
+
+        private boolean canUndo( )
+        {
+            return ( currentIndex > 0 );
+        }
+
+        //--------------------------------------------------------------
+
+        private boolean canRedo( )
+        {
+            return ( currentIndex < size( ) );
+        }
+
+        //--------------------------------------------------------------
+
+        private boolean isChanged( )
+        {
+            return ( currentIndex != unchangedIndex );
+        }
+
+        //--------------------------------------------------------------
+
+        private void addEdit( Edit edit )
+        {
+            // Remove redos
+            while ( size( ) > currentIndex )
+                removeLast( );
+
+            // Preserve changed status if unchanged state cannot be recovered
+            if ( unchangedIndex > currentIndex )
+                unchangedIndex = -1;
+
+            // Remove oldest edits while list is full
+            while ( size( ) >= maxLength )
+            {
+                removeFirst( );
+                if ( --unchangedIndex < 0 )
+                    unchangedIndex = -1;
+                if ( --currentIndex < 0 )
+                    currentIndex = 0;
+            }
+
+            // Add new edit
+            add( edit );
+            ++currentIndex;
+        }
+
+        //--------------------------------------------------------------
+
+        private void reset( )
+        {
+            while ( size( ) > currentIndex )
+                removeLast( );
+
+            unchangedIndex = currentIndex;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private int maxLength;
+        private int currentIndex;
+        private int unchangedIndex;
+
+    }
+
+    //==================================================================
+
+
+    // RENDERING TIME CLASS
+
+
+    private static class RenderingTime
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private RenderingTime( )
+        {
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods
+    ////////////////////////////////////////////////////////////////////
+
+        public void add( long numPixels,
+                         long nanoseconds )
+        {
+            this.numPixels += numPixels;
+            this.nanoseconds += nanoseconds;
+        }
+
+        //--------------------------------------------------------------
+
+        public void reset( )
+        {
+            numPixels = 0;
+            nanoseconds = 0;
+        }
+
+        //--------------------------------------------------------------
+
+        public double getMeanNanosecondsPerPixel( )
+        {
+            return ( (numPixels == 0) ? 0.0 : (double)nanoseconds / (double)numPixels );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private long    numPixels;
+        private long    nanoseconds;
+
+    }
+
+    //==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+    // SLIDE SHOW EXECUTION CLASS
+
+
+    private class DoSlideShow
+        implements Runnable
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Member classes : inner classes
+    ////////////////////////////////////////////////////////////////////
+
+
+        // INPUT TASK CLASS
+
+
+        private class InputTask
+            implements Runnable
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private InputTask( long          index,
+                               PatternParams params )
+            {
+                this.index = index;
+                this.params = params;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : Runnable interface
+        ////////////////////////////////////////////////////////////////
+
+            public void run( )
+            {
+                PatternParams params = this.params.clone( );
+                params.setSeed( App.getInstance( ).getNextRandomSeed( ) );
+                try
+                {
+                    PatternImage patternImage = createPatternImage( params );
+                    patternImage.renderImage( );
+                    addResult( new Result( index, params, patternImage ) );
+                }
+                catch ( InterruptedException e )
+                {
+                    // ignore
+                }
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private long            index;
+            private PatternParams   params;
+
+        }
+
+        //==============================================================
+
+
+        // RESULT CLASS
+
+
+        private class Result
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private Result( long          index,
+                            PatternParams params,
+                            PatternImage  patternImage )
+            {
+                this.index = index;
+                this.params = params;
+                this.patternImage = patternImage;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private long            index;
+            private PatternParams   params;
+            private PatternImage    patternImage;
+
+        }
+
+        //==============================================================
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private DoSlideShow( int numThreads,
+                             int interval )
+        {
+            this.numThreads = numThreads;
+            this.interval = interval;
+            results = new ArrayList<>( );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : Runnable interface
+    ////////////////////////////////////////////////////////////////////
+
+        public void run( )
+        {
+            long inTaskIndex = 0;
+            long outTaskIndex = 0;
+            ExecutorService executor = Executors.newFixedThreadPool( numThreads );
+            long endTime = 0;
+            while ( true )
+            {
+                // Test whether task has been cancelled
+                if ( Task.isCancelled( ) )
+                    break;
+
+                // Submit tasks
+                while ( inTaskIndex - outTaskIndex < numThreads )
+                {
+                    try
+                    {
+                        executor.submit( new InputTask( inTaskIndex, getParameters( ) ) );
+                        ++inTaskIndex;
+                    }
+                    catch ( RejectedExecutionException e )
+                    {
+                        // ignore
+                    }
+                }
+
+                // Update end time while paused
+                if ( paused )
+                    endTime = System.currentTimeMillis( );
+
+                // Get next pattern image from output list; update document and view
+                else if ( System.currentTimeMillis( ) >= endTime )
+                {
+                    if ( !results.isEmpty( ) )
+                    {
+                        Result result = findResult( outTaskIndex );
+                        if ( result != null )
+                        {
+                            // Increment output task index
+                            ++outTaskIndex;
+
+                            // Add change of seed to list of edits
+                            long oldSeed = getParameters( ).getSeed( );
+                            editList.addEdit( new Edit.Seed( oldSeed, result.params.getSeed( ) ) );
+
+                            // Set parameters and pattern image
+                            setParametersAndPatternImage( result.params, result.patternImage );
+
+                            // Increment frame index
+                            ++absoluteFrameIndex;
+
+                            // Update view
+                            SwingUtilities.invokeLater( new Runnable( )
+                            {
+                                public void run( )
+                                {
+                                    updatePlayView( );
+                                }
+                            } );
+
+                            // Increment end time
+                            if ( endTime == 0 )
+                                endTime = System.currentTimeMillis( );
+                            endTime += interval;
+                        }
+                    }
+                }
+
+                // Allow other threads to run
+                Thread.yield( );
+            }
+
+            // Stop task threads
+            executor.shutdownNow( );
+            try
+            {
+                executor.awaitTermination( 30, TimeUnit.SECONDS );
+            }
+            catch ( InterruptedException e )
+            {
+                // ignore
+            }
+
+            // Enable commands
+            playing = false;
+        }
+
+        //--------------------------------------------------------------
+
+        private synchronized void addResult( Result result )
+        {
+            results.add( result );
+        }
+
+        //--------------------------------------------------------------
+
+        private synchronized Result findResult( long index )
+        {
+            for ( int i = 0; i < results.size( ); ++i )
+            {
+                Result result = results.get( i );
+                if ( result.index == index )
+                {
+                    results.remove( i );
+                    return result;
+                }
+            }
+            return null;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private int             numThreads;
+        private int             interval;
+        private List<Result>    results;
+
+    }
+
+    //==================================================================
+
+
+    // ANIMATION EXECUTION CLASS
+
+
+    private class DoAnimation
+        implements Runnable
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private DoAnimation( double rate,
+                             int    startFrameIndex )
+        {
+            interval = Math.round( 1000000000.0 / rate );
+            this.startFrameIndex = startFrameIndex;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : Runnable interface
+    ////////////////////////////////////////////////////////////////////
+
+        public void run( )
+        {
+            int frameIndex = 0;
+            long endTime = 0;
+            while ( true )
+            {
+                // Test whether task has been cancelled
+                if ( Task.isCancelled( ) )
+                    break;
+
+                // Get current time
+                long currentTime = System.nanoTime( );
+
+                // If paused, update end time ...
+                if ( paused )
+                    endTime = currentTime;
+
+                // ... otherwise, generate next image; update view
+                else if ( currentTime >= endTime )
+                {
+                    // Update animation
+                    try
+                    {
+                        absoluteFrameIndex = startFrameIndex + frameIndex;
+                        updateAnimation( absoluteFrameIndex );
+                    }
+                    catch ( InterruptedException e )
+                    {
+                        break;
+                    }
+
+                    // Update view
+                    SwingUtilities.invokeLater( new Runnable( )
+                    {
+                        public void run( )
+                        {
+                            updatePlayView( );
+                        }
+                    } );
+
+                    // Increment end time
+                    if ( endTime == 0 )
+                        endTime = currentTime;
+
+                    while ( currentTime >= endTime )
+                    {
+                        endTime += interval;
+                        ++frameIndex;
+                    }
+                }
+
+                // Allow other threads to run
+                Thread.yield( );
+            }
+
+            // Enable commands
+            playing = false;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private long    interval;
+        private int     startFrameIndex;
+
+    }
+
+    //==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+    protected PatternDocument( File         file,
+                               DocumentKind documentKind )
+    {
+        this( file, documentKind, false );
+    }
+
+    //------------------------------------------------------------------
+
+    protected PatternDocument( File         file,
+                               DocumentKind documentKind,
+                               boolean      temporary )
+    {
+        this.file = file;
+        this.documentKind = documentKind;
+        if ( (file == null) && !temporary )
+            unnamedIndex = ++newFileIndex;
+        imageSequenceParams = new ImageSequenceParams( );
+        editList = new EditList( );
+        renderingTime = new RenderingTime( );
+    }
+
+    //------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Class methods
+////////////////////////////////////////////////////////////////////////
+
+    public static PatternDocument read( FileInfo fileInfo )
+        throws AppException
+    {
+        // Determine document kind
+        File file = fileInfo.file;
+        DocumentKind documentKind = fileInfo.documentKind;
+        if ( documentKind == null )
+            documentKind = DocumentKind.forFilename( file.getName( ) );
+        if ( documentKind == null )
+            documentKind = isDefinitionDocument( file ) ? DocumentKind.DEFINITION : DocumentKind.PARAMETERS;
+
+        // Read document
+        PatternDocument patternDocument = null;
+        switch ( documentKind )
+        {
+            case DEFINITION:
+                patternDocument = readDefinition( file );
+                break;
+
+            case PARAMETERS:
+                patternDocument = readParameters( file );
+                break;
+        }
+
+        // Set timestamp
+        if ( patternDocument != null )
+            patternDocument.timestamp = file.lastModified( );
+
+        return patternDocument;
+    }
+
+    //------------------------------------------------------------------
+
+    public static void updateRenderingTime( )
+    {
+        if ( renderingTimeDialog != null )
+            renderingTimeDialog.updateRenderingTime( );
+    }
+
+    //------------------------------------------------------------------
+
+    public static void closeRenderingTimeDialog( )
+    {
+        if ( renderingTimeDialog != null )
+        {
+            renderingTimeDialog.close( );
+            renderingTimeDialog = null;
+        }
+    }
+
+    //------------------------------------------------------------------
+
+    protected static String getElementName( )
+    {
+        return ElementName.PATTERN_GENERATOR;
+    }
+
+    //------------------------------------------------------------------
+
+    protected static MainWindow getWindow( )
+    {
+        return App.getInstance( ).getMainWindow( );
+    }
+
+    //------------------------------------------------------------------
+
+    private static boolean isDefinitionDocument( File file )
+        throws AppException
+    {
+        Document document = XmlFile.read( file );
+        return document.getDocumentElement( ).getNodeName( ).equals( ElementName.PATTERN_GENERATOR );
+    }
+
+    //------------------------------------------------------------------
+
+    private static PatternDocument readDefinition( File file )
+        throws AppException
+    {
+        // Read XML file
+        Document document = XmlFile.read( file );
+
+        // Test document format
+        Element element = document.getDocumentElement( );
+        if ( !element.getNodeName( ).equals( ElementName.PATTERN_GENERATOR ) )
+            throw new FileException( ErrorId.UNEXPECTED_DOCUMENT_FORMAT, file );
+        String elementPath = ElementName.PATTERN_GENERATOR;
+
+        // Attribute: namespace
+        String attrName = AttrName.XMLNS;
+        String attrKey = XmlUtilities.appendAttributeName( elementPath, attrName );
+        String attrValue = XmlUtilities.getAttribute( element, attrName );
+        if ( attrValue == null )
+            throw new XmlParseException( ErrorId.NO_ATTRIBUTE, file, attrKey );
+        if ( !attrValue.startsWith( NAMESPACE_PREFIX ) )
+            throw new FileException( ErrorId.UNEXPECTED_DOCUMENT_FORMAT, file );
+        PatternKind patternKind =
+                        PatternKind.forKey( StringUtilities.removePrefix( attrValue, NAMESPACE_PREFIX ) );
+        if ( patternKind == null )
+            throw new FileException( ErrorId.UNEXPECTED_DOCUMENT_FORMAT, file );
+
+        // Attribute: version
+        attrName = AttrName.VERSION;
+        attrKey = XmlUtilities.appendAttributeName( elementPath, attrName );
+        attrValue = XmlUtilities.getAttribute( element, attrName );
+        if ( attrValue == null )
+            throw new XmlParseException( ErrorId.NO_ATTRIBUTE, file, attrKey );
+        try
+        {
+            int version = Integer.parseInt( attrValue );
+            if ( (version < MIN_SUPPORTED_VERSION) || (version > MAX_SUPPORTED_VERSION) )
+                throw new FileException( ErrorId.UNSUPPORTED_DOCUMENT_VERSION, file, attrValue );
+        }
+        catch ( NumberFormatException e )
+        {
+            throw new XmlParseException( ErrorId.INVALID_ATTRIBUTE, file, attrKey, attrValue );
+        }
+
+        // Parse pattern node
+        NodeList nodes = element.getElementsByTagName( patternKind.getKey( ) );
+        if ( nodes.getLength( ) == 0 )
+            throw new FileException( ErrorId.NO_PATTERN_ELEMENT, file );
+        if ( nodes.getLength( ) > 1 )
+            throw new FileException( ErrorId.MULTIPLE_PATTERN_ELEMENTS, file );
+
+        // Create instance of document for pattern kind
+        PatternDocument patternDocument = null;
+        switch ( patternKind )
+        {
+            case PATTERN1:
+            {
+                patternDocument = new Pattern1Document( file, (Element)nodes.item( 0 ) );
+                break;
+            }
+
+            case PATTERN2:
+            {
+                patternDocument = new Pattern2Document( file, (Element)nodes.item( 0 ) );
+                break;
+            }
+        }
+        return patternDocument;
+    }
+
+    //------------------------------------------------------------------
+
+    private static PatternDocument readParameters( File file )
+        throws AppException
+    {
+        PatternParams params = PatternParams.read( file );
+        PatternDocument patternDocument = null;
+        switch ( params.getPatternKind( ) )
+        {
+            case PATTERN1:
+            {
+                patternDocument = new Pattern1Document( file, (Pattern1Params)params );
+                break;
+            }
+
+            case PATTERN2:
+            {
+                patternDocument = new Pattern2Document( file, (Pattern2Params)params );
+                break;
+            }
+        }
+        return patternDocument;
+    }
+
+    //------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Abstract methods
+////////////////////////////////////////////////////////////////////////
+
+    public abstract PatternKind getPatternKind( );
+
+    //------------------------------------------------------------------
+
+    public abstract PatternParams getParameters( );
+
+    //------------------------------------------------------------------
+
+    public abstract void setParameters( PatternParams params )
+        throws AppException;
+
+    //------------------------------------------------------------------
+
+    public abstract void setParametersAndPatternImage( PatternParams params,
+                                                       PatternImage  patternImage );
+
+    //------------------------------------------------------------------
+
+    public abstract boolean hasImage( );
+
+    //------------------------------------------------------------------
+
+    public abstract BufferedImage getImage( );
+
+    //------------------------------------------------------------------
+
+    public abstract PatternImage createPatternImage( PatternParams params )
+        throws InterruptedException;
+
+    //------------------------------------------------------------------
+
+    public abstract void generatePattern( )
+        throws AppException;
+
+    //------------------------------------------------------------------
+
+    public abstract boolean editParameters( )
+        throws AppException;
+
+    //------------------------------------------------------------------
+
+    public abstract void setSeed( long seed )
+        throws AppException;
+
+    //------------------------------------------------------------------
+
+    public abstract PatternDocument createDefinitionDocument( boolean temporary )
+        throws AppException;
+
+    //------------------------------------------------------------------
+
+    public abstract void write( XmlWriter writer )
+        throws IOException;
+
+    //------------------------------------------------------------------
+
+    protected abstract boolean canExportAsSvg( );
+
+    //------------------------------------------------------------------
+
+    public abstract void writeSvgElements( XmlWriter writer,
+                                           int       indent )
+        throws IOException;
+
+    //------------------------------------------------------------------
+
+    protected abstract boolean hasParameters( );
+
+    //------------------------------------------------------------------
+
+    protected abstract String getDescription( );
+
+    //------------------------------------------------------------------
+
+    protected abstract void setDescription( String description );
+
+    //------------------------------------------------------------------
+
+    protected abstract int getNumAnimationKinds( );
+
+    //------------------------------------------------------------------
+
+    protected abstract AnimationParams selectAnimation( boolean imageSequence );
+
+    //------------------------------------------------------------------
+
+    protected abstract boolean canOptimiseAnimation( );
+
+    //------------------------------------------------------------------
+
+    protected abstract void optimiseAnimation( );
+
+    //------------------------------------------------------------------
+
+    protected abstract boolean initAnimation( int animationId,
+                                              int startFrameIndex );
+
+    //------------------------------------------------------------------
+
+    protected abstract void updateAnimation( int frameIndex )
+        throws InterruptedException;
+
+    //------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods
+////////////////////////////////////////////////////////////////////////
+
+    public File getFile( )
+    {
+        return file;
+    }
+
+    //------------------------------------------------------------------
+
+    public FileInfo getFileInfo( )
+    {
+        return new FileInfo( file, documentKind, hasParameters( ) );
+    }
+
+    //------------------------------------------------------------------
+
+    public File getExportImageFile( )
+    {
+        return exportImageFile;
+    }
+
+    //------------------------------------------------------------------
+
+    public File getExportSvgFile( )
+    {
+        return exportSvgFile;
+    }
+
+    //------------------------------------------------------------------
+
+    public long getTimestamp( )
+    {
+        return timestamp;
+    }
+
+    //------------------------------------------------------------------
+
+    public boolean isExecutingCommand( )
+    {
+        return executingCommand;
+    }
+
+    //------------------------------------------------------------------
+
+    public boolean isPlaying( )
+    {
+        return playing;
+    }
+
+    //------------------------------------------------------------------
+
+    public boolean isChanged( )
+    {
+        return ( (file == null) || editList.isChanged( ) );
+    }
+
+    //------------------------------------------------------------------
+
+    public boolean hasAnimation( )
+    {
+        return ( getNumAnimationKinds( ) > 0 );
+    }
+
+    //------------------------------------------------------------------
+
+    public ImageSequenceParams getImageSequenceParams( )
+    {
+        return imageSequenceParams;
+    }
+
+    //------------------------------------------------------------------
+
+    public int getAbsoluteFrameIndex( )
+    {
+        return absoluteFrameIndex;
+    }
+
+    //------------------------------------------------------------------
+
+    public String getName( boolean fullPathname )
+    {
+        return ( (file == null) ? UNNAMED_STR + unnamedIndex
+                                : fullPathname ? Util.getPathname( file ) : file.getName( ) );
+    }
+
+    //------------------------------------------------------------------
+
+    public String getBaseFilename( )
+    {
+        String filename = null;
+        if ( file != null )
+        {
+            filename = file.getName( );
+            int length = filename.length( );
+            filename = StringUtilities.removeSuffix( filename, AppConstants.PG_DEF_FILE_SUFFIX );
+            if ( filename.length( ) == length )
+                filename = StringUtilities.removeSuffix( filename, AppConstants.PG_PAR_FILE_SUFFIX );
+            if ( filename.length( ) == length )
+                filename = StringUtilities.removeFromLast( filename, '.' );
+        }
+        return filename;
+    }
+
+    //------------------------------------------------------------------
+
+    public String getTitleString( boolean fullPathname )
+    {
+        String str = getName( fullPathname );
+        if ( isChanged( ) )
+            str += AppConstants.FILE_CHANGED_SUFFIX;
+        return str;
+    }
+
+    //------------------------------------------------------------------
+
+    public String getParameterTitleString( )
+    {
+        return ( (file == null)
+                    ? null
+                    : StringUtilities.removeSuffix( file.getName( ), AppConstants.PG_PAR_FILE_SUFFIX ) );
+    }
+
+    //------------------------------------------------------------------
+
+    public void setTimestamp( long timestamp )
+    {
+        this.timestamp = timestamp;
+    }
+
+    //------------------------------------------------------------------
+
+    public void setPaused( boolean paused )
+    {
+        this.paused = paused;
+    }
+
+    //------------------------------------------------------------------
+
+    public void stopPlaying( )
+    {
+        Task.setCancelled( true );
+        while ( playing )
+            Thread.yield( );
+        Task.setCancelled( false );
+    }
+
+    //------------------------------------------------------------------
+
+    public double getRenderingTime( )
+    {
+        return renderingTime.getMeanNanosecondsPerPixel( );
+    }
+
+    //------------------------------------------------------------------
+
+    public void resetRenderingTime( )
+    {
+        renderingTime.reset( );
+        updateRenderingTime( );
+    }
+
+    //------------------------------------------------------------------
+
+    public void addRenderingTime( long numPixels,
+                                  long nanoseconds )
+    {
+        renderingTime.add( numPixels, nanoseconds );
+        updateRenderingTime( );
+    }
+
+    //------------------------------------------------------------------
+
+    public void write( FileInfo fileInfo )
+        throws AppException
+    {
+        // Set instance variables
+        file = fileInfo.file;
+        if ( fileInfo.documentKind != null )
+            documentKind = fileInfo.documentKind;
+
+        // Write file
+        if ( documentKind == null )
+            documentKind = AppConfig.getInstance( ).getDefaultDocumentKind( );
+        switch ( documentKind )
+        {
+            case DEFINITION:
+                writeDefinition( );
+                break;
+
+            case PARAMETERS:
+                writeParameters( );
+                break;
+        }
+    }
+
+    //------------------------------------------------------------------
+
+    public void writeImage( File file )
+        throws AppException
+    {
+        // Set instance variable
+        exportImageFile = file;
+
+        // Reset progress view
+        TaskProgressDialog progressView = (TaskProgressDialog)Task.getProgressView( );
+        progressView.setInfo( WRITING_STR, file );
+        progressView.setProgress( 0, -1.0 );
+
+        // Write file
+        PngOutputFile imageFile = new PngOutputFile( file, getImage( ) );
+        imageFile.addProgressListener( progressView );
+        imageFile.write( FileWritingMode.USE_TEMP_FILE );
+    }
+
+    //------------------------------------------------------------------
+
+    public void writeImageSequence( ImageSequenceParams params )
+        throws AppException
+    {
+        // Set instance variable
+        imageSequenceParams = params;
+
+        // Select animation
+        AnimationParams animationParams = selectAnimation( true );
+
+        // Write images from running animation on a temporary document
+        if ( animationParams != null )
+            createDefinitionDocument( true ).writeImageSequence( animationParams.animationKind,
+                                                                 params.directory,
+                                                                 params.filenameBase, params.frameWidth,
+                                                                 params.frameHeight, params.startFrameIndex,
+                                                                 params.numFrames, params.fadeIn,
+                                                                 params.fadeOut );
+    }
+
+    //------------------------------------------------------------------
+
+    public void writeSvg( File file )
+        throws AppException
+    {
+        // Set instance variable
+        exportSvgFile = file;
+
+        // Initialise progress view
+        ProgressView progressView = Task.getProgressView( );
+        progressView.setInfo( WRITING_STR, file );
+        progressView.setProgress( 0, -1.0 );
+
+        // Write file
+        File tempFile = null;
+        XmlWriter writer = null;
+        boolean oldFileDeleted = false;
+        try
+        {
+            // Create temporary file
+            try
+            {
+                tempFile = File.createTempFile( AppConstants.TEMP_FILE_PREFIX, null,
+                                                file.getAbsoluteFile( ).getParentFile( ) );
+            }
+            catch ( Exception e )
+            {
+                throw new AppException( ErrorId.FAILED_TO_CREATE_TEMPORARY_FILE, e );
+            }
+
+            // Open XML writer on temporary file
+            try
+            {
+                writer = new XmlWriter( tempFile, XmlConstants.ENCODING_NAME_UTF8 );
+            }
+            catch ( FileNotFoundException e )
+            {
+                throw new FileException( ErrorId.FAILED_TO_OPEN_FILE, tempFile, e );
+            }
+            catch ( SecurityException e )
+            {
+                throw new FileException( ErrorId.FILE_ACCESS_NOT_PERMITTED, tempFile, e );
+            }
+            catch ( UnsupportedEncodingException e )
+            {
+                throw new UnexpectedRuntimeException( e );
+            }
+
+            // Write file
+            try
+            {
+                // Write XML declaration
+                writer.writeXmlDeclaration( AppConstants.XML_VERSION_STR, XmlConstants.ENCODING_NAME_UTF8,
+                                            XmlWriter.Standalone.NO );
+
+                // Write document type
+                writer.writeDocumentType( Svg.ElementName.SVG, SVG_SYSTEM_ID, SVG_PUBLIC_ID );
+
+                // Write root element start tag
+                List<Attribute> attributes = new ArrayList<>( );
+                attributes.add( new Attribute( Svg.AttrName.XMLNS, SVG_NAMESPACE_NAME ) );
+                attributes.add( new Attribute( Svg.AttrName.VERSION, SVG_VERSION_STR ) );
+                attributes.add( new Attribute( Svg.AttrName.WIDTH, getImage( ).getWidth( ) ) );
+                attributes.add( new Attribute( Svg.AttrName.HEIGHT, getImage( ).getHeight( ) ) );
+                writer.writeElementStart( Svg.ElementName.SVG, attributes, 0, true, true );
+
+                // Write SVG elements
+                writeSvgElements( writer, XmlWriter.INDENT_INCREMENT );
+
+                // Write root element end tag
+                writer.writeElementEnd( Svg.ElementName.SVG, 0 );
+            }
+            catch ( IOException e )
+            {
+                throw new FileException( ErrorId.ERROR_WRITING_FILE, tempFile, e );
+            }
+
+            // Close output stream
+            try
+            {
+                writer.close( );
+                writer = null;
+            }
+            catch ( IOException e )
+            {
+                throw new FileException( ErrorId.FAILED_TO_CLOSE_FILE, tempFile, e );
+            }
+
+            // Delete any existing file
+            try
+            {
+                if ( file.exists( ) && !file.delete( ) )
+                    throw new FileException( ErrorId.FAILED_TO_DELETE_FILE, file );
+                oldFileDeleted = true;
+            }
+            catch ( SecurityException e )
+            {
+                throw new FileException( ErrorId.FAILED_TO_DELETE_FILE, file, e );
+            }
+
+            // Rename temporary file
+            try
+            {
+                if ( !tempFile.renameTo( file ) )
+                    throw new TempFileException( ErrorId.FAILED_TO_RENAME_FILE, file, tempFile );
+            }
+            catch ( SecurityException e )
+            {
+                throw new TempFileException( ErrorId.FAILED_TO_RENAME_FILE, file, e, tempFile );
+            }
+        }
+        catch ( AppException e )
+        {
+            // Close output stream
+            try
+            {
+                if ( writer != null )
+                    writer.close( );
+            }
+            catch ( Exception e1 )
+            {
+                // ignore
+            }
+
+            // Delete temporary file
+            try
+            {
+                if ( !oldFileDeleted && (tempFile != null) && tempFile.exists( ) )
+                    tempFile.delete( );
+            }
+            catch ( Exception e1 )
+            {
+                // ignore
+            }
+
+            // Rethrow exception
+            throw e;
+        }
+    }
+
+    //------------------------------------------------------------------
+
+    public void updateCommands( )
+    {
+        boolean hasParameters = hasParameters( );
+        boolean hasImage = hasImage( );
+        boolean hasAnimation = hasAnimation( );
+
+        Command.UNDO.setEnabled( editList.canUndo( ) );
+        Command.REDO.setEnabled( editList.canRedo( ) );
+        Command.CLEAR_EDIT_LIST.setEnabled( !editList.isEmpty( ) );
+        Command.EDIT_PATTERN_PARAMETERS.setEnabled( hasParameters );
+        Command.EDIT_DESCRIPTION.setEnabled( true );
+        Command.REGENERATE_PATTERN_WITH_NEW_SEED.setEnabled( hasParameters );
+        Command.SHOW_IMAGE_RENDERING_TIME.setEnabled( renderingTimeDialog == null );
+        Command.START_SLIDE_SHOW.setEnabled( hasParameters );
+        Command.START_ANIMATION.setEnabled( hasImage && hasAnimation );
+        Command.OPTIMISE_ANIMATION.setEnabled( hasAnimation && canOptimiseAnimation( ) );
+        Command.RESIZE_WINDOW_TO_IMAGE.setEnabled( hasImage && !getWindow( ).isMaximised( ) );
+    }
+
+    //------------------------------------------------------------------
+
+    public void executeCommand( Command command )
+    {
+        // Set command execution flag
+        executingCommand = true;
+
+        // Perform command
+        Edit edit = null;
+        try
+        {
+            try
+            {
+                switch ( command )
+                {
+                    case UNDO:
+                        edit = onUndo( );
+                        break;
+
+                    case REDO:
+                        edit = onRedo( );
+                        break;
+
+                    case CLEAR_EDIT_LIST:
+                        edit = onClearEditList( );
+                        break;
+
+                    case EDIT_PATTERN_PARAMETERS:
+                        edit = onEditPatternParameters( );
+                        break;
+
+                    case EDIT_DESCRIPTION:
+                        edit = onEditDescription( );
+                        break;
+
+                    case REGENERATE_PATTERN_WITH_NEW_SEED:
+                        edit = onRegeneratePatternWithNewSeed( );
+                        break;
+
+                    case SHOW_IMAGE_RENDERING_TIME:
+                        onShowImageRenderingTime( );
+                        break;
+
+                    case START_SLIDE_SHOW:
+                        edit = onStartSlideShow( );
+                        break;
+
+                    case START_ANIMATION:
+                        edit = onStartAnimation( );
+                        break;
+
+                    case OPTIMISE_ANIMATION:
+                        edit = onOptimiseAnimation( );
+                        break;
+
+                    case RESIZE_WINDOW_TO_IMAGE:
+                        edit = onResizeWindowToImage( );
+                        break;
+                }
+            }
+            catch ( OutOfMemoryError e )
+            {
+                throw new AppException( ErrorId.NOT_ENOUGH_MEMORY_TO_PERFORM_COMMAND );
+            }
+        }
+        catch ( AppException e )
+        {
+            App.getInstance( ).showErrorMessage( App.SHORT_NAME, e );
+        }
+
+        // Add edit to undo list
+        if ( edit != null )
+            editList.addEdit( edit );
+
+        // Update tab text and title and menus in main window
+        App.getInstance( ).updateTabText( this );
+        getWindow( ).updateTitleAndMenus( );
+
+        // Clear command execution flag
+        executingCommand = false;
+    }
+
+    //------------------------------------------------------------------
+
+    protected void appendCommonAttributes( List<Attribute> attributes )
+    {
+        attributes.add( new Attribute( AttrName.XMLNS, NAMESPACE_PREFIX + getPatternKind( ).getKey( ) ) );
+        attributes.add( new Attribute( AttrName.VERSION, VERSION ) );
+    }
+
+    //------------------------------------------------------------------
+
+    private PatternView getView( )
+    {
+        return App.getInstance( ).getView( this );
+    }
+
+    //------------------------------------------------------------------
+
+    private void updateView( )
+    {
+        getView( ).setImage( getImage( ) );
+    }
+
+    //------------------------------------------------------------------
+
+    private void updatePlayView( )
+    {
+        sequenceDialog.setImage( getImage( ) );
+    }
+
+    //------------------------------------------------------------------
+
+    private void writeDefinition( )
+        throws AppException
+    {
+        // Initialise progress view
+        ProgressView progressView = Task.getProgressView( );
+        progressView.setInfo( WRITING_STR, file );
+        progressView.setProgress( 0, -1.0 );
+
+        // Write file
+        File tempFile = null;
+        XmlWriter writer = null;
+        boolean oldFileDeleted = false;
+        long timestamp = this.timestamp;
+        this.timestamp = 0;
+        try
+        {
+            // Create temporary file
+            try
+            {
+                tempFile = File.createTempFile( AppConstants.TEMP_FILE_PREFIX, null,
+                                                file.getAbsoluteFile( ).getParentFile( ) );
+            }
+            catch ( Exception e )
+            {
+                throw new AppException( ErrorId.FAILED_TO_CREATE_TEMPORARY_FILE, e );
+            }
+
+            // Open XML writer on temporary file
+            try
+            {
+                writer = new XmlWriter( tempFile, XmlConstants.ENCODING_NAME_UTF8 );
+            }
+            catch ( FileNotFoundException e )
+            {
+                throw new FileException( ErrorId.FAILED_TO_OPEN_FILE, tempFile, e );
+            }
+            catch ( SecurityException e )
+            {
+                throw new FileException( ErrorId.FILE_ACCESS_NOT_PERMITTED, tempFile, e );
+            }
+            catch ( UnsupportedEncodingException e )
+            {
+                throw new UnexpectedRuntimeException( e );
+            }
+
+            // Write file
+            try
+            {
+                // Write XML declaration
+                writer.writeXmlDeclaration( AppConstants.XML_VERSION_STR, XmlConstants.ENCODING_NAME_UTF8,
+                                            XmlWriter.Standalone.NO );
+
+                // Write pattern definition
+                write( writer );
+            }
+            catch ( IOException e )
+            {
+                throw new FileException( ErrorId.ERROR_WRITING_FILE, tempFile, e );
+            }
+
+            // Close output stream
+            try
+            {
+                writer.close( );
+                writer = null;
+            }
+            catch ( IOException e )
+            {
+                throw new FileException( ErrorId.FAILED_TO_CLOSE_FILE, tempFile, e );
+            }
+
+            // Delete any existing file
+            try
+            {
+                if ( file.exists( ) && !file.delete( ) )
+                    throw new FileException( ErrorId.FAILED_TO_DELETE_FILE, file );
+                oldFileDeleted = true;
+            }
+            catch ( SecurityException e )
+            {
+                throw new FileException( ErrorId.FAILED_TO_DELETE_FILE, file, e );
+            }
+
+            // Rename temporary file
+            try
+            {
+                if ( !tempFile.renameTo( file ) )
+                    throw new TempFileException( ErrorId.FAILED_TO_RENAME_FILE, file, tempFile );
+            }
+            catch ( SecurityException e )
+            {
+                throw new TempFileException( ErrorId.FAILED_TO_RENAME_FILE, file, e, tempFile );
+            }
+
+            // Set timestamp
+            timestamp = file.lastModified( );
+
+            // Reset list of edits
+            if ( AppConfig.getInstance( ).isClearEditListOnSave( ) )
+                editList.clear( );
+            else
+                editList.reset( );
+        }
+        catch ( AppException e )
+        {
+            // Close output stream
+            try
+            {
+                if ( writer != null )
+                    writer.close( );
+            }
+            catch ( Exception e1 )
+            {
+                // ignore
+            }
+
+            // Delete temporary file
+            try
+            {
+                if ( !oldFileDeleted && (tempFile != null) && tempFile.exists( ) )
+                    tempFile.delete( );
+            }
+            catch ( Exception e1 )
+            {
+                // ignore
+            }
+
+            // Rethrow exception
+            throw e;
+        }
+        finally
+        {
+            this.timestamp = timestamp;
+        }
+    }
+
+    //------------------------------------------------------------------
+
+    private void writeParameters( )
+        throws AppException
+    {
+        // Test for parameters
+        if ( !hasParameters( ) )
+            throw new AppException( ErrorId.NO_PARAMETERS );
+
+        // Write file
+        long timestamp = this.timestamp;
+        this.timestamp = 0;
+        try
+        {
+            // Write file
+            getParameters( ).write( file );
+
+            // Set timestamp
+            timestamp = file.lastModified( );
+        }
+        finally
+        {
+            this.timestamp = timestamp;
+        }
+
+        // Reset list of edits
+        if ( AppConfig.getInstance( ).isClearEditListOnSave( ) )
+            editList.clear( );
+        else
+            editList.reset( );
+    }
+
+    //------------------------------------------------------------------
+
+    private void doAnimation( AnimationParams animationParams )
+    {
+        // Get index of first frame
+        int startFrameIndex = animationParams.startFrameIndex;
+
+        // Initialise animation; if initialisation is successful, start animation task
+        absoluteFrameIndex = 0;
+        paused = false;
+        playing = false;
+        Task.setCancelled( false );
+        if ( initAnimation( animationParams.animationKind, startFrameIndex ) )
+        {
+            // Hide main window
+            getWindow( ).setVisible( false );
+
+            // Create dialog
+            sequenceDialog = new SequenceDialog( getWindow( ), this );
+
+            // Start animation task
+            playing = true;
+            new Thread( new DoAnimation( animationParams.frameRate, startFrameIndex ) ).start( );
+
+            // Show dialog
+            sequenceDialog.setVisible( true );
+
+            // Show main window
+            getWindow( ).setVisible( true );
+        }
+    }
+
+    //------------------------------------------------------------------
+
+    private void writeImageSequence( int    animationKind,
+                                     File   directory,
+                                     String filenameBase,
+                                     int    frameWidth,
+                                     int    frameHeight,
+                                     int    startFrameIndex,
+                                     int    numFrames,
+                                     int    fadeIn,
+                                     int    fadeOut )
+        throws AppException
+    {
+        // Initialise animation
+        if ( !initAnimation( animationKind, startFrameIndex ) )
+            return;
+
+        // Create output directory
+        if ( !directory.exists( ) && !directory.mkdirs( ) )
+            throw new FileException( ErrorId.FAILED_TO_CREATE_DIRECTORY, directory );
+
+        // Initialise progress view
+        ProgressView progressView = Task.getProgressView( );
+        progressView.setProgress( 0, 0.0 );
+
+        // Get dimensions of image
+        BufferedImage image = getImage( );
+        int imageWidth = image.getWidth( );
+        int imageHeight = image.getHeight( );
+
+        // Create buffer for image's RGB data
+        int[] rgbBuffer = null;
+        if ( (frameWidth > imageWidth) || (frameHeight > imageHeight) || (fadeIn > 0) || (fadeOut > 0) )
+            rgbBuffer = new int[imageWidth * imageHeight];
+
+        // Get number of digits in filename
+        int numDigits = NumberUtilities.getNumDigitsDec( numFrames - 1 );
+
+        // Generate a sequence of images, writing each image to a file
+        int frameIndex = 0;
+        while ( frameIndex < numFrames )
+        {
+            // Create pathname
+            String filename = filenameBase + NumberUtilities.uIntToDecString( frameIndex, numDigits, '0' ) +
+                                                                            AppConstants.PNG_FILE_SUFFIX;
+            File file = new File( directory, filename );
+
+            // Update info in progress view
+            progressView.setInfo( WRITING_STR, file );
+
+            // Generate next image
+            try
+            {
+                updateAnimation( startFrameIndex + frameIndex );
+            }
+            catch ( InterruptedException e )
+            {
+                break;
+            }
+
+            // Wrap image in frame, if necessary
+            image = getImage( );
+            if ( rgbBuffer != null )
+            {
+                // Get array of RGB values for image
+                image.getRGB( 0, 0, imageWidth, imageHeight, rgbBuffer, 0, imageWidth );
+
+                // Fade in or fade out
+                double factor = 1.0;
+                if ( frameIndex < fadeIn )
+                    factor = (double)frameIndex / (double)fadeIn;
+                else if ( frameIndex >= numFrames - fadeOut )
+                    factor = (double)(numFrames - frameIndex - 1) / (double)fadeOut;
+                if ( factor < 1.0 )
+                {
+                    for ( int i = 0; i < rgbBuffer.length; ++i )
+                    {
+                        int rgb = 0;
+                        for ( int shift = 0; shift < 24; shift += 8 )
+                        {
+                            int value = (int)Math.round( factor * (double)(rgbBuffer[i] >> shift & 0xFF) );
+                            rgb |= value << shift;
+                        }
+                        rgbBuffer[i] = rgb;
+                    }
+                }
+
+                // Create new image from RGB values
+                BufferedImage frameImage = new BufferedImage( frameWidth, frameHeight, image.getType( ) );
+                frameImage.setRGB( (frameWidth - imageWidth) / 2, (frameHeight - imageHeight) / 2,
+                                   imageWidth, imageHeight, rgbBuffer, 0, imageWidth );
+                image = frameImage;
+            }
+
+            // Write image file
+            PngOutputFile.write( file, image );
+
+            // Increment frame index
+            ++frameIndex;
+
+            // Update progress in progress view
+            progressView.setProgress( 0, (double)frameIndex / (double)numFrames );
+        }
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onUndo( )
+    {
+        Edit edit = editList.removeUndo( );
+        if ( edit != null )
+        {
+            edit.undo( this );
+            updateView( );
+        }
+        return null;
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onRedo( )
+    {
+        Edit edit = editList.removeRedo( );
+        if ( edit != null )
+        {
+            edit.redo( this );
+            updateView( );
+        }
+        return null;
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onClearEditList( )
+    {
+        String[] optionStrs = Util.getOptionStrings( AppConstants.CLEAR_STR );
+        if ( JOptionPane.showOptionDialog( App.getInstance( ).getMainWindow( ), CLEAR_EDIT_LIST_STR,
+                                           App.SHORT_NAME, JOptionPane.OK_CANCEL_OPTION,
+                                           JOptionPane.QUESTION_MESSAGE, null, optionStrs,
+                                           optionStrs[1] ) == JOptionPane.OK_OPTION )
+        {
+            editList.clear( );
+            System.gc( );
+        }
+        return null;
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onEditPatternParameters( )
+        throws AppException
+    {
+        Edit edit = null;
+        PatternParams oldParams = getParameters( );
+        if ( editParameters( ) )
+        {
+            updateView( );
+            edit = new Edit.Parameters( oldParams, getParameters( ) );
+        }
+        return edit;
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onEditDescription( )
+    {
+        Edit edit = null;
+        String oldDescription = getDescription( );
+        String description = DescriptionDialog.showDialog( getWindow( ), getPatternKind( ).getName( ),
+                                                           oldDescription );
+        if ( description != null )
+        {
+            setDescription( description );
+            edit = new Edit.Description( oldDescription, description );
+        }
+        return edit;
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onRegeneratePatternWithNewSeed( )
+        throws AppException
+    {
+        long oldSeed = getParameters( ).getSeed( );
+        setSeed( App.getInstance( ).getNextRandomSeed( ) );
+        updateView( );
+        return new Edit.Seed( oldSeed, getParameters( ).getSeed( ) );
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onStartSlideShow( )
+    {
+        // Display dialog for slide-show parameters
+        if ( SlideShowParamsDialog.showDialog( getWindow( ) ) )
+        {
+            // Hide main window
+            getWindow( ).setVisible( false );
+
+            // Create dialog
+            sequenceDialog = new SequenceDialog( getWindow( ), this );
+
+            // Start slide-show task
+            absoluteFrameIndex = 0;
+            paused = false;
+            playing = true;
+            Task.setCancelled( false );
+            int numThreads = AppConfig.getInstance( ).getNumSlideShowThreads( getPatternKind( ) );
+            if ( numThreads == 0 )
+                numThreads = Runtime.getRuntime( ).availableProcessors( );
+            new Thread( new DoSlideShow( numThreads, SlideShowParamsDialog.getInterval( ) ) ).start( );
+
+            // Show dialog
+            sequenceDialog.setVisible( true );
+
+            // Show main window
+            getWindow( ).setVisible( true );
+
+            // Update view with last image from slide show
+            updateView( );
+        }
+
+        return null;
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onStartAnimation( )
+        throws AppException
+    {
+        // Select animation
+        AnimationParams animationParams = selectAnimation( false );
+
+        // Run animation on a temporary document
+        if ( animationParams != null )
+            createDefinitionDocument( true ).doAnimation( animationParams );
+
+        return null;
+    }
+
+    //------------------------------------------------------------------
+
+    private void onShowImageRenderingTime( )
+    {
+        if ( renderingTimeDialog == null )
+            renderingTimeDialog = RenderingTimeDialog.showDialog( getWindow( ) );
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onOptimiseAnimation( )
+        throws AppException
+    {
+        optimiseAnimation( );
+        return null;
+    }
+
+    //------------------------------------------------------------------
+
+    private Edit onResizeWindowToImage( )
+    {
+        PatternView view = getView( );
+        if ( view != null )
+        {
+            BufferedImage image = view.getImage( );
+            if ( image != null )
+                view.setPreferredViewportSize( new Dimension( image.getWidth( ), image.getHeight( ) ) );
+        }
+        return null;
+    }
+
+    //------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+    private static  int                 newFileIndex;
+    private static  RenderingTimeDialog renderingTimeDialog;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+    private File                file;
+    private DocumentKind        documentKind;
+    private File                exportImageFile;
+    private File                exportSvgFile;
+    private long                timestamp;
+    private int                 unnamedIndex;
+    private boolean             executingCommand;
+    private boolean             playing;
+    private boolean             paused;
+    private ImageSequenceParams imageSequenceParams;
+    private SequenceDialog      sequenceDialog;
+    private EditList            editList;
+    private RenderingTime       renderingTime;
+
+    private volatile    int     absoluteFrameIndex;
+}
+
+//----------------------------------------------------------------------
