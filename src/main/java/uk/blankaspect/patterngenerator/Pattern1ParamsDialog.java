@@ -113,7 +113,7 @@ class Pattern1ParamsDialog
 	private static final	Insets	MOTION_RATE_BUTTON_MARGINS	= new Insets(1, 4, 1, 4);
 
 	private static final	String	TITLE_STR					= PatternKind.PATTERN1.getName() +
-																						" parameters | ";
+																						" parameters : ";
 	private static final	String	NEW_PATTERN_STR				= "New pattern";
 	private static final	String	SIZE_STR					= "Size";
 	private static final	String	SYMMETRY_STR				= "Symmetry";

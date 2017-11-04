@@ -120,7 +120,7 @@ class Pattern2ParamsDialog
 
 	private static final	Color	DIRECTION_TEXT_COLOUR	= new Color(192, 64, 0);
 
-	private static final	String	TITLE_STR	= PatternKind.PATTERN2.getName() + " parameters | ";
+	private static final	String	TITLE_STR	= PatternKind.PATTERN2.getName() + " parameters : ";
 
 	private static final	String	NEW_PATTERN_STR					= "New pattern";
 	private static final	String	SIZE_STR						= "Size";

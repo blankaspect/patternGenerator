@@ -695,10 +695,10 @@ class PreferencesDialog
 			{
 				String[] optionStrs = Utils.getOptionStrings(AppConstants.REPLACE_STR);
 				if (!file.exists() ||
-					 (JOptionPane.showOptionDialog(this, Utils.getPathname(file) + AppConstants.ALREADY_EXISTS_STR,
-												   SAVE_CONFIG_FILE_STR, JOptionPane.OK_CANCEL_OPTION,
-												   JOptionPane.WARNING_MESSAGE, null, optionStrs,
-												   optionStrs[1]) == JOptionPane.OK_OPTION))
+					(JOptionPane.showOptionDialog(this, Utils.getPathname(file) + AppConstants.ALREADY_EXISTS_STR,
+												  SAVE_CONFIG_FILE_STR, JOptionPane.OK_CANCEL_OPTION,
+												  JOptionPane.WARNING_MESSAGE, null, optionStrs, optionStrs[1])
+																							== JOptionPane.OK_OPTION))
 				{
 					setPreferences();
 					accepted = true;
@@ -1402,7 +1402,6 @@ class PreferencesDialog
 
 	private JPanel createPanelFonts()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -1524,7 +1523,6 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
@@ -1564,8 +1562,7 @@ class PreferencesDialog
 		config.setShowUnixPathnames(showUnixPathnamesComboBox.getSelectedValue());
 		config.setSelectTextOnFocusGained(selectTextOnFocusGainedComboBox.getSelectedValue());
 		if (saveMainWindowLocationComboBox.getSelectedValue() != config.isMainWindowLocation())
-			config.setMainWindowLocation(saveMainWindowLocationComboBox.getSelectedValue() ? new Point()
-																						   : null);
+			config.setMainWindowLocation(saveMainWindowLocationComboBox.getSelectedValue() ? new Point() : null);
 		config.setMaxEditListLength(maxEditListLengthSpinner.getIntValue());
 		config.setClearEditListOnSave(clearEditListOnSaveComboBox.getSelectedValue());
 		config.setKeepSequenceWindowOnTop(keepSequenceWindowOnTopComboBox.getSelectedValue());
@@ -1593,11 +1590,9 @@ class PreferencesDialog
 				config.setPatternName(patternKind, name);
 		}
 		for (PatternKind patternKind : defaultSizePanels.keySet())
-			config.setDefaultPatternSize(patternKind,
-										 defaultSizePanels.get(patternKind).getDimensions());
+			config.setDefaultPatternSize(patternKind, defaultSizePanels.get(patternKind).getDimensions());
 		for (PatternKind patternKind : numSlideShowThreadsSpinners.keySet())
-			config.setNumSlideShowThreads(patternKind,
-										  numSlideShowThreadsSpinners.get(patternKind).getIntValue());
+			config.setNumSlideShowThreads(patternKind, numSlideShowThreadsSpinners.get(patternKind).getIntValue());
 		config.setPattern1NumRenderingThreads(pattern1NumRenderingThreadsSpinner.getIntValue());
 		config.setPattern1PhaseAnimation(pattern1PhaseAnimationComboBox.getSelectedValue());
 		config.setPattern2PathRendering(pattern2PathRenderingComboBox.getSelectedValue());
