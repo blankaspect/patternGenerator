@@ -58,6 +58,8 @@ import uk.blankaspect.common.exception.ValueOutOfBoundsException;
 
 import uk.blankaspect.common.gui.IProgressView;
 
+import uk.blankaspect.common.indexedsub.IndexedSub;
+
 import uk.blankaspect.common.misc.ColourUtils;
 import uk.blankaspect.common.misc.IntegerRange;
 import uk.blankaspect.common.misc.IStringKeyed;
@@ -2427,7 +2429,7 @@ strictfp class Pattern2Image
 		for (String str : PATH_STYLE_STRS)
 		{
 			writer.writeSpaces(indent + XmlWriter.INDENT_INCREMENT);
-			writer.write(StringUtils.substitute(str, OutputShape.FORMAT.format(pathThickness)));
+			writer.write(IndexedSub.sub(str, OutputShape.FORMAT.format(pathThickness)));
 			writer.writeEol();
 		}
 

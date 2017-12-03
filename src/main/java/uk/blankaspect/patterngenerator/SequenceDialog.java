@@ -67,7 +67,7 @@ import uk.blankaspect.common.gui.FMenuItem;
 import uk.blankaspect.common.gui.GuiUtils;
 import uk.blankaspect.common.gui.TextRendering;
 
-import uk.blankaspect.common.misc.StringUtils;
+import uk.blankaspect.common.indexedsub.IndexedSub;
 
 //----------------------------------------------------------------------
 
@@ -1018,8 +1018,7 @@ class SequenceDialog
 			{
 				PatternDocument newDocument = document.createDefinitionDocument(false);
 				App.INSTANCE.addDocument(newDocument);
-				String str = StringUtils.substitute(DOCUMENT_CREATED_STR,
-													newDocument.getName(false));
+				String str = IndexedSub.sub(DOCUMENT_CREATED_STR, newDocument.getName(false));
 				JOptionPane.showMessageDialog(this, str, App.SHORT_NAME, JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
