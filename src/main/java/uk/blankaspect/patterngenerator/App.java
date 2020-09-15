@@ -24,6 +24,11 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
+import java.io.IOException;
+
+import java.time.LocalDateTime;
+
+import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,23 +45,32 @@ import javax.swing.UIManager;
 
 import javax.swing.filechooser.FileFilter;
 
+import uk.blankaspect.common.cls.ClassUtils;
+
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.ExceptionUtils;
 
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.exception2.LocationException;
 
-import uk.blankaspect.common.misc.CalendarTime;
-import uk.blankaspect.common.misc.ClassUtils;
+import uk.blankaspect.common.filesystem.PathnameUtils;
+
+import uk.blankaspect.common.logging.ErrorLogger;
+
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
-import uk.blankaspect.common.misc.PngOutputFile;
-import uk.blankaspect.common.misc.PropertyString;
-import uk.blankaspect.common.misc.ResourceProperties;
-import uk.blankaspect.common.misc.StringUtils;
 
 import uk.blankaspect.common.random.Prng01;
 
-import uk.blankaspect.common.textfield.TextFieldUtils;
+import uk.blankaspect.common.resource.ResourceProperties;
+
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.image.PngOutputFile;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+
+import uk.blankaspect.common.swing.textfield.TextFieldUtils;
 
 //----------------------------------------------------------------------
 
@@ -89,6 +103,8 @@ public class App
 	private static final	String	VERSION_PROPERTY_KEY	= "version";
 	private static final	String	BUILD_PROPERTY_KEY		= "build";
 	private static final	String	RELEASE_PROPERTY_KEY	= "release";
+
+	private static final	String	VERSION_DATE_TIME_PATTERN	= "uuuuMMdd-HHmmss";
 
 	private static final	String	BUILD_PROPERTIES_FILENAME	= "build.properties";
 
@@ -143,81 +159,11 @@ public class App
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	PatternDocument	document;
 		private	PatternView		view;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// INITIALISATION CLASS
-
-
-	/**
-	 * The run() method of this class creates the main window and performs the remaining initialisation of
-	 * the application from the event-dispatching thread.
-	 */
-
-	private class DoInitialisation
-		implements Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private DoInitialisation(String[] arguments)
-		{
-			this.arguments = arguments;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		public void run()
-		{
-			// Create main window
-			mainWindow = new MainWindow();
-
-			// Start file-check timer
-			fileCheckTimer = new Timer(FILE_CHECK_TIMER_INTERVAL, AppCommand.CHECK_MODIFIED_FILE);
-			fileCheckTimer.setRepeats(false);
-			fileCheckTimer.start();
-
-			// Command-line arguments: open files
-			if (arguments.length > 0)
-			{
-				// Create list of files from command-line arguments
-				List<File> files = Arrays.stream(arguments)
-											.map(argument -> new File(PropertyString.parsePathname(argument)))
-											.collect(Collectors.toList());
-
-				// Open files
-				openFiles(files);
-
-				// Update title and menus
-				mainWindow.updateTitleAndMenus();
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance fields
-	////////////////////////////////////////////////////////////////////
-
-		private	String[]	arguments;
 
 	}
 
@@ -352,11 +298,8 @@ public class App
 			}
 			else
 			{
-				long time = System.currentTimeMillis();
 				buffer.append('b');
-				buffer.append(CalendarTime.dateToString(time));
-				buffer.append('-');
-				buffer.append(CalendarTime.hoursMinsToString(time));
+				buffer.append(DateTimeFormatter.ofPattern(VERSION_DATE_TIME_PATTERN).format(LocalDateTime.now()));
 			}
 			versionStr = buffer.toString();
 		}
@@ -726,14 +669,37 @@ public class App
 
 	//------------------------------------------------------------------
 
-	private void init(String[] arguments)
+	private void init(String[] args)
 	{
-		// Initialise instance fields
+		// Log stack trace of uncaught exception
+		if (ClassUtils.isFromJar(getClass()))
+		{
+			Thread.setDefaultUncaughtExceptionHandler((thread, exception) ->
+			{
+				try
+				{
+					ErrorLogger.INSTANCE.write(exception);
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			});
+		}
+
+		// Initialise instance variables
 		documentsViews = new ArrayList<>();
 		prng = new Prng01();
 
 		// Read build properties
-		buildProperties = new ResourceProperties(BUILD_PROPERTIES_FILENAME, getClass());
+		try
+		{
+			buildProperties = new ResourceProperties(BUILD_PROPERTIES_FILENAME);
+		}
+		catch (LocationException e)
+		{
+			e.printStackTrace();
+		}
 
 		// Read configuration
 		AppConfig config = AppConfig.INSTANCE;
@@ -775,7 +741,29 @@ public class App
 		initFileChoosers();
 
 		// Perform remaining initialisation from event-dispatching thread
-		SwingUtilities.invokeLater(new DoInitialisation(arguments));
+		SwingUtilities.invokeLater(() ->
+		{
+			// Create main window
+			mainWindow = new MainWindow();
+
+			// Start file-check timer
+			new Timer(FILE_CHECK_TIMER_INTERVAL, AppCommand.CHECK_MODIFIED_FILE).start();
+
+			// Command-line arguments: open files
+			if (args.length > 0)
+			{
+				// Create list of files from command-line arguments
+				List<File> files = Arrays.stream(args)
+											.map(argument -> new File(PathnameUtils.parsePathname(argument)))
+											.collect(Collectors.toList());
+
+				// Open files
+				openFiles(files);
+
+				// Update title and menus
+				mainWindow.updateTitleAndMenus();
+			}
+		});
 	}
 
 	//------------------------------------------------------------------
@@ -993,15 +981,22 @@ public class App
 													  JOptionPane.QUESTION_MESSAGE) ==
 																					JOptionPane.YES_OPTION)
 					{
-						revertDocument(fileInfo);
-						mainWindow.updateTitleAndMenus();
+						try
+						{
+							revertDocument(fileInfo);
+							mainWindow.updateTitleAndMenus();
+						}
+						catch (AppException e)
+						{
+							document.setTimestamp(currentTimestamp);
+							throw e;
+						}
 					}
 					else
 						document.setTimestamp(currentTimestamp);
 				}
 			}
 		}
-		fileCheckTimer.start();
 	}
 
 	//------------------------------------------------------------------
@@ -1261,13 +1256,12 @@ public class App
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	ResourceProperties	buildProperties;
 	private	String				versionStr;
 	private	MainWindow			mainWindow;
-	private	Timer				fileCheckTimer;
 	private	List<DocumentView>	documentsViews;
 	private	Prng01				prng;
 	private	JFileChooser		openFileChooser;

@@ -20,8 +20,9 @@ package uk.blankaspect.patterngenerator;
 
 import java.awt.Dimension;
 
-import uk.blankaspect.common.misc.IntegerRange;
 import uk.blankaspect.common.misc.IStringKeyed;
+
+import uk.blankaspect.common.range.IntegerRange;
 
 //----------------------------------------------------------------------
 
@@ -76,7 +77,7 @@ enum PatternKind
 		this.defaultWidth = defaultWidth;
 		heightRange = new IntegerRange(minHeight, maxHeight);
 		this.defaultHeight = defaultHeight;
-		sizeRanges = new IntegerRange[]{ widthRange, heightRange };
+		sizeRanges = new IntegerRange[] { widthRange, heightRange };
 	}
 
 	//------------------------------------------------------------------
@@ -160,7 +161,7 @@ enum PatternKind
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	String			key;

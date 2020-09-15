@@ -62,12 +62,15 @@ import javax.swing.Timer;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.FMenuItem;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.TextRendering;
-
 import uk.blankaspect.common.indexedsub.IndexedSub;
+
+import uk.blankaspect.common.swing.colour.Colours;
+
+import uk.blankaspect.common.swing.menu.FMenuItem;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
@@ -210,7 +213,7 @@ class SequenceDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String			key;
@@ -373,7 +376,7 @@ class SequenceDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	boolean	mouseOver;
@@ -407,7 +410,7 @@ class SequenceDialog
 
 		private FrameIndexLabel(int frameIndex)
 		{
-			// Initialise instance fields
+			// Initialise instance variables
 			text = Integer.toString(frameIndex);
 
 			// Set preferred size
@@ -458,7 +461,7 @@ class SequenceDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -531,7 +534,7 @@ class SequenceDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	KeyStroke		keyStroke;
@@ -602,7 +605,7 @@ class SequenceDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	MouseEvent	lastMouseEvent;
@@ -622,7 +625,7 @@ class SequenceDialog
 		// Call superclass constructor
 		super(owner, App.SHORT_NAME, Dialog.ModalityType.APPLICATION_MODAL);
 
-		// Initialise instance fields
+		// Initialise instance variables
 		this.document = document;
 		mouseEventListener = new MouseEventListener();
 		timer = new Timer(BUTTON_PANEL_DELAY, this);
@@ -1038,13 +1041,13 @@ class SequenceDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Point	location;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	PatternDocument		document;

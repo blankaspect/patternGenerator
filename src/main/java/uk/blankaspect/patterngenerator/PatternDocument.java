@@ -30,7 +30,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+
+import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -56,16 +57,18 @@ import org.w3c.dom.NodeList;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 import uk.blankaspect.common.exception.TempFileException;
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
-
-import uk.blankaspect.common.gui.IProgressView;
 
 import uk.blankaspect.common.misc.FileWritingMode;
-import uk.blankaspect.common.misc.NumberUtils;
-import uk.blankaspect.common.misc.PngOutputFile;
-import uk.blankaspect.common.misc.StringUtils;
 
-import uk.blankaspect.common.xml.Attribute;
+import uk.blankaspect.common.number.NumberUtils;
+
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.image.PngOutputFile;
+
+import uk.blankaspect.common.ui.progress.IProgressView;
+
+import uk.blankaspect.common.xml.AttributeList;
 import uk.blankaspect.common.xml.XmlConstants;
 import uk.blankaspect.common.xml.XmlFile;
 import uk.blankaspect.common.xml.XmlParseException;
@@ -111,9 +114,6 @@ abstract class PatternDocument
 	private static final	String	UNNAMED_STR			= "Unnamed";
 	private static final	String	CLEAR_EDIT_LIST_STR	= "Do you want to clear all the undo/redo actions?";
 
-	private static final	String	SVG_SYSTEM_ID		= "http://www.w3.org/Graphics/SVG/1.1/DTD/" +
-															"svg11.dtd";
-	private static final	String	SVG_PUBLIC_ID		= "-//W3C//DTD SVG 1.1//EN";
 	private static final	String	SVG_NAMESPACE_NAME	= "http://www.w3.org/2000/svg";
 	private static final	String	SVG_VERSION_STR		= "1.1";
 
@@ -228,7 +228,7 @@ abstract class PatternDocument
 
 		private Command(String key)
 		{
-			command = new uk.blankaspect.common.misc.Command(this);
+			command = new uk.blankaspect.common.swing.action.Command(this);
 			putValue(Action.ACTION_COMMAND_KEY, key);
 		}
 
@@ -337,10 +337,10 @@ abstract class PatternDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
-		private	uk.blankaspect.common.misc.Command	command;
+		private	uk.blankaspect.common.swing.action.Command	command;
 
 	}
 
@@ -436,7 +436,7 @@ abstract class PatternDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -480,7 +480,7 @@ abstract class PatternDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		File			file;
@@ -521,7 +521,7 @@ abstract class PatternDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		int		animationKind;
@@ -585,7 +585,7 @@ abstract class PatternDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	String	oldDescription;
@@ -651,7 +651,7 @@ abstract class PatternDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	long	oldSeed;
@@ -717,7 +717,7 @@ abstract class PatternDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	PatternParams	oldParams;
@@ -862,7 +862,7 @@ abstract class PatternDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int	maxLength;
@@ -919,7 +919,7 @@ abstract class PatternDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	long	numPixels;
@@ -989,7 +989,7 @@ abstract class PatternDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	long			index;
@@ -1022,7 +1022,7 @@ abstract class PatternDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	long			index;
@@ -1164,7 +1164,7 @@ abstract class PatternDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int				numThreads;
@@ -1262,7 +1262,7 @@ abstract class PatternDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	long	interval;
@@ -1685,7 +1685,7 @@ abstract class PatternDocument
 			if (filename.length() == length)
 				filename = StringUtils.removeSuffix(filename, AppConstants.PG_PAR_FILE_SUFFIX);
 			if (filename.length() == length)
-				filename = StringUtils.removeFromLast(filename, '.');
+				filename = StringUtils.getPrefixLast(filename, '.');
 		}
 		return filename;
 	}
@@ -1762,7 +1762,7 @@ abstract class PatternDocument
 	public void write(FileInfo fileInfo)
 		throws AppException
 	{
-		// Set instance fields
+		// Set instance variables
 		file = fileInfo.file;
 		if (fileInfo.documentKind != null)
 			documentKind = fileInfo.documentKind;
@@ -1787,7 +1787,7 @@ abstract class PatternDocument
 	public void writeImage(File file)
 		throws AppException
 	{
-		// Set instance field
+		// Set instance variable
 		exportImageFile = file;
 
 		// Reset progress view
@@ -1813,7 +1813,7 @@ abstract class PatternDocument
 	public void writeImageSequence(ImageSequenceParams params)
 		throws AppException
 	{
-		// Set instance field
+		// Set instance variable
 		imageSequenceParams = params;
 
 		// Select animation
@@ -1833,7 +1833,7 @@ abstract class PatternDocument
 	public void writeSvg(File file)
 		throws AppException
 	{
-		// Set instance field
+		// Set instance variable
 		exportSvgFile = file;
 
 		// Initialise progress view
@@ -1861,7 +1861,7 @@ abstract class PatternDocument
 			// Open XML writer on temporary file
 			try
 			{
-				writer = new XmlWriter(tempFile, XmlConstants.ENCODING_NAME_UTF8);
+				writer = new XmlWriter(tempFile, StandardCharsets.UTF_8);
 			}
 			catch (FileNotFoundException e)
 			{
@@ -1871,10 +1871,6 @@ abstract class PatternDocument
 			{
 				throw new FileException(ErrorId.FILE_ACCESS_NOT_PERMITTED, tempFile, e);
 			}
-			catch (UnsupportedEncodingException e)
-			{
-				throw new UnexpectedRuntimeException(e);
-			}
 
 			// Write file
 			try
@@ -1883,15 +1879,12 @@ abstract class PatternDocument
 				writer.writeXmlDeclaration(AppConstants.XML_VERSION_STR, XmlConstants.ENCODING_NAME_UTF8,
 										   XmlWriter.Standalone.NO);
 
-				// Write document type
-				writer.writeDocumentType(Svg.ElementName.SVG, SVG_SYSTEM_ID, SVG_PUBLIC_ID);
-
 				// Write root element start tag
-				List<Attribute> attributes = new ArrayList<>();
-				attributes.add(new Attribute(Svg.AttrName.XMLNS, SVG_NAMESPACE_NAME));
-				attributes.add(new Attribute(Svg.AttrName.VERSION, SVG_VERSION_STR));
-				attributes.add(new Attribute(Svg.AttrName.WIDTH, getImage().getWidth()));
-				attributes.add(new Attribute(Svg.AttrName.HEIGHT, getImage().getHeight()));
+				AttributeList attributes = new AttributeList();
+				attributes.add(Svg.AttrName.XMLNS, SVG_NAMESPACE_NAME);
+				attributes.add(Svg.AttrName.VERSION, SVG_VERSION_STR);
+				attributes.add(Svg.AttrName.WIDTH, getImage().getWidth());
+				attributes.add(Svg.AttrName.HEIGHT, getImage().getHeight());
 				writer.writeElementStart(Svg.ElementName.SVG, attributes, 0, true, true);
 
 				// Write SVG elements
@@ -2073,10 +2066,10 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	protected void appendCommonAttributes(List<Attribute> attributes)
+	protected void appendCommonAttributes(AttributeList attributes)
 	{
-		attributes.add(new Attribute(AttrName.XMLNS, NAMESPACE_PREFIX + getPatternKind().getKey()));
-		attributes.add(new Attribute(AttrName.VERSION, VERSION));
+		attributes.add(AttrName.XMLNS, NAMESPACE_PREFIX + getPatternKind().getKey());
+		attributes.add(AttrName.VERSION, VERSION);
 	}
 
 	//------------------------------------------------------------------
@@ -2132,7 +2125,7 @@ abstract class PatternDocument
 			// Open XML writer on temporary file
 			try
 			{
-				writer = new XmlWriter(tempFile, XmlConstants.ENCODING_NAME_UTF8);
+				writer = new XmlWriter(tempFile, StandardCharsets.UTF_8);
 			}
 			catch (FileNotFoundException e)
 			{
@@ -2141,10 +2134,6 @@ abstract class PatternDocument
 			catch (SecurityException e)
 			{
 				throw new FileException(ErrorId.FILE_ACCESS_NOT_PERMITTED, tempFile, e);
-			}
-			catch (UnsupportedEncodingException e)
-			{
-				throw new UnexpectedRuntimeException(e);
 			}
 
 			// Write file
@@ -2576,14 +2565,14 @@ abstract class PatternDocument
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	int					newFileIndex;
 	private static	RenderingTimeDialog	renderingTimeDialog;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	File				file;

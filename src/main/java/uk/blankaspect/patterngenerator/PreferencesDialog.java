@@ -53,25 +53,35 @@ import javax.swing.UIManager;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.BooleanComboBox;
-import uk.blankaspect.common.gui.DimensionsSpinnerPanel;
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FComboBox;
-import uk.blankaspect.common.gui.FIntegerSpinner;
-import uk.blankaspect.common.gui.FLabel;
-import uk.blankaspect.common.gui.FontEx;
-import uk.blankaspect.common.gui.FontStyle;
-import uk.blankaspect.common.gui.FTabbedPane;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.IntegerSpinner;
-import uk.blankaspect.common.gui.TextRendering;
-import uk.blankaspect.common.gui.TitledBorder;
+import uk.blankaspect.common.range.IntegerRange;
 
-import uk.blankaspect.common.misc.IntegerRange;
-import uk.blankaspect.common.misc.KeyAction;
+import uk.blankaspect.common.swing.action.KeyAction;
 
-import uk.blankaspect.common.textfield.ConstrainedTextField;
-import uk.blankaspect.common.textfield.IntegerValueField;
+import uk.blankaspect.common.swing.border.TitledBorder;
+
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.combobox.BooleanComboBox;
+import uk.blankaspect.common.swing.combobox.FComboBox;
+
+import uk.blankaspect.common.swing.container.DimensionsSpinnerPanel;
+
+import uk.blankaspect.common.swing.font.FontEx;
+import uk.blankaspect.common.swing.font.FontStyle;
+
+import uk.blankaspect.common.swing.label.FLabel;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
+import uk.blankaspect.common.swing.spinner.IntegerSpinner;
+
+import uk.blankaspect.common.swing.tabbedpane.FTabbedPane;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+
+import uk.blankaspect.common.swing.textfield.ConstrainedTextField;
+import uk.blankaspect.common.swing.textfield.IntegerValueField;
 
 //----------------------------------------------------------------------
 
@@ -302,7 +312,7 @@ class PreferencesDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -461,7 +471,7 @@ class PreferencesDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	FComboBox<String>		nameComboBox;
@@ -1612,14 +1622,14 @@ class PreferencesDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Point	location;
 	private static	int		tabIndex;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	// Main panel

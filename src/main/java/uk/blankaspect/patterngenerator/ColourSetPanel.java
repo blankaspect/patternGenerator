@@ -57,17 +57,22 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.GuiUtils;
-
-import uk.blankaspect.common.misc.ColourUtils;
-import uk.blankaspect.common.misc.IntegerRange;
-import uk.blankaspect.common.misc.KeyAction;
-import uk.blankaspect.common.misc.NumberUtils;
-import uk.blankaspect.common.misc.StringUtils;
+import uk.blankaspect.common.number.NumberUtils;
 
 import uk.blankaspect.common.random.Prng01;
+
+import uk.blankaspect.common.range.IntegerRange;
+
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.action.KeyAction;
+
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.common.swing.colour.ColourUtils;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
@@ -101,6 +106,9 @@ class ColourSetPanel
 	private static final	Color	COLOUR_BUTTON_SELECTED_BORDER_COLOUR	= new Color(240, 160, 64);
 	private static final	Color	COLOUR_BUTTON_FOCUSED_BORDER1_COLOUR	= Color.WHITE;
 	private static final	Color	COLOUR_BUTTON_FOCUSED_BORDER2_COLOUR	= Color.BLACK;
+
+	private static final	Stroke	DASH	= new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
+															  10.0f, new float[] { 2.0f, 2.0f }, 0.5f);
 
 	private enum ButtonState
 	{
@@ -440,13 +448,13 @@ class ColourSetPanel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Class fields
+	//  Class variables
 	////////////////////////////////////////////////////////////////////
 
 		private static	Point	location;
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	boolean					accepted;
@@ -488,7 +496,7 @@ class ColourSetPanel
 		private ColourButton(int   index,
 							 Color colour)
 		{
-			// Initialise instance fields
+			// Initialise instance variables
 			this.index = index;
 			this.colour = colour;
 			buttonState = ButtonState.NOT_PRESSED;
@@ -687,7 +695,7 @@ class ColourSetPanel
 
 				Graphics2D gr2d = (Graphics2D)gr;
 				Stroke stroke = gr2d.getStroke();
-				gr2d.setStroke(dash);
+				gr2d.setStroke(DASH);
 				gr.setColor(COLOUR_BUTTON_FOCUSED_BORDER2_COLOUR);
 				gr.drawRect(x1, y1, x2, y2);
 
@@ -788,7 +796,7 @@ class ColourSetPanel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int			index;
@@ -810,7 +818,7 @@ class ColourSetPanel
 						  Color       defaultColour,
 						  Color       transparencyColour)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		this.defaultColour = defaultColour;
 		numColours = colours.size();
 		colourButtons = new ArrayList<>();
@@ -1263,19 +1271,15 @@ class ColourSetPanel
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Prng01							prng			= new Prng01(App.INSTANCE.getNextRandomSeed());
-	private static	Stroke							dash			= new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
-																					  BasicStroke.JOIN_MITER,
-																					  10.0f, new float[]{ 2.0f, 2.0f },
-																					  0.5f);
 	private static	HueSaturationRangePanel.Params	graduateParams	= new HueSaturationRangePanel.Params();
 	private static	HueSaturationRangePanel.Params	randomiseParams	= new HueSaturationRangePanel.Params();
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	int					numColours;

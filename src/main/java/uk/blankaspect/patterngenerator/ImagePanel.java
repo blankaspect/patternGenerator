@@ -41,7 +41,7 @@ class ImagePanel
 
 	public ImagePanel(BufferedImage image)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		this.image = image;
 
 		// Set component attributes
@@ -94,7 +94,7 @@ class ImagePanel
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	BufferedImage	image;

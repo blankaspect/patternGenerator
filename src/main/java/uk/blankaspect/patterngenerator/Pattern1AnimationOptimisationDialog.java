@@ -76,16 +76,25 @@ import javax.swing.table.TableColumnModel;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FIntegerSpinner;
-import uk.blankaspect.common.gui.FLabel;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.TextRendering;
-import uk.blankaspect.common.gui.TitledBorder;
+import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.misc.KeyAction;
-import uk.blankaspect.common.misc.StringUtils;
+import uk.blankaspect.common.swing.action.KeyAction;
+
+import uk.blankaspect.common.swing.border.TitledBorder;
+
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.colour.Colours;
+
+import uk.blankaspect.common.swing.font.FontUtils;
+
+import uk.blankaspect.common.swing.label.FLabel;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
+
+import uk.blankaspect.common.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
@@ -211,7 +220,7 @@ class Pattern1AnimationOptimisationDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -574,7 +583,7 @@ class Pattern1AnimationOptimisationDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	long[]	keys;
@@ -690,7 +699,7 @@ class Pattern1AnimationOptimisationDialog
 						x = width - (fontMetrics.stringWidth(text) + MapKeyTable.CELL_HORIZONTAL_MARGIN);
 						break;
 				}
-				gr.drawString(text, x, GuiUtils.getBaselineOffset(height, fontMetrics));
+				gr.drawString(text, x, FontUtils.getBaselineOffset(height, fontMetrics));
 			}
 
 			// Draw cell border
@@ -704,7 +713,7 @@ class Pattern1AnimationOptimisationDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -832,7 +841,7 @@ class Pattern1AnimationOptimisationDialog
 		}
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	boolean	value;
@@ -896,7 +905,7 @@ class Pattern1AnimationOptimisationDialog
 		// Set icons
 		setIconImages(owner.getIconImages());
 
-		// Initialise instance fields
+		// Initialise instance variables
 		this.document = document;
 
 
@@ -1253,7 +1262,7 @@ class Pattern1AnimationOptimisationDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Point								location;
@@ -1263,7 +1272,7 @@ class Pattern1AnimationOptimisationDialog
 	private static	int									numFrames		= DEFAULT_NUM_FRAMES;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Pattern1Document	document;

@@ -51,14 +51,17 @@ import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.ArgumentOutOfBoundsException;
 import uk.blankaspect.common.exception.UnexpectedRuntimeException;
 
-import uk.blankaspect.common.misc.DoubleRange;
-import uk.blankaspect.common.misc.IntegerRange;
 import uk.blankaspect.common.misc.IStringKeyed;
-import uk.blankaspect.common.misc.StringUtils;
 
 import uk.blankaspect.common.random.Prng01;
 
+import uk.blankaspect.common.range.DoubleRange;
+import uk.blankaspect.common.range.IntegerRange;
+
+import uk.blankaspect.common.string.StringUtils;
+
 import uk.blankaspect.common.xml.Attribute;
+import uk.blankaspect.common.xml.AttributeList;
 import uk.blankaspect.common.xml.XmlParseException;
 import uk.blankaspect.common.xml.XmlUtils;
 import uk.blankaspect.common.xml.XmlWriter;
@@ -131,15 +134,14 @@ strictfp class Pattern1Image
 	private static final	double	ATTENUATION_FACTOR	= -0.05;
 
 	private static final	double	HUE_FACTOR		= 360.0;
-	private static final	double	INV_HUE_FACTOR	= 1.0 / HUE_FACTOR;
+	private static final	double	HUE_FACTOR_INV	= 1.0 / HUE_FACTOR;
 
 	private static final	double	SATURATION_FACTOR		= 100.0;
-	private static final	double	INV_SATURATION_FACTOR	= 1.0 / SATURATION_FACTOR;
+	private static final	double	SATURATION_FACTOR_INV	= 1.0 / SATURATION_FACTOR;
 
 	private static final	double	PHASE_INCREMENT_FACTOR1	= 0.001;
-	private static final	double	PHASE_INCREMENT_FACTOR2	=
-														StrictMath.log(0.25 / PHASE_INCREMENT_FACTOR1) /
-																				(double)MAX_PHASE_INCREMENT;
+	private static final	double	PHASE_INCREMENT_FACTOR2	= StrictMath.log(0.25 / PHASE_INCREMENT_FACTOR1)
+																					/ (double)MAX_PHASE_INCREMENT;
 
 	private static final	float	MAX_SATURATION	= 1.0f;
 
@@ -285,7 +287,7 @@ strictfp class Pattern1Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -373,7 +375,7 @@ strictfp class Pattern1Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -460,7 +462,7 @@ strictfp class Pattern1Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -571,7 +573,7 @@ strictfp class Pattern1Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -630,7 +632,7 @@ strictfp class Pattern1Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -894,14 +896,14 @@ strictfp class Pattern1Image
 
 		public Color getColour()
 		{
-			return new Color(Utils.hsToRgb((double)hue * INV_HUE_FACTOR,
-										   (double)saturation * INV_SATURATION_FACTOR));
+			return new Color(Utils.hsToRgb((double)hue * HUE_FACTOR_INV,
+										   (double)saturation * SATURATION_FACTOR_INV));
 		}
 
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	Source.Shape		shape;
@@ -960,7 +962,7 @@ strictfp class Pattern1Image
 		private static final	double	MAX_ORIENTATION	= 1.0;
 
 		private static final	double	WAVE_TABLE_FACTOR_FIXED_PHASE		= 2.0;
-		private static final	double	INV_WAVE_TABLE_FACTOR_FIXED_PHASE	= 1.0 / WAVE_TABLE_FACTOR_FIXED_PHASE;
+		private static final	double	WAVE_TABLE_FACTOR_FIXED_PHASE_INV	= 1.0 / WAVE_TABLE_FACTOR_FIXED_PHASE;
 
 		private static final	int	WAVE_TABLE_LENGTH_VARIABLE_PHASE	= 1 << 14;  // 16384
 
@@ -1104,7 +1106,7 @@ strictfp class Pattern1Image
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	String	key;
@@ -1268,7 +1270,7 @@ strictfp class Pattern1Image
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	String	key;
@@ -1362,7 +1364,7 @@ strictfp class Pattern1Image
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	String	key;
@@ -1454,11 +1456,11 @@ strictfp class Pattern1Image
 			//----------------------------------------------------------
 
 			@Override
-			protected List<Attribute> getAttributes()
+			protected AttributeList getAttributes()
 			{
-				List<Attribute> attributes = new ArrayList<>();
-				attributes.add(new Attribute(AttrName.SHAPE, Shape.CIRCLE.key));
-				attributes.addAll(super.getAttributes());
+				AttributeList attributes = new AttributeList();
+				attributes.add(AttrName.SHAPE, Shape.CIRCLE.key);
+				attributes.add(super.getAttributes());
 				return attributes;
 			}
 
@@ -1485,7 +1487,7 @@ strictfp class Pattern1Image
 			public static final		int	MAX_ECCENTRICITY	= 9;
 
 			private static final	double	ECCENTRICITY_FACTOR		= 10.0;
-			private static final	double	INV_ECCENTRICITY_FACTOR	= 1.0 / ECCENTRICITY_FACTOR;
+			private static final	double	ECCENTRICITY_FACTOR_INV	= 1.0 / ECCENTRICITY_FACTOR;
 
 		////////////////////////////////////////////////////////////////
 		//  Constructors
@@ -1511,9 +1513,9 @@ strictfp class Pattern1Image
 				super(x, y, waveform, waveCoeff, attenuationCoeff, frequency, phaseOffset, orientation,
 					  hue, saturation, phaseIncrement, motionAngle, motionRate, rotationRate);
 
-				// Initialise instance fields
+				// Initialise instance variables
 				this.eccentricity = eccentricity;
-				double e = (double)eccentricity * INV_ECCENTRICITY_FACTOR;
+				double e = (double)eccentricity * ECCENTRICITY_FACTOR_INV;
 				eccentricityCoeff = StrictMath.sqrt(1.0 - e * e);
 			}
 
@@ -1539,7 +1541,7 @@ strictfp class Pattern1Image
 					eccentricity = Integer.parseInt(attrValue);
 					if ((eccentricity < MIN_ECCENTRICITY) || (eccentricity > MAX_ECCENTRICITY))
 						throw new XmlParseException(ErrorId.ATTRIBUTE_OUT_OF_BOUNDS, attrKey, attrValue);
-					double e = (double)eccentricity * INV_ECCENTRICITY_FACTOR;
+					double e = (double)eccentricity * ECCENTRICITY_FACTOR_INV;
 					eccentricityCoeff = StrictMath.sqrt(1.0 - e * e);
 				}
 				catch (NumberFormatException e)
@@ -1585,19 +1587,19 @@ strictfp class Pattern1Image
 			//----------------------------------------------------------
 
 			@Override
-			protected List<Attribute> getAttributes()
+			protected AttributeList getAttributes()
 			{
-				List<Attribute> attributes = new ArrayList<>();
-				attributes.add(new Attribute(AttrName.SHAPE, Shape.ELLIPSE.key));
-				attributes.add(new Attribute(AttrName.ECCENTRICITY, eccentricity));
-				attributes.addAll(super.getAttributes());
+				AttributeList attributes = new AttributeList();
+				attributes.add(AttrName.SHAPE, Shape.ELLIPSE.key);
+				attributes.add(AttrName.ECCENTRICITY, eccentricity);
+				attributes.add(super.getAttributes());
 				return attributes;
 			}
 
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	int		eccentricity;
@@ -1647,7 +1649,7 @@ strictfp class Pattern1Image
 				super(x, y, waveform, waveCoeff, attenuationCoeff, frequency, phaseOffset, orientation,
 					  hue, saturation, phaseIncrement, motionAngle, motionRate, rotationRate);
 
-				// Initialise instance fields
+				// Initialise instance variables
 				this.numEdges = numEdges;
 				anglePerEdge = TWO_PI / (double)numEdges;
 			}
@@ -1720,19 +1722,19 @@ strictfp class Pattern1Image
 			//----------------------------------------------------------
 
 			@Override
-			protected List<Attribute> getAttributes()
+			protected AttributeList getAttributes()
 			{
-				List<Attribute> attributes = new ArrayList<>();
-				attributes.add(new Attribute(AttrName.SHAPE, Shape.POLYGON.key));
-				attributes.add(new Attribute(AttrName.NUM_EDGES, numEdges));
-				attributes.addAll(super.getAttributes());
+				AttributeList attributes = new AttributeList();
+				attributes.add(AttrName.SHAPE, Shape.POLYGON.key);
+				attributes.add(AttrName.NUM_EDGES, numEdges);
+				attributes.add(super.getAttributes());
 				return attributes;
 			}
 
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	int		numEdges;
@@ -1778,8 +1780,8 @@ strictfp class Pattern1Image
 			this.frequency = frequency;
 			this.phaseOffset = phaseOffset;
 			this.orientation = orientation * TWO_PI;
-			this.hue = (double)hue * INV_HUE_FACTOR;
-			this.saturation = (double)saturation * INV_SATURATION_FACTOR;
+			this.hue = (double)hue * HUE_FACTOR_INV;
+			this.saturation = (double)saturation * SATURATION_FACTOR_INV;
 			this.phaseIncrement = phaseIncrement;
 			this.motionAngle = motionAngle * TWO_PI;
 			this.motionRate = motionRate;
@@ -1940,7 +1942,7 @@ strictfp class Pattern1Image
 				int hueInt = Integer.parseInt(attrValue);
 				if ((hueInt < MIN_HUE) || (hueInt > MAX_HUE))
 					throw new XmlParseException(ErrorId.ATTRIBUTE_OUT_OF_BOUNDS, attrKey, attrValue);
-				hue = (double)hueInt * INV_HUE_FACTOR;
+				hue = (double)hueInt * HUE_FACTOR_INV;
 			}
 			catch (NumberFormatException e)
 			{
@@ -1958,7 +1960,7 @@ strictfp class Pattern1Image
 				int saturationInt = Integer.parseInt(attrValue);
 				if ((saturationInt < MIN_SATURATION) || (saturationInt > MAX_SATURATION))
 					throw new XmlParseException(ErrorId.ATTRIBUTE_OUT_OF_BOUNDS, attrKey, attrValue);
-				saturation = (double)saturationInt * INV_SATURATION_FACTOR;
+				saturation = (double)saturationInt * SATURATION_FACTOR_INV;
 			}
 			catch (NumberFormatException e)
 			{
@@ -2039,7 +2041,7 @@ strictfp class Pattern1Image
 				}
 			}
 
-			// Initialise remaining instance fields
+			// Initialise remaining instance variables
 			init();
 		}
 
@@ -2119,31 +2121,25 @@ strictfp class Pattern1Image
 
 		//--------------------------------------------------------------
 
-		protected List<Attribute> getAttributes()
+		protected AttributeList getAttributes()
 		{
-			List<Attribute> attributes = new ArrayList<>();
-			attributes.add(new Attribute(AttrName.X, x, AppConstants.FORMAT_1_8));
-			attributes.add(new Attribute(AttrName.Y, y, AppConstants.FORMAT_1_8));
-			attributes.add(new Attribute(AttrName.WAVEFORM, waveform.key));
-			attributes.add(new Attribute(AttrName.WAVE_COEFFICIENT, waveCoeff));
-			attributes.add(new Attribute(AttrName.ATTENUATION_COEFFICIENT, attenuationCoeff,
-										 AppConstants.FORMAT_1_8));
-			attributes.add(new Attribute(AttrName.FREQUENCY, frequency, AppConstants.FORMAT_1_8));
-			attributes.add(new Attribute(AttrName.PHASE_OFFSET, phaseOffset, AppConstants.FORMAT_1_8));
+			AttributeList attributes = new AttributeList();
+			attributes.add(AttrName.X, x, AppConstants.FORMAT_1_8);
+			attributes.add(AttrName.Y, y, AppConstants.FORMAT_1_8);
+			attributes.add(AttrName.WAVEFORM, waveform.key);
+			attributes.add(AttrName.WAVE_COEFFICIENT, waveCoeff);
+			attributes.add(AttrName.ATTENUATION_COEFFICIENT, attenuationCoeff, AppConstants.FORMAT_1_8);
+			attributes.add(AttrName.FREQUENCY, frequency, AppConstants.FORMAT_1_8);
+			attributes.add(AttrName.PHASE_OFFSET, phaseOffset, AppConstants.FORMAT_1_8);
 			if (canRotate())
-				attributes.add(new Attribute(AttrName.ORIENTATION, orientation / TWO_PI,
-											 AppConstants.FORMAT_1_8));
-			attributes.add(new Attribute(AttrName.HUE, StrictMath.round(hue * HUE_FACTOR)));
-			attributes.add(new Attribute(AttrName.SATURATION,
-										 StrictMath.round(saturation * SATURATION_FACTOR)));
-			attributes.add(new Attribute(AttrName.PHASE_INCREMENT, phaseIncrement,
-										 AppConstants.FORMAT_1_8));
-			attributes.add(new Attribute(AttrName.MOTION_ANGLE, motionAngle / TWO_PI,
-										 AppConstants.FORMAT_1_8));
-			attributes.add(new Attribute(AttrName.MOTION_RATE, motionRate, AppConstants.FORMAT_1_8));
+				attributes.add(AttrName.ORIENTATION, orientation / TWO_PI, AppConstants.FORMAT_1_8);
+			attributes.add(AttrName.HUE, StrictMath.round(hue * HUE_FACTOR));
+			attributes.add(AttrName.SATURATION, StrictMath.round(saturation * SATURATION_FACTOR));
+			attributes.add(AttrName.PHASE_INCREMENT, phaseIncrement, AppConstants.FORMAT_1_8);
+			attributes.add(AttrName.MOTION_ANGLE, motionAngle / TWO_PI, AppConstants.FORMAT_1_8);
+			attributes.add(AttrName.MOTION_RATE, motionRate, AppConstants.FORMAT_1_8);
 			if (canRotate())
-				attributes.add(new Attribute(AttrName.ROTATION_RATE, rotationRate / TWO_PI,
-											 AppConstants.FORMAT_1_8));
+				attributes.add(AttrName.ROTATION_RATE, rotationRate / TWO_PI, AppConstants.FORMAT_1_8);
 			return attributes;
 		}
 
@@ -2322,8 +2318,8 @@ strictfp class Pattern1Image
 			int length = (waveTableLength > 0)
 								? waveTableLength
 								: variablePhase ? WAVE_TABLE_LENGTH_VARIABLE_PHASE
-												: (int)StrictMath.ceil(StrictMath.hypot(width, height) *
-																			WAVE_TABLE_FACTOR_FIXED_PHASE);
+												: (int)StrictMath.ceil(StrictMath.sqrt(width * width + height * height)
+																					* WAVE_TABLE_FACTOR_FIXED_PHASE);
 			waveTable = new double[length + 1];
 			double waveCoeff = (double)this.waveCoeff / (double)MAX_WAVE_COEFFICIENT;
 			switch (waveform)
@@ -2380,7 +2376,7 @@ strictfp class Pattern1Image
 									  boolean inverted)
 		{
 			double waveTableFactor = variablePhase ? 1.0 / (double)(waveTable.length - 1)
-												   : INV_WAVE_TABLE_FACTOR_FIXED_PHASE;
+												   : WAVE_TABLE_FACTOR_FIXED_PHASE_INV;
 			double x0 = waveCoeff * 0.5;
 			double x1 = 0.5;
 			double x2r = x0;
@@ -2421,7 +2417,7 @@ strictfp class Pattern1Image
 			final	double	FACTOR	= 2.0;
 
 			double waveTableFactor = variablePhase ? 1.0 / (double)(waveTable.length - 1)
-												   : INV_WAVE_TABLE_FACTOR_FIXED_PHASE;
+												   : WAVE_TABLE_FACTOR_FIXED_PHASE_INV;
 			double a = (1.0 - 2.0 * waveCoeff) * FACTOR;
 			double minY = Double.MAX_VALUE;
 			double maxY = Double.MIN_VALUE;
@@ -2460,7 +2456,7 @@ strictfp class Pattern1Image
 			final	double	FACTOR	= 2.0;
 
 			double waveTableFactor = variablePhase ? 1.0 / (double)(waveTable.length - 1)
-												   : INV_WAVE_TABLE_FACTOR_FIXED_PHASE;
+												   : WAVE_TABLE_FACTOR_FIXED_PHASE_INV;
 			double a = (1.0 - 2.0 * waveCoeff) * FACTOR;
 			double minY = Double.MAX_VALUE;
 			double maxY = Double.MIN_VALUE;
@@ -2496,7 +2492,7 @@ strictfp class Pattern1Image
 		private void initWaveTableCompressedCosine(double waveCoeff)
 		{
 			double waveTableFactor = variablePhase ? 1.0 / (double)(waveTable.length - 1)
-												   : INV_WAVE_TABLE_FACTOR_FIXED_PHASE;
+												   : WAVE_TABLE_FACTOR_FIXED_PHASE_INV;
 			double factor = StrictMath.exp(waveCoeff);
 			for (int i = 0; i < waveTable.length; i++)
 			{
@@ -2518,7 +2514,7 @@ strictfp class Pattern1Image
 												 boolean inverted)
 		{
 			double waveTableFactor = variablePhase ? 1.0 / (double)(waveTable.length - 1)
-												   : INV_WAVE_TABLE_FACTOR_FIXED_PHASE;
+												   : WAVE_TABLE_FACTOR_FIXED_PHASE_INV;
 			double a = 0.5 * (waveCoeff + 1.0);
 			double maxY = Double.MIN_VALUE;
 			for (int i = 0; i < waveTable.length; i++)
@@ -2591,7 +2587,7 @@ strictfp class Pattern1Image
 			double xInterval = x1 - x0;
 
 			double waveTableFactor = variablePhase ? 1.0 / (double)(waveTable.length - 1)
-												   : INV_WAVE_TABLE_FACTOR_FIXED_PHASE;
+												   : WAVE_TABLE_FACTOR_FIXED_PHASE_INV;
 			double maxY = Double.MIN_VALUE;
 			for (int i = 0; i < waveTable.length; i++)
 			{
@@ -2642,7 +2638,7 @@ strictfp class Pattern1Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		protected	double		x;
@@ -2728,7 +2724,7 @@ strictfp class Pattern1Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int	animationKindBitField;
@@ -2811,7 +2807,7 @@ strictfp class Pattern1Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int				startY;
@@ -2961,7 +2957,7 @@ strictfp class Pattern1Image
 			throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
 		}
 
-		// Initialise remaining instance fields
+		// Initialise remaining instance variables
 		init(document);
 
 		// Initialise wave table of each source
@@ -2973,7 +2969,7 @@ strictfp class Pattern1Image
 	public Pattern1Image(Pattern1Document document,
 						 Pattern1Params   params)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		width = params.getWidth();
 		height = params.getHeight();
 		symmetry = params.getSymmetry();
@@ -2981,7 +2977,7 @@ strictfp class Pattern1Image
 		motionRateEnvelope = params.getMotionRateEnvelope();
 		sources = new ArrayList<>();
 
-		// Initialise remaining instance fields
+		// Initialise remaining instance variables
 		init(document);
 
 		// Initialise PRNGs
@@ -3031,10 +3027,14 @@ strictfp class Pattern1Image
 		if (symmetry == Symmetry.ROTATION_QUARTER)
 		{
 			double size = (double)StrictMath.max(width, height);
-			d = StrictMath.hypot(size, size);
+			d = StrictMath.sqrt(2.0 * size * size);
 		}
 		else
-			d = StrictMath.hypot((double)width, (double)height);
+		{
+			double w = (double)width;
+			double h = (double)height;
+			d = StrictMath.sqrt(w * w + h * h);
+		}
 
 		// Generate sources
 		List<SourceParams> sourceParams = params.getSources();
@@ -3051,8 +3051,7 @@ strictfp class Pattern1Image
 			DoubleRange wavelengthRange = params.getWavelengthRange();
 			int minWavelength = (int)StrictMath.round(d * wavelengthRange.lowerBound);
 			int maxWavelength = (int)StrictMath.round(d * wavelengthRange.upperBound);
-			double frequency = 1.0 / (double)(minWavelength +
-														prng1.nextInt(maxWavelength - minWavelength + 1));
+			double frequency = 1.0 / (double)(minWavelength + prng1.nextInt(maxWavelength - minWavelength + 1));
 
 			// Generate phase offset
 			double phaseOffset = prng1.nextDouble();
@@ -3557,12 +3556,12 @@ strictfp class Pattern1Image
 
 	private void init(Pattern1Document document)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		this.document = document;
 		brightnessRanges = new HashMap<>();
 		renderingMode = RenderingMode.TWO_PASSES;
 
-		// Initialise instance fields from configuration
+		// Initialise instance variables from configuration
 		AppConfig config = AppConfig.INSTANCE;
 		numRenderingThreads = config.getPattern1NumRenderingThreads();
 		if (numRenderingThreads == 0)
@@ -3892,26 +3891,26 @@ strictfp class Pattern1Image
 
 	//------------------------------------------------------------------
 
-	private List<Attribute> getAttributes()
+	private AttributeList getAttributes()
 	{
-		List<Attribute> attributes = new ArrayList<>();
-		attributes.add(new Attribute(AttrName.VERSION, VERSION));
+		AttributeList attributes = new AttributeList();
+		attributes.add(AttrName.VERSION, VERSION);
 		if (description != null)
-			attributes.add(new Attribute(AttrName.DESCRIPTION, description, true));
-		attributes.add(new Attribute(AttrName.WIDTH, width));
-		attributes.add(new Attribute(AttrName.HEIGHT, height));
-		attributes.add(new Attribute(AttrName.SYMMETRY, symmetry.key));
-		attributes.add(new Attribute(AttrName.SATURATION_MODE, saturationMode.key));
+			attributes.add(AttrName.DESCRIPTION, description, true);
+		attributes.add(AttrName.WIDTH, width);
+		attributes.add(AttrName.HEIGHT, height);
+		attributes.add(AttrName.SYMMETRY, symmetry.key);
+		attributes.add(AttrName.SATURATION_MODE, saturationMode.key);
 		if (motionRateEnvelope != null)
-			attributes.add(new Attribute(AttrName.MOTION_RATE_ENVELOPE, motionRateEnvelope));
-		attributes.add(new Attribute(AttrName.NUM_SOURCES, sources.size()));
+			attributes.add(AttrName.MOTION_RATE_ENVELOPE, motionRateEnvelope);
+		attributes.add(AttrName.NUM_SOURCES, sources.size());
 		return attributes;
 	}
 
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Pattern1Document				document;

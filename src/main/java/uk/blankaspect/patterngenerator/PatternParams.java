@@ -30,7 +30,7 @@ import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 import uk.blankaspect.common.exception.UnexpectedRuntimeException;
 
-import uk.blankaspect.common.misc.Property;
+import uk.blankaspect.common.property.Property;
 
 import uk.blankaspect.common.tuple.StringKVPair;
 
@@ -118,7 +118,7 @@ abstract class PatternParams
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -136,7 +136,7 @@ abstract class PatternParams
 
 
 	private static class PropertySet
-		extends uk.blankaspect.common.misc.PropertySet
+		extends uk.blankaspect.common.property.PropertySet
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -297,7 +297,7 @@ abstract class PatternParams
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	List<StringKVPair>	properties;
@@ -450,7 +450,7 @@ abstract class PatternParams
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	protected	List<Property>	properties;

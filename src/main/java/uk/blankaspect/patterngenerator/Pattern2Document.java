@@ -23,17 +23,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.w3c.dom.Element;
 
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.TaskCancelledException;
 
-import uk.blankaspect.common.gui.IProgressView;
+import uk.blankaspect.common.ui.progress.IProgressView;
 
-import uk.blankaspect.common.xml.Attribute;
+import uk.blankaspect.common.xml.AttributeList;
 import uk.blankaspect.common.xml.XmlParseException;
 import uk.blankaspect.common.xml.XmlWriter;
 
@@ -73,7 +70,7 @@ class Pattern2Document
 		// Call superclass constructor
 		super(file, DocumentKind.PARAMETERS);
 
-		// Initialise instance fields
+		// Initialise instance variables
 		this.params = params;
 
 		// Generate pattern from parameters
@@ -126,7 +123,7 @@ class Pattern2Document
 		// Call superclass constructor
 		super(file, DocumentKind.DEFINITION, temporary);
 
-		// Initialise instance fields
+		// Initialise instance variables
 		this.patternImage = patternImage;
 	}
 
@@ -268,7 +265,7 @@ class Pattern2Document
 	public void write(XmlWriter writer)
 		throws IOException
 	{
-		List<Attribute> attributes = new ArrayList<>();
+		AttributeList attributes = new AttributeList();
 		appendCommonAttributes(attributes);
 		writer.writeElementStart(getElementName(), attributes, 0, true, true);
 		patternImage.write(writer, XmlWriter.INDENT_INCREMENT);
@@ -434,7 +431,7 @@ class Pattern2Document
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Pattern2Params	params;

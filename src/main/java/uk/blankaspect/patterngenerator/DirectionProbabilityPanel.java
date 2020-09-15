@@ -43,7 +43,7 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
-import uk.blankaspect.common.gui.Colours;
+import uk.blankaspect.common.swing.colour.Colours;
 
 //----------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ class DirectionProbabilityPanel
 									  Pattern2Image.Direction.Mode          directionMode,
 									  boolean                               symmetrical)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		this.paramsDialog = paramsDialog;
 		this.probabilities = new EnumMap<>(Pattern2Image.Direction.class);
 		for (Pattern2Image.Direction direction : Pattern2Image.Direction.values())
@@ -399,7 +399,7 @@ class DirectionProbabilityPanel
 		Map<Pattern2Image.Direction, Point2D.Double[]> strokeBoxPoints =
 															new EnumMap<>(Pattern2Image.Direction.class);
 
-		inPoints = new Point2D.Double[]{ p1, p2 };
+		inPoints = new Point2D.Double[] { p1, p2 };
 		STROKE_LINE_POINTS.put(Pattern2Image.Direction.FORE, inPoints);
 
 		outPoints = new Point2D.Double[inPoints.length];
@@ -410,7 +410,7 @@ class DirectionProbabilityPanel
 		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
 		STROKE_LINE_POINTS.put(Pattern2Image.Direction.FORE_RIGHT, outPoints);
 
-		inPoints = new Point2D.Double[]{ v1, v2, v3, v4 };
+		inPoints = new Point2D.Double[] { v1, v2, v3, v4 };
 		strokeBoxPoints.put(Pattern2Image.Direction.FORE, inPoints);
 
 		outPoints = new Point2D.Double[inPoints.length];
@@ -431,7 +431,7 @@ class DirectionProbabilityPanel
 		v3 = new Point2D.Double(x + halfWidth, y);
 		v4 = new Point2D.Double(x - halfWidth, y);
 
-		inPoints = new Point2D.Double[]{ p1, p2 };
+		inPoints = new Point2D.Double[] { p1, p2 };
 		STROKE_LINE_POINTS.put(Pattern2Image.Direction.BACK, inPoints);
 
 		outPoints = new Point2D.Double[inPoints.length];
@@ -442,7 +442,7 @@ class DirectionProbabilityPanel
 		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
 		STROKE_LINE_POINTS.put(Pattern2Image.Direction.BACK_LEFT, outPoints);
 
-		inPoints = new Point2D.Double[]{ v1, v2, v3, v4 };
+		inPoints = new Point2D.Double[] { v1, v2, v3, v4 };
 		strokeBoxPoints.put(Pattern2Image.Direction.BACK, inPoints);
 
 		outPoints = new Point2D.Double[inPoints.length];
@@ -480,7 +480,7 @@ class DirectionProbabilityPanel
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Pattern2ParamsDialog					paramsDialog;

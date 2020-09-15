@@ -52,18 +52,26 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FComboBox;
-import uk.blankaspect.common.gui.FixedWidthLabel;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.HorizontalSlider;
-import uk.blankaspect.common.gui.IntegerSpinnerSliderPanel;
-import uk.blankaspect.common.gui.SpinnerSliderPanel;
-import uk.blankaspect.common.gui.TitledBorder;
-
-import uk.blankaspect.common.misc.KeyAction;
 import uk.blankaspect.common.misc.MaxValueMap;
+
+import uk.blankaspect.common.swing.action.KeyAction;
+
+import uk.blankaspect.common.swing.border.TitledBorder;
+
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.colour.Colours;
+
+import uk.blankaspect.common.swing.combobox.FComboBox;
+
+import uk.blankaspect.common.swing.container.IntegerSpinnerSliderPanel;
+import uk.blankaspect.common.swing.container.SpinnerSliderPanel;
+
+import uk.blankaspect.common.swing.label.FixedWidthLabel;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.slider.HorizontalSlider;
 
 //----------------------------------------------------------------------
 
@@ -200,7 +208,7 @@ class Pattern1SourceDialog
 		private WavePlotPanel(Pattern1Image.Source.Waveform waveform,
 							  int                           waveCoeff)
 		{
-			// Initialise instance fields
+			// Initialise instance variables
 			this.waveform = waveform;
 			this.waveCoeff = waveCoeff;
 			source = Pattern1Image.createWaveTableSource(waveform, waveCoeff, WIDTH);
@@ -272,7 +280,7 @@ class Pattern1SourceDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	Pattern1Image.Source.Waveform	waveform;
@@ -529,13 +537,13 @@ class Pattern1SourceDialog
 		sliderWidth = HorizontalSlider.extentToWidth(sliderExtent, SLIDER_KNOB_WIDTH);
 
 		attenuationCoeffSpinnerSlider =
-						new IntegerSpinnerSliderPanel(params.getAttenuationCoefficient(),
-													  Pattern1Image.Source.MIN_ATTENUATION_COEFFICIENT,
-													  Pattern1Image.Source.MAX_ATTENUATION_COEFFICIENT,
-													  ATTENUATION_COEFF_FIELD_LENGTH, false,
-													  sliderWidth, SLIDER_HEIGHT, SLIDER_KNOB_WIDTH,
-													  Pattern1Image.Source.DEFAULT_ATTENUATION_COEFFICIENT,
-													  SPINNER_SLIDER_PANEL_KEY);
+									new IntegerSpinnerSliderPanel(params.getAttenuationCoefficient(),
+																  Pattern1Image.Source.MIN_ATTENUATION_COEFFICIENT,
+																  Pattern1Image.Source.MAX_ATTENUATION_COEFFICIENT,
+																  ATTENUATION_COEFF_FIELD_LENGTH, false,
+																  sliderWidth, SLIDER_HEIGHT, SLIDER_KNOB_WIDTH,
+																  Pattern1Image.Source.DEFAULT_ATTENUATION_COEFFICIENT,
+																  SPINNER_SLIDER_PANEL_KEY);
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;
@@ -996,13 +1004,13 @@ class Pattern1SourceDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Point	location;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	boolean										accepted;

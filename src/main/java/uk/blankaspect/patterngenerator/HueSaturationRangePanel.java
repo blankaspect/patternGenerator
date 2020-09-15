@@ -47,17 +47,24 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.FIntegerSpinner;
-import uk.blankaspect.common.gui.FixedWidthRadioButton;
-import uk.blankaspect.common.gui.FLabel;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.HorizontalSlider;
-import uk.blankaspect.common.gui.IntegerSpinnerSliderPanel;
-
-import uk.blankaspect.common.misc.ColourUtils;
 import uk.blankaspect.common.misc.MaxValueMap;
-import uk.blankaspect.common.misc.StringUtils;
+
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.button.FixedWidthRadioButton;
+
+import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.common.swing.colour.ColourUtils;
+
+import uk.blankaspect.common.swing.container.IntegerSpinnerSliderPanel;
+
+import uk.blankaspect.common.swing.label.FLabel;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.slider.HorizontalSlider;
+
+import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
 
 //----------------------------------------------------------------------
 
@@ -184,7 +191,7 @@ class HueSaturationRangePanel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -241,7 +248,7 @@ class HueSaturationRangePanel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		int	hue1;
@@ -363,7 +370,7 @@ class HueSaturationRangePanel
 
 		private ColourPanel(Params params)
 		{
-			// Initialise instance fields
+			// Initialise instance variables
 			hue1 = params.hue1;
 			saturation1 = params.saturation1;
 			hue2 = params.hue2;
@@ -616,7 +623,7 @@ class HueSaturationRangePanel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int				hue1;
@@ -635,7 +642,7 @@ class HueSaturationRangePanel
 
 	public HueSaturationRangePanel(Params params)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		bound = Bound.BOUND1;
 
 
@@ -1082,7 +1089,7 @@ class HueSaturationRangePanel
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Bound						bound;

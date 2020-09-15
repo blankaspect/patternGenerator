@@ -40,12 +40,17 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.misc.KeyAction;
-import uk.blankaspect.common.misc.StringUtils;
+import uk.blankaspect.common.swing.action.KeyAction;
+
+import uk.blankaspect.common.swing.colour.Colours;
+
+import uk.blankaspect.common.swing.font.FontUtils;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
@@ -105,7 +110,7 @@ class Pattern1AnimationKindsPanel
 
 		private CheckBox(String text)
 		{
-			// Initialise instance fields
+			// Initialise instance variables
 			AppFont.MAIN.apply(this);
 			FontMetrics fontMetrics = getFontMetrics(getFont());
 			width = LEFT_MARGIN + ICON_WIDTH + HORIZONTAL_GAP + fontMetrics.stringWidth(text) +
@@ -171,7 +176,7 @@ class Pattern1AnimationKindsPanel
 			// Draw text
 			gr.setColor(isEnabled() ? FOREGROUND_COLOUR : DISABLED_FOREGROUND_COLOUR);
 			gr.drawString(getText(), LEFT_MARGIN + ICON_WIDTH + HORIZONTAL_GAP,
-						  GuiUtils.getBaselineOffset(height, gr.getFontMetrics()));
+						  FontUtils.getBaselineOffset(height, gr.getFontMetrics()));
 
 			// Draw border
 			gr.setColor(isEnabled() ? isSelected() ? SELECTED_BORDER_COLOUR : BORDER_COLOUR
@@ -188,7 +193,7 @@ class Pattern1AnimationKindsPanel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int	width;
@@ -291,7 +296,7 @@ class Pattern1AnimationKindsPanel
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Map<Pattern1Image.AnimationKind, CheckBox>	checkBoxes;

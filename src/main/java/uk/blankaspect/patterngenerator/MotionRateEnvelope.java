@@ -96,7 +96,7 @@ class MotionRateEnvelope
 		if (yCoeff == 0.0)
 			throw new IllegalArgumentException();
 
-		// Initialise remaining instance fields
+		// Initialise remaining instance variables
 		envelopeEvaluator = new EnvelopeEvaluator(nodes, Envelope.Kind.LINEAR);
 	}
 
@@ -180,7 +180,7 @@ class MotionRateEnvelope
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	List<Envelope.SimpleNode>	nodes;

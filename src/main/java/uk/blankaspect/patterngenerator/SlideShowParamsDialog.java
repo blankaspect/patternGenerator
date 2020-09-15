@@ -41,12 +41,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FDoubleSpinner;
-import uk.blankaspect.common.gui.FLabel;
-import uk.blankaspect.common.gui.GuiUtils;
+import uk.blankaspect.common.swing.action.KeyAction;
 
-import uk.blankaspect.common.misc.KeyAction;
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.label.FLabel;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.spinner.FDoubleSpinner;
 
 //----------------------------------------------------------------------
 
@@ -68,12 +71,10 @@ class SlideShowParamsDialog
 	private static final	int	INTERVAL_FIELD_LENGTH	= 6;
 
 	private static final	double	INTERVAL_FACTOR		= 1000.0;
-	private static final	double	INV_INTERVAL_FACTOR	= 1.0 / INTERVAL_FACTOR;
+	private static final	double	INTERVAL_FACTOR_INV	= 1.0 / INTERVAL_FACTOR;
 
-	private static final	double	MIN_INTERVAL	=
-											PatternDocument.MIN_SLIDE_SHOW_INTERVAL * INV_INTERVAL_FACTOR;
-	private static final	double	MAX_INTERVAL	=
-											PatternDocument.MAX_SLIDE_SHOW_INTERVAL * INV_INTERVAL_FACTOR;
+	private static final	double	MIN_INTERVAL	= PatternDocument.MIN_SLIDE_SHOW_INTERVAL * INTERVAL_FACTOR_INV;
+	private static final	double	MAX_INTERVAL	= PatternDocument.MAX_SLIDE_SHOW_INTERVAL * INTERVAL_FACTOR_INV;
 
 	private static final	String	TITLE_STR		= "Slide-show parameters";
 	private static final	String	INTERVAL_STR	= "Interval";
@@ -323,15 +324,14 @@ class SlideShowParamsDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Point	location;
-	private static	double	interval	= (double)AppConfig.INSTANCE.getSlideShowInterval() *
-																						INV_INTERVAL_FACTOR;
+	private static	double	interval	= (double)AppConfig.INSTANCE.getSlideShowInterval() * INTERVAL_FACTOR_INV;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	boolean			accepted;

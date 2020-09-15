@@ -28,12 +28,16 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.blankaspect.common.collection.CollectionUtils;
+
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.misc.CollectionUtils;
-import uk.blankaspect.common.misc.ColourUtils;
-import uk.blankaspect.common.misc.IntegerRange;
-import uk.blankaspect.common.misc.Property;
+import uk.blankaspect.common.property.Property;
+
+import uk.blankaspect.common.range.IntegerRange;
+
+import uk.blankaspect.common.swing.colour.ColourProperty;
+import uk.blankaspect.common.swing.colour.ColourUtils;
 
 //----------------------------------------------------------------------
 
@@ -176,7 +180,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPDescription	ppDescription	= new PPDescription();
@@ -228,7 +232,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPWidth	ppWidth	= new PPWidth();
@@ -280,7 +284,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPHeight	ppHeight	= new PPHeight();
@@ -330,7 +334,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPOrientation	ppOrientation	= new PPOrientation();
@@ -380,7 +384,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPEndMargin	ppEndMargin	= new PPEndMargin();
@@ -430,7 +434,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPSideMargin	ppSideMargin	= new PPSideMargin();
@@ -480,7 +484,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPGridInterval	ppGridInterval	= new PPGridInterval();
@@ -530,7 +534,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPPathThickness	ppPathThickness	= new PPPathThickness();
@@ -581,7 +585,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPTerminalDiameter	ppTerminalDiameter	= new PPTerminalDiameter();
@@ -631,7 +635,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPExpectedPathLength	ppExpectedPathLength	= new PPExpectedPathLength();
@@ -723,7 +727,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPDirectionProbability	ppDirectionProbability	= new PPDirectionProbability();
@@ -773,7 +777,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPDirectionMode	ppDirectionMode	= new PPDirectionMode();
@@ -823,7 +827,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPTerminalEmphasis	ppTerminalEmphasis	= new PPTerminalEmphasis();
@@ -873,7 +877,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPShowEmptyPaths	ppShowEmptyPaths	= new PPShowEmptyPaths();
@@ -885,7 +889,7 @@ class Pattern2Params
 
 
 	private class PPTransparencyColour
-		extends Property.ColourProperty
+		extends ColourProperty
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -923,7 +927,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPTransparencyColour	ppTransparencyColour	= new PPTransparencyColour();
@@ -935,7 +939,7 @@ class Pattern2Params
 
 
 	private class PPBackgroundColour
-		extends Property.ColourProperty
+		extends ColourProperty
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -973,7 +977,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPBackgroundColour	ppBackgroundColour	= new PPBackgroundColour();
@@ -1010,7 +1014,7 @@ class Pattern2Params
 		{
 			try
 			{
-				Color colour = input.parseColour();
+				Color colour = ColourProperty.parseColour(input);
 				if (index < values.size())
 					values.set(index, colour);
 				else
@@ -1066,7 +1070,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPPathColours	ppPathColours	= new PPPathColours();
@@ -1117,7 +1121,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPActiveFraction	ppActiveFraction	= new PPActiveFraction();
@@ -1154,7 +1158,7 @@ class Pattern2Params
 		{
 			IntegerRange range = new IntegerRange(Pattern2Image.MIN_TRANSITION_INTERVAL,
 												  Pattern2Image.MAX_TRANSITION_INTERVAL);
-			int[] outValues = input.parseIntegers(2, new IntegerRange[]{ range, range },
+			int[] outValues = input.parseIntegers(2, new IntegerRange[] { range, range },
 												  Order.GREATER_THAN_OR_EQUAL_TO);
 			value = new IntegerRange(outValues[0], outValues[1]);
 		}
@@ -1192,7 +1196,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPTransitionIntervalRange	ppTransitionIntervalRange	= new PPTransitionIntervalRange();
@@ -1265,7 +1269,7 @@ class Pattern2Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPSeed	ppSeed	= new PPSeed();

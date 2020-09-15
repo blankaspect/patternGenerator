@@ -63,24 +63,36 @@ import javax.swing.event.DocumentListener;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.ColourSampleIcon;
-import uk.blankaspect.common.gui.DimensionsSpinnerPanel;
-import uk.blankaspect.common.gui.DoubleSpinnerSliderPanel;
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FCheckBox;
-import uk.blankaspect.common.gui.FComboBox;
-import uk.blankaspect.common.gui.FIntegerSpinner;
-import uk.blankaspect.common.gui.FLabel;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.HorizontalSlider;
-import uk.blankaspect.common.gui.IntegerRangeBarPanel;
-import uk.blankaspect.common.gui.TextRendering;
-import uk.blankaspect.common.gui.TitledBorder;
-
-import uk.blankaspect.common.misc.ColourUtils;
-import uk.blankaspect.common.misc.KeyAction;
-
 import uk.blankaspect.common.observer.Observable;
+
+import uk.blankaspect.common.swing.action.KeyAction;
+
+import uk.blankaspect.common.swing.border.TitledBorder;
+
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.checkbox.FCheckBox;
+
+import uk.blankaspect.common.swing.colour.ColourUtils;
+
+import uk.blankaspect.common.swing.combobox.FComboBox;
+
+import uk.blankaspect.common.swing.container.DimensionsSpinnerPanel;
+import uk.blankaspect.common.swing.container.DoubleSpinnerSliderPanel;
+
+import uk.blankaspect.common.swing.icon.ColourSampleIcon;
+
+import uk.blankaspect.common.swing.label.FLabel;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.range.IntegerRangeBarPanel;
+
+import uk.blankaspect.common.swing.slider.HorizontalSlider;
+
+import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
+
+import uk.blankaspect.common.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
@@ -216,7 +228,7 @@ class Pattern2ParamsDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -330,7 +342,7 @@ class Pattern2ParamsDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int		width;
@@ -441,7 +453,7 @@ class Pattern2ParamsDialog
 		@Override
 		public double normaliseValue(int value)
 		{
-			return ((double)(value - OFFSET) / (double)FACTOR);
+			return (double)(value - OFFSET) / (double)FACTOR;
 		}
 
 		//--------------------------------------------------------------
@@ -449,7 +461,7 @@ class Pattern2ParamsDialog
 		@Override
 		public int denormaliseValue(double value)
 		{
-			return ((int)Math.round(value * (double)FACTOR) + OFFSET);
+			return (int)Math.round(value * (double)FACTOR) + OFFSET;
 		}
 
 		//--------------------------------------------------------------
@@ -487,7 +499,7 @@ class Pattern2ParamsDialog
 			// Call superclass constructor
 			super(new ColourSampleIcon(ICON_WIDTH, ICON_HEIGHT));
 
-			// Initialise instance fields
+			// Initialise instance variables
 			this.colour = new Observable.Equality<>();
 			this.blend = blend;
 
@@ -527,7 +539,7 @@ class Pattern2ParamsDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	Observable<Color>	colour;
@@ -1786,14 +1798,14 @@ class Pattern2ParamsDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Point	location;
 	private static	boolean	symmetrical;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	boolean											accepted;

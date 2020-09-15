@@ -73,22 +73,34 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.DimensionsSpinnerPanel;
-import uk.blankaspect.common.gui.DoubleRangeBarPanel;
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FCheckBox;
-import uk.blankaspect.common.gui.FComboBox;
-import uk.blankaspect.common.gui.FDoubleSpinner;
-import uk.blankaspect.common.gui.FIntegerSpinner;
-import uk.blankaspect.common.gui.FLabel;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.IntegerRangeBarPanel;
-import uk.blankaspect.common.gui.RangeBarPanel;
-import uk.blankaspect.common.gui.TextRendering;
-import uk.blankaspect.common.gui.TitledBorder;
+import uk.blankaspect.common.swing.action.KeyAction;
 
-import uk.blankaspect.common.misc.KeyAction;
+import uk.blankaspect.common.swing.border.TitledBorder;
+
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.checkbox.FCheckBox;
+
+import uk.blankaspect.common.swing.colour.Colours;
+
+import uk.blankaspect.common.swing.combobox.FComboBox;
+
+import uk.blankaspect.common.swing.container.DimensionsSpinnerPanel;
+
+import uk.blankaspect.common.swing.font.FontUtils;
+
+import uk.blankaspect.common.swing.label.FLabel;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.range.DoubleRangeBarPanel;
+import uk.blankaspect.common.swing.range.IntegerRangeBarPanel;
+import uk.blankaspect.common.swing.range.RangeBarPanel;
+
+import uk.blankaspect.common.swing.spinner.FDoubleSpinner;
+import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
+
+import uk.blankaspect.common.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
@@ -230,7 +242,7 @@ class Pattern1ParamsDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -401,7 +413,7 @@ class Pattern1ParamsDialog
 		@Override
 		public double normaliseValue(int value)
 		{
-			return ((double)(value - OFFSET) / (double)FACTOR);
+			return (double)(value - OFFSET) / (double)FACTOR;
 		}
 
 		//--------------------------------------------------------------
@@ -409,7 +421,7 @@ class Pattern1ParamsDialog
 		@Override
 		public int denormaliseValue(double value)
 		{
-			return ((int)Math.round(value * (double)FACTOR) + OFFSET);
+			return (int)Math.round(value * (double)FACTOR) + OFFSET;
 		}
 
 		//--------------------------------------------------------------
@@ -1010,7 +1022,7 @@ class Pattern1ParamsDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	List<Pattern1Image.SourceParams>	sources;
@@ -1111,7 +1123,7 @@ class Pattern1ParamsDialog
 			int x = (alignment == SwingConstants.LEADING)
 						? SourceTable.CELL_HORIZONTAL_MARGIN
 						: width - (fontMetrics.stringWidth(text) + SourceTable.CELL_HORIZONTAL_MARGIN);
-			gr.drawString(text, x, GuiUtils.getBaselineOffset(height, fontMetrics));
+			gr.drawString(text, x, FontUtils.getBaselineOffset(height, fontMetrics));
 
 			// Draw cell border
 			--width;
@@ -1124,7 +1136,7 @@ class Pattern1ParamsDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -1231,7 +1243,7 @@ class Pattern1ParamsDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	Color	colour;
@@ -1537,7 +1549,7 @@ class Pattern1ParamsDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	SourceTableModel	tableModel;
@@ -1567,7 +1579,7 @@ class Pattern1ParamsDialog
 		// Set icons
 		setIconImages(owner.getIconImages());
 
-		// Initialise instance fields
+		// Initialise instance variables
 		if (params.isMotionRateEnvelope())
 			motionRateEnvelope = params.getMotionRateEnvelope().clone();
 
@@ -2235,13 +2247,13 @@ class Pattern1ParamsDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Point	location;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	boolean									accepted;

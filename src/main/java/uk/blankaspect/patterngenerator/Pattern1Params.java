@@ -23,13 +23,15 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.blankaspect.common.collection.CollectionUtils;
+
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.ArgumentOutOfBoundsException;
 
-import uk.blankaspect.common.misc.CollectionUtils;
-import uk.blankaspect.common.misc.DoubleRange;
-import uk.blankaspect.common.misc.IntegerRange;
-import uk.blankaspect.common.misc.Property;
+import uk.blankaspect.common.property.Property;
+
+import uk.blankaspect.common.range.DoubleRange;
+import uk.blankaspect.common.range.IntegerRange;
 
 //----------------------------------------------------------------------
 
@@ -148,7 +150,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPDescription	ppDescription	= new PPDescription();
@@ -200,7 +202,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPWidth	ppWidth	= new PPWidth();
@@ -252,7 +254,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPHeight	ppHeight	= new PPHeight();
@@ -302,7 +304,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPSymmetry	ppSymmetry	= new PPSymmetry();
@@ -352,7 +354,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPSaturationMode	ppSaturationMode	= new PPSaturationMode();
@@ -388,7 +390,7 @@ class Pattern1Params
 			throws AppException
 		{
 			DoubleRange range = new DoubleRange(MIN_WAVELENGTH, MAX_WAVELENGTH);
-			double[] outValues = input.parseDoubles(2, new DoubleRange[]{ range, range },
+			double[] outValues = input.parseDoubles(2, new DoubleRange[] { range, range },
 													Order.GREATER_THAN_OR_EQUAL_TO);
 			value = new DoubleRange(outValues[0], outValues[1]);
 		}
@@ -427,7 +429,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPWavelengthRange	ppWavelengthRange	= new PPWavelengthRange();
@@ -531,7 +533,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPSources	ppSources	= new PPSources();
@@ -568,7 +570,7 @@ class Pattern1Params
 		{
 			DoubleRange range = new DoubleRange(Pattern1Image.MIN_MOTION_RATE,
 												Pattern1Image.MAX_MOTION_RATE);
-			double[] outValues = input.parseDoubles(2, new DoubleRange[]{ range, range },
+			double[] outValues = input.parseDoubles(2, new DoubleRange[] { range, range },
 													Order.GREATER_THAN_OR_EQUAL_TO);
 			value = new DoubleRange(outValues[0], outValues[1]);
 		}
@@ -607,7 +609,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPMotionRateRange	ppMotionRateRange	= new PPMotionRateRange();
@@ -691,7 +693,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPMotionRateEnvelope	ppMotionRateEnvelope	= new PPMotionRateEnvelope();
@@ -728,7 +730,7 @@ class Pattern1Params
 		{
 			IntegerRange range = new IntegerRange(Pattern1Image.MIN_PHASE_INCREMENT,
 												  Pattern1Image.MAX_PHASE_INCREMENT);
-			int[] outValues = input.parseIntegers(2, new IntegerRange[]{ range, range },
+			int[] outValues = input.parseIntegers(2, new IntegerRange[] { range, range },
 												  Order.GREATER_THAN_OR_EQUAL_TO);
 			value = new IntegerRange(outValues[0], outValues[1]);
 		}
@@ -766,7 +768,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPPhaseIncrementRange	ppPhaseIncrementRange	= new PPPhaseIncrementRange();
@@ -802,7 +804,7 @@ class Pattern1Params
 			throws AppException
 		{
 			DoubleRange range = new DoubleRange(MIN_ROTATION_PERIOD, MAX_ROTATION_PERIOD);
-			double[] outValues = input.parseDoubles(2, new DoubleRange[]{ range, range },
+			double[] outValues = input.parseDoubles(2, new DoubleRange[] { range, range },
 													Order.GREATER_THAN_OR_EQUAL_TO);
 			value = new DoubleRange(outValues[0], outValues[1]);
 		}
@@ -841,7 +843,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPRotationPeriodRange	ppRotationPeriodRange	= new PPRotationPeriodRange();
@@ -891,7 +893,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPRotationSense	ppRotationSense	= new PPRotationSense();
@@ -964,7 +966,7 @@ class Pattern1Params
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	PPSeed	ppSeed	= new PPSeed();

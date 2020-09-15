@@ -37,7 +37,6 @@ import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -56,19 +55,23 @@ import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.UnexpectedRuntimeException;
 import uk.blankaspect.common.exception.ValueOutOfBoundsException;
 
-import uk.blankaspect.common.gui.IProgressView;
-
 import uk.blankaspect.common.indexedsub.IndexedSub;
 
-import uk.blankaspect.common.misc.ColourUtils;
-import uk.blankaspect.common.misc.IntegerRange;
 import uk.blankaspect.common.misc.IStringKeyed;
 import uk.blankaspect.common.misc.NoYes;
-import uk.blankaspect.common.misc.StringUtils;
 
 import uk.blankaspect.common.random.Prng01;
 
+import uk.blankaspect.common.range.IntegerRange;
+
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.colour.ColourUtils;
+
+import uk.blankaspect.common.ui.progress.IProgressView;
+
 import uk.blankaspect.common.xml.Attribute;
+import uk.blankaspect.common.xml.AttributeList;
 import uk.blankaspect.common.xml.XmlParseException;
 import uk.blankaspect.common.xml.XmlUtils;
 import uk.blankaspect.common.xml.XmlWriter;
@@ -280,7 +283,7 @@ strictfp class Pattern2Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -408,7 +411,7 @@ strictfp class Pattern2Image
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	String	key;
@@ -542,7 +545,7 @@ strictfp class Pattern2Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -645,7 +648,7 @@ strictfp class Pattern2Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -716,7 +719,7 @@ strictfp class Pattern2Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -779,7 +782,7 @@ strictfp class Pattern2Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -810,6 +813,8 @@ strictfp class Pattern2Image
 		private static final	int	MIN_I1	= 0;
 		private static final	int	MAX_I1	= 10000;
 
+		private static final	Comparator<Path>	LENGTH_COMPARATOR;
+
 		private enum Change
 		{
 			NONE,
@@ -834,56 +839,6 @@ strictfp class Pattern2Image
 	////////////////////////////////////////////////////////////////////
 	//  Member classes : non-inner classes
 	////////////////////////////////////////////////////////////////////
-
-
-		// PATH-LENGTH COMPARATOR CLASS
-
-
-		private static class LengthComparator
-			implements Comparator<Path>
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	LengthComparator	INSTANCE	= new LengthComparator();
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private LengthComparator()
-			{
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : Comparator interface
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			public int compare(Path path1,
-							   Path path2)
-			{
-				// Compare path lengths: shortest is first
-				int result = Integer.compare(path1.getLength(), path2.getLength());
-
-				// If lengths are equal, compare times of last lengthening: most recent is first
-				if (result == 0)
-					result = Integer.compare(StrictMath.max(path2.start.lengthenFrameIndex,
-															path2.end.lengthenFrameIndex),
-											 StrictMath.max(path1.start.lengthenFrameIndex,
-															path1.end.lengthenFrameIndex));
-				return result;
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
 
 
 		// TERMINAL CLASS
@@ -1059,7 +1014,7 @@ strictfp class Pattern2Image
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	Path	path;
@@ -1390,14 +1345,14 @@ strictfp class Pattern2Image
 
 		//--------------------------------------------------------------
 
-		private List<Attribute> getAttributes()
+		private AttributeList getAttributes()
 		{
-			List<Attribute> attributes = new ArrayList<>();
-			attributes.add(new Attribute(AttrName.I0, start.i0));
-			attributes.add(new Attribute(AttrName.I1, start.i1));
-			attributes.add(new Attribute(AttrName.EMPHASISE_START, start.emphasise));
-			attributes.add(new Attribute(AttrName.EMPHASISE_END, end.emphasise));
-			attributes.add(new Attribute(AttrName.COLOUR, ColourUtils.colourToRgbString(colour)));
+			AttributeList attributes = new AttributeList();
+			attributes.add(AttrName.I0, start.i0);
+			attributes.add(AttrName.I1, start.i1);
+			attributes.add(AttrName.EMPHASISE_START, start.emphasise);
+			attributes.add(AttrName.EMPHASISE_END, end.emphasise);
+			attributes.add(AttrName.COLOUR, ColourUtils.colourToRgbString(colour));
 			return attributes;
 		}
 
@@ -1445,7 +1400,28 @@ strictfp class Pattern2Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Static initialiser
+	////////////////////////////////////////////////////////////////////
+
+		static
+		{
+			LENGTH_COMPARATOR = (path1, path2) ->
+			{
+				// Compare path lengths: shortest is first
+				int result = Integer.compare(path1.getLength(), path2.getLength());
+
+				// If lengths are equal, compare times of last lengthening: most recent is first
+				if (result == 0)
+					result = Integer.compare(StrictMath.max(path2.start.lengthenFrameIndex,
+															path2.end.lengthenFrameIndex),
+											 StrictMath.max(path1.start.lengthenFrameIndex,
+															path1.end.lengthenFrameIndex));
+				return result;
+			};
+		}
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	Terminal		start;
@@ -1560,12 +1536,12 @@ strictfp class Pattern2Image
 					it.next();
 				}
 
-				List<Attribute> attributes = new ArrayList<>();
-				attributes.add(new Attribute(Svg.AttrName.STROKE, ColourUtils.colourToHexString(colour)));
+				AttributeList attributes = new AttributeList();
+				attributes.add(Svg.AttrName.STROKE, ColourUtils.colourToHexString(colour));
 				if (ColourUtils.isTransparent(colour))
-					attributes.add(new Attribute(Svg.AttrName.STROKE_OPACITY, ColourUtils.getOpacity(colour),
-												 ColourUtils.OPACITY_FORMAT));
-				attributes.add(new Attribute(Svg.AttrName.D, buffer));
+					attributes.add(Svg.AttrName.STROKE_OPACITY, ColourUtils.getOpacity(colour),
+								   ColourUtils.OPACITY_FORMAT);
+				attributes.add(Svg.AttrName.D, buffer);
 				writer.writeEmptyElement(ElementName.PATH, attributes, indent, true);
 			}
 
@@ -1584,7 +1560,7 @@ strictfp class Pattern2Image
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	Path2D.Double	path;
@@ -1646,19 +1622,18 @@ strictfp class Pattern2Image
 			{
 				double radius = 0.5 * disc.width;
 
-				List<Attribute> attributes = new ArrayList<>();
-				attributes.add(new Attribute(Svg.AttrName.FILL,
-											 ColourUtils.colourToHexString(colour)));
-				attributes.add(new Attribute(Svg.AttrName.CX, FORMAT.format(disc.x + radius)));
-				attributes.add(new Attribute(Svg.AttrName.CY, FORMAT.format(disc.y + radius)));
-				attributes.add(new Attribute(Svg.AttrName.R, FORMAT.format(radius)));
+				AttributeList attributes = new AttributeList();
+				attributes.add(Svg.AttrName.FILL, ColourUtils.colourToHexString(colour));
+				attributes.add(Svg.AttrName.CX, FORMAT.format(disc.x + radius));
+				attributes.add(Svg.AttrName.CY, FORMAT.format(disc.y + radius));
+				attributes.add(Svg.AttrName.R, FORMAT.format(radius));
 				writer.writeEmptyElement(Svg.ElementName.CIRCLE, attributes, indent, true);
 			}
 
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	Ellipse2D.Double	disc;
@@ -1697,7 +1672,7 @@ strictfp class Pattern2Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		protected	Color	colour;
@@ -1714,7 +1689,7 @@ strictfp class Pattern2Image
 						 Element          element)
 		throws XmlParseException
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		this.document = document;
 
 		// Get element path
@@ -1989,7 +1964,7 @@ strictfp class Pattern2Image
 		double interval1 = params.getGridInterval();
 		double interval0 = interval1 * INTERVAL_FACTOR;
 
-		// Initialise instance fields
+		// Initialise instance variables
 		this.document = document;
 		width = params.getWidth();
 		height = params.getHeight();
@@ -2110,7 +2085,7 @@ strictfp class Pattern2Image
 		}
 
 		// Sort the paths by increasing length
-		Collections.sort(paths, Path.LengthComparator.INSTANCE);
+		paths.sort(Path.LENGTH_COMPARATOR);
 
 		// Extend the ends of paths to empty vertices
 		boolean changed = true;
@@ -2401,15 +2376,15 @@ strictfp class Pattern2Image
 		indent += XmlWriter.INDENT_INCREMENT;
 
 		// Write clipping path element start tag
-		List<Attribute> attributes = new ArrayList<>();
-		attributes.add(new Attribute(Svg.AttrName.ID, CLIP_STR));
+		AttributeList attributes = new AttributeList();
+		attributes.add(Svg.AttrName.ID, CLIP_STR);
 		writer.writeElementStart(Svg.ElementName.CLIP_PATH, attributes, indent, true, true);
 		indent += XmlWriter.INDENT_INCREMENT;
 
 		// Write clipping rectangle element
 		attributes.clear();
-		attributes.add(new Attribute(Svg.AttrName.WIDTH, width));
-		attributes.add(new Attribute(Svg.AttrName.HEIGHT, height));
+		attributes.add(Svg.AttrName.WIDTH, width);
+		attributes.add(Svg.AttrName.HEIGHT, height);
 		writer.writeEmptyElement(Svg.ElementName.RECT, attributes, indent, true);
 
 		// Write clipping path element end tag
@@ -2421,8 +2396,8 @@ strictfp class Pattern2Image
 
 		// Write style element start tag
 		attributes.clear();
-		attributes.add(new Attribute(Svg.AttrName.ID, PATH_STYLE_STR));
-		attributes.add(new Attribute(Svg.AttrName.TYPE, TEXT_CSS_STR));
+		attributes.add(Svg.AttrName.ID, PATH_STYLE_STR);
+		attributes.add(Svg.AttrName.TYPE, TEXT_CSS_STR);
 		writer.writeElementStart(Svg.ElementName.STYLE, attributes, indent, true, true);
 
 		// Write style
@@ -2445,18 +2420,18 @@ strictfp class Pattern2Image
 
 		// Write background group element start tag
 		attributes.clear();
-		attributes.add(new Attribute(Svg.AttrName.ID, BACKGROUND_STR));
+		attributes.add(Svg.AttrName.ID, BACKGROUND_STR);
 		writer.writeElementStart(Svg.ElementName.G, attributes, indent, true, true);
 		indent += XmlWriter.INDENT_INCREMENT;
 
 		// Write background rectangle element
 		attributes.clear();
-		attributes.add(new Attribute(Svg.AttrName.FILL, ColourUtils.colourToHexString(backgroundColour)));
+		attributes.add(Svg.AttrName.FILL, ColourUtils.colourToHexString(backgroundColour));
 		if (ColourUtils.isTransparent(backgroundColour))
-			attributes.add(new Attribute(Svg.AttrName.FILL_OPACITY, ColourUtils.getOpacity(backgroundColour),
-										 ColourUtils.OPACITY_FORMAT));
-		attributes.add(new Attribute(Svg.AttrName.WIDTH, width));
-		attributes.add(new Attribute(Svg.AttrName.HEIGHT, height));
+			attributes.add(Svg.AttrName.FILL_OPACITY, ColourUtils.getOpacity(backgroundColour),
+						   ColourUtils.OPACITY_FORMAT);
+		attributes.add(Svg.AttrName.WIDTH, width);
+		attributes.add(Svg.AttrName.HEIGHT, height);
 		writer.writeEmptyElement(Svg.ElementName.RECT, attributes, indent, true);
 
 		// Write background group element end tag
@@ -2468,8 +2443,8 @@ strictfp class Pattern2Image
 
 		// Write foreground group element start tag
 		attributes.clear();
-		attributes.add(new Attribute(Svg.AttrName.ID, FOREGROUND_STR));
-		attributes.add(new Attribute(Svg.AttrName.CLIP_PATH, CLIP_PATH_REF_STR));
+		attributes.add(Svg.AttrName.ID, FOREGROUND_STR);
+		attributes.add(Svg.AttrName.CLIP_PATH, CLIP_PATH_REF_STR);
 		writer.writeElementStart(Svg.ElementName.G, attributes, indent, true, true);
 		indent += XmlWriter.INDENT_INCREMENT;
 
@@ -2549,7 +2524,7 @@ strictfp class Pattern2Image
 		}
 
 		// Sort the paths by increasing length
-		Collections.sort(candidatePaths, Path.LengthComparator.INSTANCE);
+		candidatePaths.sort(Path.LENGTH_COMPARATOR);
 
 		// Lengthen selected paths
 		while (!candidatePaths.isEmpty())
@@ -2778,25 +2753,25 @@ strictfp class Pattern2Image
 
 	//------------------------------------------------------------------
 
-	private List<Attribute> getAttributes()
+	private AttributeList getAttributes()
 	{
-		List<Attribute> attributes = new ArrayList<>();
-		attributes.add(new Attribute(AttrName.VERSION, VERSION));
+		AttributeList attributes = new AttributeList();
+		attributes.add(AttrName.VERSION, VERSION);
 		if (description != null)
-			attributes.add(new Attribute(AttrName.DESCRIPTION, description, true));
-		attributes.add(new Attribute(AttrName.WIDTH, width));
-		attributes.add(new Attribute(AttrName.HEIGHT, height));
-		attributes.add(new Attribute(AttrName.ORIENTATION, orientation.getKey()));
-		attributes.add(new Attribute(AttrName.X_INTERVAL, xInterval, AppConstants.FORMAT_1_8));
-		attributes.add(new Attribute(AttrName.Y_INTERVAL, yInterval, AppConstants.FORMAT_1_8));
-		attributes.add(new Attribute(AttrName.X_MARGIN, xMargin, AppConstants.FORMAT_1_8));
-		attributes.add(new Attribute(AttrName.Y_MARGIN, yMargin, AppConstants.FORMAT_1_8));
-		attributes.add(new Attribute(AttrName.PATH_THICKNESS, pathThickness, AppConstants.FORMAT_1_8));
-		attributes.add(new Attribute(AttrName.TERMINAL_DIAMETER, terminalDiameter, AppConstants.FORMAT_1_8));
-		attributes.add(new Attribute(AttrName.SHOW_EMPTY_PATHS, showEmptyPaths));
-		attributes.add(new Attribute(AttrName.TRANSPARENCY_COLOUR, ColourUtils.colourToRgbString(transparencyColour)));
-		attributes.add(new Attribute(AttrName.BACKGROUND_COLOUR, ColourUtils.colourToRgbString(backgroundColour)));
-		attributes.add(new Attribute(AttrName.NUM_PATHS, paths.size()));
+			attributes.add(AttrName.DESCRIPTION, description, true);
+		attributes.add(AttrName.WIDTH, width);
+		attributes.add(AttrName.HEIGHT, height);
+		attributes.add(AttrName.ORIENTATION, orientation.getKey());
+		attributes.add(AttrName.X_INTERVAL, xInterval, AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.Y_INTERVAL, yInterval, AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.X_MARGIN, xMargin, AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.Y_MARGIN, yMargin, AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.PATH_THICKNESS, pathThickness, AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.TERMINAL_DIAMETER, terminalDiameter, AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.SHOW_EMPTY_PATHS, showEmptyPaths);
+		attributes.add(AttrName.TRANSPARENCY_COLOUR, ColourUtils.colourToRgbString(transparencyColour));
+		attributes.add(AttrName.BACKGROUND_COLOUR, ColourUtils.colourToRgbString(backgroundColour));
+		attributes.add(AttrName.NUM_PATHS, paths.size());
 		return attributes;
 	}
 
@@ -3148,7 +3123,7 @@ strictfp class Pattern2Image
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Map<Integer, List<Double>>	pathLengthCumulativeProbabilities	= new HashMap<>();
@@ -3166,7 +3141,7 @@ strictfp class Pattern2Image
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Pattern2Document						document;

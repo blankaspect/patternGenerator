@@ -2,7 +2,7 @@
 
 HueSaturationPanel.java
 
-Hue and saturation panel class.
+Class: hue and saturation panel.
 
 \*====================================================================*/
 
@@ -40,14 +40,16 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.FIntegerSpinner;
-import uk.blankaspect.common.gui.FLabel;
+import uk.blankaspect.common.swing.colour.Colours;
+
+import uk.blankaspect.common.swing.label.FLabel;
+
+import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
 
 //----------------------------------------------------------------------
 
 
-// HUE AND SATURATION PANEL CLASS
+// CLASS: HUE AND SATURATION PANEL
 
 
 class HueSaturationPanel
@@ -83,7 +85,7 @@ class HueSaturationPanel
 ////////////////////////////////////////////////////////////////////////
 
 
-	// COLOUR PANEL CLASS
+	// CLASS: COLOUR PANEL
 
 
 	private class ColourPanel
@@ -112,21 +114,27 @@ class HueSaturationPanel
 		private static final	double	S_FACTOR	= 1.0 / (double)(COLOUR_AREA_HEIGHT - 1);
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int	hue;
+		private	int	saturation;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
 		private ColourPanel(int hue,
 							int saturation)
 		{
-			// Initialise instance fields
+			// Initialise instance variables
 			this.hue = hue;
 			this.saturation = saturation;
 
 			// Initialise image for colour area
 			if (colourAreaImage == null)
 			{
-				colourAreaImage = new BufferedImage(COLOUR_AREA_WIDTH, COLOUR_AREA_HEIGHT,
-													BufferedImage.TYPE_INT_RGB);
+				colourAreaImage = new BufferedImage(COLOUR_AREA_WIDTH, COLOUR_AREA_HEIGHT, BufferedImage.TYPE_INT_RGB);
 				for (int y = 0; y < COLOUR_AREA_HEIGHT; y++)
 				{
 					for (int x = 0; x < COLOUR_AREA_WIDTH; x++)
@@ -153,6 +161,7 @@ class HueSaturationPanel
 	//  Instance methods : MouseListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void mouseClicked(MouseEvent event)
 		{
 			// do nothing
@@ -160,6 +169,7 @@ class HueSaturationPanel
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseEntered(MouseEvent event)
 		{
 			// do nothing
@@ -167,6 +177,7 @@ class HueSaturationPanel
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseExited(MouseEvent event)
 		{
 			// do nothing
@@ -174,6 +185,7 @@ class HueSaturationPanel
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mousePressed(MouseEvent event)
 		{
 			if (SwingUtilities.isLeftMouseButton(event))
@@ -182,6 +194,7 @@ class HueSaturationPanel
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseReleased(MouseEvent event)
 		{
 			if (SwingUtilities.isLeftMouseButton(event))
@@ -194,6 +207,7 @@ class HueSaturationPanel
 	//  Instance methods : MouseMotionListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void mouseDragged(MouseEvent event)
 		{
 			if (SwingUtilities.isLeftMouseButton(event))
@@ -202,6 +216,7 @@ class HueSaturationPanel
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseMoved(MouseEvent event)
 		{
 			// do nothing
@@ -254,7 +269,7 @@ class HueSaturationPanel
 			gr.setColor(COLOUR_PANEL_MARKER_COLOUR);
 			int x1 = xh - MARKER_LENGTH + 1;
 			int x2 = xh + MARKER_LENGTH - 1;
-			y = COLOUR_AREA_Y - BORDER_WIDTH - MARKER_LENGTH;
+			y = 0;
 			while (x1 <= x2)
 			{
 				gr.drawLine(x1, y, x2, y);
@@ -298,8 +313,7 @@ class HueSaturationPanel
 		private void setValues(MouseEvent event)
 		{
 			int hue = Math.min(Math.max(MIN_HUE, (event.getX() - COLOUR_AREA_X) * 2), MAX_HUE);
-			int saturation = Math.min(Math.max(MIN_SATURATION,
-											   COLOUR_AREA_Y + COLOUR_AREA_HEIGHT - 1 - event.getY()),
+			int saturation = Math.min(Math.max(MIN_SATURATION, COLOUR_AREA_Y + COLOUR_AREA_HEIGHT - 1 - event.getY()),
 									  MAX_SATURATION);
 			setValues(hue, saturation);
 			HueSaturationPanel.this.setValues(hue, saturation);
@@ -307,16 +321,24 @@ class HueSaturationPanel
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance fields
-	////////////////////////////////////////////////////////////////////
-
-		private	int	hue;
-		private	int	saturation;
-
 	}
 
 	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	BufferedImage	colourAreaImage;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	ColourPanel		colourPanel;
+	private	FIntegerSpinner	hueSpinner;
+	private	FIntegerSpinner	saturationSpinner;
+	private	ColourSampleBox	sampleBox;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -385,8 +407,7 @@ class HueSaturationPanel
 		controlPanel.add(saturationLabel);
 
 		// Spinner: saturation
-		saturationSpinner = new FIntegerSpinner(saturation, MIN_SATURATION, MAX_SATURATION,
-												SATURATION_FIELD_LENGTH);
+		saturationSpinner = new FIntegerSpinner(saturation, MIN_SATURATION, MAX_SATURATION, SATURATION_FIELD_LENGTH);
 		saturationSpinner.addChangeListener(this);
 
 		gbc.gridx = 1;
@@ -457,8 +478,7 @@ class HueSaturationPanel
 	public static Color hsToColour(int hue,
 								   int saturation)
 	{
-		return new Color(Utils.hsToRgb((double)hue / (double)HUE_RANGE,
-									   (double)saturation / (double)MAX_SATURATION));
+		return new Color(Utils.hsToRgb((double)hue / (double)HUE_RANGE, (double)saturation / (double)MAX_SATURATION));
 	}
 
 	//------------------------------------------------------------------
@@ -467,6 +487,7 @@ class HueSaturationPanel
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		updateColour();
@@ -510,21 +531,6 @@ class HueSaturationPanel
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class fields
-////////////////////////////////////////////////////////////////////////
-
-	private static	BufferedImage	colourAreaImage;
-
-////////////////////////////////////////////////////////////////////////
-//  Instance fields
-////////////////////////////////////////////////////////////////////////
-
-	private	ColourPanel		colourPanel;
-	private	FIntegerSpinner	hueSpinner;
-	private	FIntegerSpinner	saturationSpinner;
-	private	ColourSampleBox	sampleBox;
 
 }
 

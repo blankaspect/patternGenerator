@@ -38,15 +38,20 @@ import javax.swing.UIManager;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 
-import uk.blankaspect.common.gui.FontEx;
-import uk.blankaspect.common.gui.IProgressView;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.filesystem.PathnameUtils;
 
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
-import uk.blankaspect.common.misc.IntegerRange;
-import uk.blankaspect.common.misc.Property;
-import uk.blankaspect.common.misc.PropertySet;
-import uk.blankaspect.common.misc.PropertyString;
+
+import uk.blankaspect.common.property.Property;
+import uk.blankaspect.common.property.PropertySet;
+
+import uk.blankaspect.common.range.IntegerRange;
+
+import uk.blankaspect.common.swing.font.FontEx;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+
+import uk.blankaspect.common.ui.progress.IProgressView;
 
 //----------------------------------------------------------------------
 
@@ -71,9 +76,9 @@ class AppConfig
 	private static final	String	CONFIG_DIR_KEY		= Property.APP_PREFIX + "configDir";
 	private static final	String	PROPERTIES_FILENAME	= App.NAME_KEY + "-properties" +
 																			AppConstants.XML_FILE_SUFFIX;
-	private static final	String	FILENAME_BASE		= App.NAME_KEY + "-config";
-	private static final	String	CONFIG_FILENAME		= FILENAME_BASE + AppConstants.XML_FILE_SUFFIX;
-	private static final	String	CONFIG_OLD_FILENAME	= FILENAME_BASE + "-old" +
+	private static final	String	FILENAME_STEM		= App.NAME_KEY + "-config";
+	private static final	String	CONFIG_FILENAME		= FILENAME_STEM + AppConstants.XML_FILE_SUFFIX;
+	private static final	String	CONFIG_OLD_FILENAME	= FILENAME_STEM + "-old" +
 																			AppConstants.XML_FILE_SUFFIX;
 
 	private static final	String	SAVE_CONFIGURATION_FILE_STR	= "Save configuration file";
@@ -173,7 +178,7 @@ class AppConfig
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -318,7 +323,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPDefaultDocumentKind	cpDefaultDocumentKind	= new CPDefaultDocumentKind();
@@ -382,7 +387,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPShowUnixPathnames	cpShowUnixPathnames	= new CPShowUnixPathnames();
@@ -432,7 +437,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPSelectTextOnFocusGained	cpSelectTextOnFocusGained	= new CPSelectTextOnFocusGained();
@@ -482,7 +487,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPShowFullPathnames	cpShowFullPathnames	= new CPShowFullPathnames();
@@ -566,7 +571,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPMainWindowLocation	cpMainWindowLocation	= new CPMainWindowLocation();
@@ -641,7 +646,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPMainWindowSize	cpMainWindowSize	= new CPMainWindowSize();
@@ -692,7 +697,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPMaxEditListLength	cpMaxEditListLength	= new CPMaxEditListLength();
@@ -742,7 +747,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPClearEditListOnSave	cpClearEditListOnSave	= new CPClearEditListOnSave();
@@ -792,7 +797,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPKeepSequenceWindowOnTop	cpKeepSequenceWindowOnTop	= new CPKeepSequenceWindowOnTop();
@@ -851,7 +856,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPLookAndFeel	cpLookAndFeel	= new CPLookAndFeel();
@@ -902,7 +907,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPTextAntialiasing	cpTextAntialiasing	= new CPTextAntialiasing();
@@ -924,7 +929,7 @@ class AppConfig
 		private CPOpenPatternPathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.OPEN_PATTERN_DIRECTORY));
-			value = PropertyString.USER_HOME_PREFIX;
+			value = PathnameUtils.USER_HOME_PREFIX;
 		}
 
 		//--------------------------------------------------------------
@@ -946,7 +951,7 @@ class AppConfig
 
 	public File getOpenPatternDirectory()
 	{
-		return new File(PropertyString.parsePathname(getOpenPatternPathname()));
+		return new File(PathnameUtils.parsePathname(getOpenPatternPathname()));
 	}
 
 	//------------------------------------------------------------------
@@ -959,7 +964,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPOpenPatternPathname	cpOpenPatternPathname	= new CPOpenPatternPathname();
@@ -981,7 +986,7 @@ class AppConfig
 		private CPSavePatternPathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.SAVE_PATTERN_DIRECTORY));
-			value = PropertyString.USER_HOME_PREFIX;
+			value = PathnameUtils.USER_HOME_PREFIX;
 		}
 
 		//--------------------------------------------------------------
@@ -1003,7 +1008,7 @@ class AppConfig
 
 	public File getSavePatternDirectory()
 	{
-		return new File(PropertyString.parsePathname(getSavePatternPathname()));
+		return new File(PathnameUtils.parsePathname(getSavePatternPathname()));
 	}
 
 	//------------------------------------------------------------------
@@ -1016,7 +1021,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPSavePatternPathname	cpSavePatternPathname	= new CPSavePatternPathname();
@@ -1038,7 +1043,7 @@ class AppConfig
 		private CPExportImagePathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.EXPORT_IMAGE_DIRECTORY));
-			value = PropertyString.USER_HOME_PREFIX;
+			value = PathnameUtils.USER_HOME_PREFIX;
 		}
 
 		//--------------------------------------------------------------
@@ -1060,7 +1065,7 @@ class AppConfig
 
 	public File getExportImageDirectory()
 	{
-		return new File(PropertyString.parsePathname(getExportImagePathname()));
+		return new File(PathnameUtils.parsePathname(getExportImagePathname()));
 	}
 
 	//------------------------------------------------------------------
@@ -1073,7 +1078,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPExportImagePathname	cpExportImagePathname	= new CPExportImagePathname();
@@ -1095,7 +1100,7 @@ class AppConfig
 		private CPExportSvgPathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.EXPORT_SVG_DIRECTORY));
-			value = PropertyString.USER_HOME_PREFIX;
+			value = PathnameUtils.USER_HOME_PREFIX;
 		}
 
 		//--------------------------------------------------------------
@@ -1117,7 +1122,7 @@ class AppConfig
 
 	public File getExportSvgDirectory()
 	{
-		return new File(PropertyString.parsePathname(getExportSvgPathname()));
+		return new File(PathnameUtils.parsePathname(getExportSvgPathname()));
 	}
 
 	//------------------------------------------------------------------
@@ -1130,7 +1135,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPExportSvgPathname	cpExportSvgPathname	= new CPExportSvgPathname();
@@ -1152,7 +1157,7 @@ class AppConfig
 		private CPExportImageSequencePathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.EXPORT_IMAGE_SEQUENCE_DIRECTORY));
-			value = PropertyString.USER_HOME_PREFIX;
+			value = PathnameUtils.USER_HOME_PREFIX;
 		}
 
 		//--------------------------------------------------------------
@@ -1174,7 +1179,7 @@ class AppConfig
 
 	public File getExportImageSequenceDirectory()
 	{
-		return new File(PropertyString.parsePathname(getExportImageSequencePathname()));
+		return new File(PathnameUtils.parsePathname(getExportImageSequencePathname()));
 	}
 
 	//------------------------------------------------------------------
@@ -1187,7 +1192,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPExportImageSequencePathname	cpExportImageSequencePathname	=
@@ -1262,7 +1267,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPatternName	cpPatternName	= new CPPatternName();
@@ -1338,7 +1343,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPDefaultPatternSize	cpDefaultPatternSize	= new CPDefaultPatternSize();
@@ -1414,7 +1419,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPNumSlideShowThreads	cpNumSlideShowThreads	= new CPNumSlideShowThreads();
@@ -1465,7 +1470,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPattern1NumRenderingThreads	cpPattern1NumRenderingThreads	=
@@ -1516,7 +1521,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPattern1PhaseAnimation	cpPattern1PhaseAnimation	= new CPPattern1PhaseAnimation();
@@ -1567,7 +1572,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPattern2PathRendering	cpPattern2PathRendering	= new CPPattern2PathRendering();
@@ -1618,7 +1623,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPSlideShowInterval	cpSlideShowInterval	= new CPSlideShowInterval();
@@ -1669,7 +1674,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPAnimationRate	cpAnimationRate	= new CPAnimationRate();
@@ -1755,7 +1760,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPFonts	cpFonts	= new CPFonts();
@@ -1860,7 +1865,7 @@ class AppConfig
 		// Set configuration file from pathname of configuration directory
 		else if (!pathname.isEmpty())
 		{
-			file = new File(PropertyString.parsePathname(pathname), CONFIG_FILENAME);
+			file = new File(PathnameUtils.parsePathname(pathname), CONFIG_FILENAME);
 			if (!file.isFile())
 				throw new FileException(ErrorId.NO_CONFIGURATION_FILE, file);
 		}
@@ -2073,7 +2078,7 @@ class AppConfig
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	File			file;
