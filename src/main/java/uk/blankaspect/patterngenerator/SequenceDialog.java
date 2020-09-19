@@ -120,7 +120,7 @@ class SequenceDialog
 		(
 			"play",
 			KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0),
-			AppIcon.PLAY,
+			Icons.PLAY,
 			"Play",
 			"Play"
 		),
@@ -129,7 +129,7 @@ class SequenceDialog
 		(
 			"pause",
 			KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0),
-			AppIcon.PAUSE,
+			Icons.PAUSE,
 			"Pause",
 			"Pause"
 		),
@@ -138,7 +138,7 @@ class SequenceDialog
 		(
 			"stop",
 			KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-			AppIcon.STOP,
+			Icons.STOP,
 			"Stop",
 			"Stop"
 		),

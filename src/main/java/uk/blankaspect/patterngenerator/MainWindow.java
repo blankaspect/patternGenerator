@@ -421,9 +421,8 @@ class MainWindow
 
 	public MainWindow()
 	{
-
 		// Set icons
-		setIconImages(AppIcon.getAppIconImages());
+		setIconImages(Images.APP_ICON_IMAGES);
 
 
 		//----  Menu bar
@@ -486,8 +485,7 @@ class MainWindow
 		menu = Menu.PATTERN.menu;
 		menu.addMenuListener(this);
 
-		menu.add(new FMenuItem(PatternDocument.Command.REGENERATE_PATTERN_WITH_NEW_SEED,
-							   KeyEvent.VK_R));
+		menu.add(new FMenuItem(PatternDocument.Command.REGENERATE_PATTERN_WITH_NEW_SEED, KeyEvent.VK_R));
 
 		menu.addSeparator();
 
@@ -578,7 +576,6 @@ class MainWindow
 
 		// Make window visible
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------

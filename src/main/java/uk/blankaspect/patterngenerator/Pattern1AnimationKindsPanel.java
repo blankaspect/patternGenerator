@@ -68,8 +68,8 @@ class Pattern1AnimationKindsPanel
 ////////////////////////////////////////////////////////////////////////
 
 	private static final	int	ICON_MARGIN	= 2;
-	private static final	int	ICON_WIDTH	= 2 * ICON_MARGIN + AppIcon.CROSS_10_10.getIconWidth();
-	private static final	int	ICON_HEIGHT	= 2 * ICON_MARGIN + AppIcon.CROSS_10_10.getIconHeight();
+	private static final	int	ICON_WIDTH	= 2 * ICON_MARGIN + Icons.CROSS_10_10.getIconWidth();
+	private static final	int	ICON_HEIGHT	= 2 * ICON_MARGIN + Icons.CROSS_10_10.getIconHeight();
 
 	private static final	int	VERTICAL_MARGIN	= 3;
 	private static final	int	LEFT_MARGIN		= 4;
@@ -167,7 +167,7 @@ class Pattern1AnimationKindsPanel
 
 			// Draw cross
 			if (isSelected())
-				gr.drawImage(AppIcon.CROSS_10_10.getImage(), LEFT_MARGIN + ICON_MARGIN, y + ICON_MARGIN,
+				gr.drawImage(Icons.CROSS_10_10.getImage(), LEFT_MARGIN + ICON_MARGIN, y + ICON_MARGIN,
 							 null);
 
 			// Set rendering hints for text antialiasing and fractional metrics

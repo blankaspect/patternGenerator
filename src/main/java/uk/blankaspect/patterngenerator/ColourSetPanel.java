@@ -217,7 +217,7 @@ class ColourSetPanel
 		private RowSelectionButton()
 		{
 			// Call superclass constructor
-			super(AppIcon.DOUBLE_ANGLE_LEFT);
+			super(Icons.DOUBLE_ANGLE_LEFT);
 
 			// Set attributes
 			setBorder(null);
