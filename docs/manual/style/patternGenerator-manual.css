@@ -1,0 +1,72 @@
+/**********************************************************************\
+
+Styles for PatternGenerator manual
+
+\**********************************************************************/
+
+@import url("blankaspect-manual.css");
+
+div#p1Symmetry
+{
+  display: table;
+  line-height: 125%;
+}
+div#p1Symmetry > div
+{
+  display: table-row;
+}
+div#p1Symmetry > div > div
+{
+  display: table-cell;
+  vertical-align: middle;
+  padding: 0.3em 0.6em;
+}
+div#p1Symmetry > div > div > div.comment
+{
+  font-size: 85%;
+  padding-top: 0.2em;
+}
+
+p.quotation
+{
+  font-size: 90%;
+  margin-top: 0.6em;
+  margin-left: 2.0em;
+  margin-right: 2.0em;
+}
+
+table.basic td.definitionTerm
+{
+  color: #004040;
+  font-weight: bold;
+}
+
+table.basic td.command
+{
+  color: #8C4818;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+table.imageArray td
+{
+  padding: 0.1em 0.8em;
+}
+table.imageArray td.caption
+{
+  font-size: 85%;
+  font-style: italic;
+}
+
+ul.paddedItems li
+{
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
+ul#p1Attributes li div img
+{
+  padding-top: 0.3em;
+}
+
+/*--------------------------------------------------------------------*/

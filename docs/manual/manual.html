@@ -1,0 +1,2829 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+   PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html
+   xmlns="http://www.w3.org/1999/xhtml"
+   xml:lang="en">
+
+  <head>
+    <meta
+       http-equiv="content-type"
+       content="application/xhtml+xml;charset=UTF-8"/>
+    <meta
+       content="initial-scale=1"
+       name="viewport"/>
+    <title>PatternGenerator : manual</title>
+    <link
+       href="style/blankaspect-common.css"
+       rel="stylesheet"
+       type="text/css"/>
+    <link
+       href="style/blankaspect-manual.css"
+       rel="stylesheet"
+       type="text/css"/>
+    <link
+       href="style/patternGenerator-manual.css"
+       rel="stylesheet"
+       type="text/css"/>
+    <link
+       href="images/icon-48x48.png"
+       rel="icon"/>
+    <script
+       src="scripts/Toc.js"
+       type="text/javascript">
+    </script>
+    <script
+       src="scripts/init.js"
+       type="text/javascript">
+    </script>
+  </head>
+
+  <body>
+
+    <!-- Title -->
+
+    <div id="title">
+      <div>
+        <img alt="Icon" src="images/icon-48x48.png"/>
+      </div>
+      <div>
+        PatternGenerator : manual
+      </div>
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Table of contents -->
+
+    <div class="section">
+      <h2 id="toc">Table of contents</h2>
+      <div id="tocRoot">
+        <div class="wrap" id="tocPlaceholder">
+          You must have JavaScript enabled in your browser to generate the table of contents.
+        </div>
+      </div>
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Introduction -->
+
+    <div class="section">
+      <h2 id="section1">1&nbsp; Introduction</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        PatternGenerator is a Java application that generates two kinds of graphical pattern as
+        static images and animations.  It is provided primarily for entertainment, but the two
+        kinds of pattern that it can generate are not very interesting, and its entertainment
+        value is likely to diminish rapidly with use.
+      </p>
+
+      <h3 id="section1-1">1.1&nbsp; Licence</h3>
+
+      <p class="wrap">
+        PatternGenerator is made available under two licences:
+      </p>
+      <ul class="list">
+        <li class="spaced wrap">
+          The contents of the <code>uk.blankaspect.patterngenerator</code> package (including
+          resources) may be used under the terms of version 3 of the <a class="external"
+          href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License</a>.
+        </li>
+        <li class="spaced wrap">
+          All other contents of the GitHub <a
+          href="https://github.com/blankaspect/patternGenerator">blankaspect/patternGenerator</a>
+          repository may be used under the terms of the <a class="external"
+          href="https://mit-license.org/">MIT License</a>.
+        </li>
+      </ul>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Building and running the application -->
+
+    <div class="section">
+      <h2 id="section2">2&nbsp; Building and running the application</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        This section assumes that you have some experience of building and running a Java
+        application.
+      </p>
+
+      <h3 id="section2-1">2.1&nbsp; Building the application</h3>
+
+      <p class="wrap">
+        A Java Development Kit (JDK) that supports Java 17, such as <a class="external"
+        href="https://adoptium.net/">Eclipse Temurin from Adoptium</a>, is required to build
+        PatternGenerator.
+      </p>
+      <p class="wrap">
+        The <code>src</code> directory of the distribution contains all the source code and
+        resources that constitute the application; there are no external dependencies.  The
+        directory conforms to the Maven standard directory layout: the source code is in
+        <code>src/main/java</code> and the resources are in <code>src/main/resources</code>.
+      </p>
+      <p class="wrap">
+        The supplied Kotlin-DSL-based <a class="external" href="https://gradle.org/">Gradle</a>
+        build script, <code>build.gradle.kts</code>, modifies the <code>compileJava</code> and
+        <code>jar</code> tasks (provided by the <code>java</code> plug-in) to compile the
+        application and to create an executable JAR file for it.
+      </p>
+
+      <h3 id="section2-2">2.2&nbsp; Running the application</h3>
+
+      <p class="wrap">
+        The supplied Kotlin-DSL-based Gradle build script, <code>build.gradle.kts</code>,
+        defines two tasks that may be used to run PatternGenerator:
+      </p>
+      <dl class="basic">
+        <dt>runMain</dt>
+        <dd class="wrap">
+          Runs the main class from the class files that were generated by the
+          <code>compileJava</code> task.
+        </dd>
+        <dt>runJar</dt>
+        <dd class="wrap">
+          Runs the executable JAR that was generated by the <code>jar</code> task.
+        </dd>
+      </dl>
+      <p class="wrap">
+        Both tasks extend the <code>JavaExec</code> task.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Configuration -->
+
+    <div class="section">
+      <h2 id="section3">3&nbsp; Configuration</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        When it starts up, PatternGenerator is configured with <i>configuration properties</i>
+        that are read from two sources: the <a href="#section3-1">command line</a> of the Java
+        launcher and a <a href="#section3-2">configuration file</a> whose location may be
+        explicitly specified.  If the same property is specified on the command line and in a
+        configuration file, the value from the configuration file takes precedence.
+      </p>
+      <p class="wrap">
+        The recommended method of setting the properties in a configuration file is with the <a
+        class="command" href="#section7-6-1">Options &gt; Preferences</a> command.  For
+        command-line properties, which must be edited manually, the form of the property values
+        is given in an <a href="#sectionB">appendix</a>, and it can also be inferred by
+        generating a configuration file with the desired values and inspecting the contents of
+        the file.
+      </p>
+
+      <h3 id="section3-1">3.1&nbsp; Command-line properties</h3>
+
+      <p class="wrap">
+        When PatternGenerator is run, configuration properties may be passed to the
+        <code>java</code> launcher on the command line as system properties; eg,
+        <code>-Dapp.general.mainWindowLocation=&quot;100, 0&quot;</code>.
+        PatternGenerator&apos;s command-line configuration properties all have the prefix
+        <code>app.</code> . A list of all the properties that are recognised by PatternGenerator
+        is given in an <a href="#sectionB">appendix</a>.
+      </p>
+      <p class="wrap">
+        System properties can be added to the <a href="#section2-2">two supplied Gradle
+        tasks</a>, <code>runMain</code> and <code>runJar</code>, with the
+        <code>systemProperties(Map&lt;String, ?&gt;)</code> method.
+      </p>
+      <p class="wrap">
+        One particular property, <span class="configProperty">app.configDir</span>, is used to
+        specify the directory that contains a configuration file, as <a
+        href="#section3-2-1">described below</a>.
+      </p>
+
+      <h3 id="section3-2">3.2&nbsp; Configuration file</h3>
+
+      <p class="wrap">
+        The configuration file is named <code>patternGenerator-config.xml</code>.
+        PatternGenerator doesn&apos;t require a configuration file: it uses a default value for
+        any configuration property that is missing from the source(s) of configuration.
+        Similarly, if it finds a property value to be invalid, PatternGenerator will display a
+        message to this effect and use the default value of the property.  If the configuration
+        file contains a property that was specified on the command line, the value from the
+        configuration file is used.
+      </p>
+      <p class="wrap">
+        If the configuration has changed when you exit the application normally (ie, using the
+        <a class="command" href="#section7-1-11">File &gt; Exit</a> command or an equivalent),
+        PatternGenerator will save its configuration to a configuration file.  If a
+        configuration file was read on startup, it will overwrite that file; otherwise, it will
+        write a configuration file to the default directory described above, unless the value of
+        the <span class="configProperty">app.configDir</span> property was an empty string.
+      </p>
+      <p class="wrap">
+        A configuration file can be written explicitly with the <span class="command">Save
+        configuration</span> command within the <span class="component">Preferences</span>
+        dialog.
+      </p>
+
+      <h4 id="section3-2-1">3.2.1&nbsp; Location of the configuration file</h4>
+      <p class="wrap">
+        When it starts up, PatternGenerator is informed of the location of the configuration
+        file with the <span class="configProperty">app.configDir</span> property.  The value of
+        the property may contain <a href="#sectionB">special constructs</a> for system
+        properties, environment variables and the user&apos;s home directory.
+      </p>
+      <p class="noBottomMargin wrap">
+        The <span class="configProperty">app.configDir</span> property may be set in two ways:
+      </p>
+      <ul class="continuationList">
+        <li class="wrap">
+          on the command line that runs the <code>java</code> launcher, or
+        </li>
+        <li class="wrap">
+          in a file named <code>patternGenerator-properties.xml</code> that resides in the same
+          directory as the <code>patternGenerator.jar</code> JAR file.
+        </li>
+      </ul>
+      <p class="wrap">
+        The <code>patternGenerator-properties.xml</code> file is a legacy from the time when
+        PatternGenerator was distributed as a JAR file with an installer; the properties file
+        was written by the installer.  If you create a properties file, it should have the
+        following form, with the example pathname replaced by the actual pathname:
+      </p>
+      <pre class="codeFragment">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;
+&lt;!DOCTYPE properties SYSTEM &quot;http://java.sun.com/dtd/properties.dtd&quot;&gt;
+&lt;properties&gt;
+&lt;entry key=&quot;app.configDir&quot;&gt;/home/slothrop/.blankaspect/patternGenerator&lt;/entry&gt;
+&lt;/properties&gt;</pre>
+
+      <p class="wrap">
+        If the <span class="configProperty">app.configDir</span> property is set both on the
+        command line and in the properties file, the value in the properties file takes
+        precedence.
+      </p>
+
+      <p class="wrap">
+        The existence and value of the <span class="configProperty">app.configDir</span>
+        property determines the locations that are searched for a configuration file:
+      </p>
+      <ul class="list">
+        <li class="spaced wrap">
+          If the <span class="configProperty">app.configDir</span> property exists and the
+          property value is an empty string, PatternGenerator will start without a configuration
+          file.  No configuration file will be written when the application exits.
+        </li>
+        <li class="spaced wrap">
+          If the <span class="configProperty">app.configDir</span> property exists and the
+          property value is not empty, PatternGenerator will look for a configuration file in
+          the directory specified by the property.  An error message is displayed if a
+          configuration file is not found in the specified directory.
+        </li>
+        <li class="spaced">
+          <div class="wrap">
+            If the <span class="configProperty">app.configDir</span> property does not exist,
+            PatternGenerator will look for a configuration file at two other locations:
+          </div>
+          <ol class="list">
+            <li class="spaced">
+              <div><i>The current working directory</i></div>
+              <div class="wrap">
+                The current working directory, which is denoted by the environment variable
+                <code>$PWD</code> on Linux/UNIX systems, depends on the system and the way in
+                which PatternGenerator was run.
+              </div>
+            </li>
+            <li class="spaced" id="defaultDirectory">
+              <div><i>The default directory</i></div>
+              <div class="wrap">
+                On Linux/UNIX systems, the default directory is
+                <code>$HOME/.blankaspect/patternGenerator</code>, where <code>$HOME</code> is
+                the environment variable that denotes the user&apos;s home directory.  On
+                Windows systems, the default directory is
+                <code>%APPDATA%\blankaspect\patternGenerator</code>, where
+                <code>%APPDATA%</code> is an environment variable.
+              </div>
+            </li>
+          </ol>
+        </li>
+      </ul>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Documents -->
+
+    <div class="section">
+      <h2 id="section4">4&nbsp; Documents</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        From a user&apos;s perspective, a document is the form in which PatternGenerator
+        operates on and stores the data that constitute a pattern.  As described <a
+        href="#section5">below</a>, PatternGenerator can generate two kinds of pattern.  For
+        each kind of pattern, there are two kinds of document: <a href="#section4-1">parameter
+        documents</a> and <a href="#section4-2">definition documents</a>.
+      </p>
+
+      <h3 id="section4-1">4.1&nbsp; Parameter documents</h3>
+
+      <p class="wrap">
+        PatternGenerator generates a pattern from a set of parameters and a sequence of <a
+        class="external" href="https://en.wikipedia.org/wiki/Pseudorandomness">pseudo-random</a>
+        numbers.  The parameters are a mixture of specific values and ranges of values &mdash;
+        explicit or implicit &mdash; from which a specific value is randomly chosen.  The use of
+        random values reduces the number of parameters that have to be specified at the cost of
+        forgoing some control over the pattern.  A parameter document contains the set of
+        parameters and a <i>seed</i> for <a class="external"
+        href="https://en.wikipedia.org/wiki/Pseudorandom_number_generator">generating</a> the
+        sequence of pseudo-random numbers that will be used to chose values from the ranges.
+        Because the numbers are pseudo-random, not truly random, any given seed will always
+        produce the same predictable sequence of numbers, but different seeds will produce
+        different sequences.  Thus, variations of a pattern can be generated effortlessly just
+        by changing the seed.
+      </p>
+      <p class="wrap">
+        A parameter document is PatternGenerator&apos;s primary document type; it is the kind of
+        document that is created in response to the <a class="command" href="#section7-1-1">File
+        &gt; New</a> command, and it is the precursor to a definition document.  Parameter
+        documents are editable whereas definition documents are not.  A parameter document can
+        be saved as a definition document but a parameter document cannot be derived from a
+        definition document.
+      </p>
+      <p class="wrap">
+        A parameter document is an XML document with the filename suffix <code>.pgpar.xml</code>
+        .
+      </p>
+
+      <h3 id="section4-2">4.2&nbsp; Definition documents</h3>
+
+      <p class="wrap">
+        In contrast to a parameter document in which some parameters of a pattern are selected
+        randomly from a range of values, a definition document contains only the specific
+        parameter values that define a pattern.  Definition documents are immutable: they can be
+        opened and saved by PatternGenerator but their content cannot be edited from within the
+        application.  A definition document can be thought of as a snapshot of a parameter
+        document; it is likely to be useful only for capturing a &quot;still&quot; &mdash; a
+        single image &mdash; from the animation of a pattern.
+      </p>
+      <p class="wrap">
+        A definition document is an XML document with the filename suffix
+        <code>.pgdef.xml</code> .
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Patterns -->
+
+    <div class="section">
+      <h2 id="section5">5&nbsp; Patterns</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        PatternGenerator can generate two kinds of pattern, which are named <i>Pattern 1</i> and
+        <i>Pattern 2</i> by default.  If you prefer names that are more imaginative or
+        memorable, you can <a href="#cp-pattern-name-pattern1">choose your own name</a> for each
+        kind of pattern.
+      </p>
+
+      <h3 id="section5-1">5.1&nbsp; Pattern 1</h3>
+
+      <p class="wrap">
+        Pattern 1 is an <a class="external"
+        href="https://en.wikipedia.org/wiki/Interference_%28wave_propagation%29">interference</a>
+        pattern.  You may be familiar with interference patterns from science lessons at school,
+        where they are customarily demonstrated with a ripple tank.  If not, an example of a
+        simple interference pattern is the pattern of waves that forms when you drop two stones
+        into a still pond: the waves move away from the <i>point sources</i> &mdash; the stones
+        &mdash; as concentric circles until the two sets of waves meet and interfere with one
+        another.
+      </p>
+      <p class="wrap">
+        The model for Pattern 1 is a set of one or more point sources from which waves propagate
+        outwards along the plane of the image.  The waves are <a class="external"
+        href="https://en.wikipedia.org/wiki/Transverse_wave">transverse</a>; that is, they
+        oscillate perpendicular to the plane.  If there are multiple point sources, the <a
+        class="external"
+        href="https://en.wikipedia.org/wiki/Superposition_principle">superposition</a> of the
+        waves from the different sources creates an interference pattern.  The pattern is
+        rendered by converting the combined amplitudes of the waves to colours.
+      </p>
+      <p class="wrap">
+        A point source (hereafter abbreviated to <i>source</i>) has a virtual shape &mdash;
+        circle, ellipse or regular polygon &mdash; that is imparted to the wave that propagates
+        from it.  Each source that you specify in the pattern parameters may be supplemented by
+        symmetrical copies of the source, according to the <i>symmetry</i> parameter of the
+        pattern.  Depending on the kind of symmetry, there may be between zero and seven copies
+        of each original source.
+      </p>
+      <p class="wrap">
+        The following images are two examples of Pattern 1.  The first image is a
+        &quot;classic&quot; interference pattern with two point sources (one explicit source,
+        near the top of the pattern, reflected in the vertical axis).  The second, more ornate
+        image has 24 point sources: three explicit sources, reflected in four axes.
+      </p>
+      <table class="imageArray">
+        <tr>
+          <td><img alt="Pattern 1, example 1" src="images/pattern1Example1.png"/></td>
+          <td><img alt="Pattern 1, example 2" src="images/pattern1Example2.png"/></td>
+        </tr>
+      </table>
+
+      <p class="wrap">
+        Each source has some key attributes that are randomly generated: <i>position</i>,
+        <i>phase offset</i> and (if the source is an ellipse or polygon) <i>orientation</i>.  A
+        Pattern 1 is animated by changing one or more of these attributes over time.
+      </p>
+      <ul class="list" id="p1Attributes">
+        <li class="spaced wrap" id="p1AttrPosition">
+          The <i>position</i> of a source is its location within the pattern (ie, its
+          <i>x</i>-coordinate and <i>y</i>-coordinate).  The position can be constrained to the
+          vertical or horizontal axis (ie, the vertical or horizontal mid-line of the pattern).
+        </li>
+        <li class="spaced" id="p1AttrPhaseOffset">
+          <div class="wrap">
+            The <i>phase offset</i> of a source is the position in the waveform at which its
+            wave starts (ie, how far the wave is along its repeating cycle when it emerges from
+            the source).  The following figure shows two waves with the same waveform and
+            wavelength but with different phase offsets:
+          </div>
+          <div>
+            <img alt="Phase offset" src="images/phaseOffset.png"/>
+          </div>
+        </li>
+        <li class="spaced" id="p1AttrOrientation">
+          <div class="wrap">
+            The <i>orientation</i> of an elliptical or polygonal source is the angle that its
+            wave makes with the image.  The following figure shows two ellipses of the same
+            shape and size but with different orientations:
+          </div>
+          <div>
+            <img alt="Orientation" src="images/orientation.png"/>
+          </div>
+        </li>
+      </ul>
+
+      <h4 id="section5-1-1">5.1.1&nbsp; Rendering time</h4>
+      <p class="wrap">
+        A Pattern 1 image is rendered by calculating the colour of each pixel of the image by as
+        the sum of the values of the waves from all the sources at the location of the pixel.
+        The calculation involves a lot of floating-point arithmetic beyond just adding a few
+        values together: it includes, for example, a conversion from the HSB colour model to the
+        RGB colour model, a conversion back to HSB, then a final conversion to RGB.  The amount
+        of arithmetic increases in proportion to the area of the image and the number of sources
+        &mdash; including any implicit sources that result from symmetry.  (The cost of the
+        implicit sources is offset by not having to calculate pixel values for the symmetrical
+        regions, though some arithmetic is done in transforming the principal area into its
+        symmetrical copies.)
+      </p>
+      <p class="wrap">
+        The upshot of all this arithmetic is that rendering a Pattern 1 image places a heavy
+        load on the CPU, and the rendering time of an image of moderate size and complexity may
+        be in the order of hundreds of milliseconds, even on a fast processor with multiple
+        cores.  (For example, a pattern of size 640&times;480, with four explicit sources and
+        four-way symmetry takes about a quarter of a second to render on a machine with an Intel
+        Core i5-2500K CPU, which has four cores and a clock rate of 3.3 GHz.)  Long rendering
+        times are likely to be particularly problematic for animations: an acceptable frame rate
+        will be achievable only for small images with few sources.  If you want to create a
+        Pattern 1 animation with a video-quality frame rate (eg, 25 frames per second), your
+        only option may be to export the pattern as a sequence of images with the <a
+        class="command" href="#section7-1-9">File &gt; Export image sequence</a> command, then
+        to generate a video from the images with a suitable tool (eg, <a class="external"
+        href="https://ffmpeg.org/">FFmpeg</a>).
+      </p>
+      <p class="wrap">
+        If you are experimenting with a pattern and are finding that rendering is too slow, you
+        could try reducing the size of the pattern while you experiment, restoring the pattern
+        to its intended size once you&apos;ve finished.  When a pattern is generated from its
+        parameters, the position of each source is randomly generated relative to the dimensions
+        of the pattern, so you can reduce the size of the pattern and you&apos;ll get a
+        scaled-down version of the original as long as you preserve its aspect ratio.  (Of
+        course, you can do this only if the width and height of the image have a common factor,
+        as is the case with common video resolutions, though an aspect ratio that is close to
+        that of the original may be good enough for a static image or a short animation.)
+      </p>
+      <p class="wrap">
+        The Pattern 1 rendering algorithm uses multiple threads to improve efficiency on
+        machines with multiple processors, but, because of the need to measure the minimum and
+        maximum brightness of the image as a whole, it is split into two stages with a
+        bottleneck &mdash; a <i>barrier</i>, in the terminology of computer science &mdash;
+        between the two stages.  (The barrier is absent if brightness is normalised with the <a
+        class="command" href="#section7-4-3">Sequence &gt; Optimise animation</a> command.)  You
+        can control the number of threads that are used to render a Pattern 1 image with the <a
+        class="configProperty"
+        href="#cp-pattern1-numRenderingThreads">pattern1.numRenderingThreads</a> configuration
+        property.  If the value of the property is zero, the number of threads will be set to
+        the number of processors that are available to the system.
+      </p>
+
+      <h4 id="section5-1-2">5.1.2&nbsp; Pattern 1 parameters</h4>
+      <p class="wrap">
+        When you create a new Pattern 1 with the <a class="command" href="#section7-1-1">File
+        &gt; New &gt; Pattern 1</a> command or edit the parameters of a Pattern 1 with the <a
+        class="command" href="#section7-2-3">Edit &gt; Edit pattern parameters</a> command, a
+        dialog box is displayed in which you can specify the values or ranges of values of the
+        pattern&apos;s parameters.  The parameters of the static image are described in the
+        following sections whereas the animation parameters are described in the <a
+        href="#section5-1-3">section on animation</a>.
+      </p>
+
+      <h5 id="section5-1-2-1">5.1.2.1&nbsp; Size</h5>
+      <p class="wrap">
+        The two <span class="component">Size</span> spinners specify the width and height of the
+        pattern image in pixels.
+      </p>
+
+      <h5 id="section5-1-2-2">5.1.2.2&nbsp; Symmetry</h5>
+      <p class="wrap">
+        Each source that is listed in the table in the <span class="component">Sources</span>
+        panel may be supplemented by copies of the source according to the value of the
+        <i>symmetry</i> parameter.  If the shape of the source is an ellipse or polygon, the
+        original orientation is transformed appropriately in the symmetrical copies.
+      </p>
+      <p class="wrap">
+        The following figures show the effect of the various kinds of symmetry on a single
+        source.  The original source is shown as a red dot, the symmetrical copies as blue dots.
+      </p>
+      <div id="p1Symmetry">
+        <div>
+          <div>
+            <img alt="Symmetry: none" src="images/symmetry_none.png"/>
+          </div>
+          <div>
+            <i>None</i> &nbsp;<small>(no copies)</small>
+          </div>
+        </div>
+        <div>
+          <div>
+            <img alt="Symmetry: reflection in V axis" src="images/symmetry_refV.png"/>
+          </div>
+          <div>
+            <i>Reflection in the vertical axis</i> &nbsp;<small>(1 copy)</small>
+          </div>
+        </div>
+        <div>
+          <div>
+            <img alt="Symmetry: reflection in H axis" src="images/symmetry_refH.png"/>
+          </div>
+          <div>
+            <i>Reflection in the horizontal axis</i> &nbsp;<small>(1 copy)</small>
+          </div>
+        </div>
+        <div>
+          <div>
+            <img alt="Symmetry: reflection in V &amp; H axes" src="images/symmetry_refVH.png"/>
+          </div>
+          <div>
+            <i>Reflection in the vertical and horizontal axes</i> &nbsp;<small>(3 copies)</small>
+          </div>
+        </div>
+        <div>
+          <div>
+            <img alt="Symmetry: reflection in diagonal axes" src="images/symmetry_refDiag.png"/>
+          </div>
+          <div>
+            <div><i>Reflection in the diagonal axes</i> &nbsp;<small>(3 copies)</small></div>
+            <div class="comment wrap">
+              If the pattern is not square, the reflection is subject to directional scaling;
+              that is, the coordinate of the smaller dimension (the <i>y</i>-coordinate in the
+              example) is scaled down by the ratio of the dimensions.  Reflection in a diagonal
+              occurs not along a line perpendicular to the diagonal but along a line parallel to
+              the other diagonal.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <img alt="Symmetry: reflection in four axes" src="images/symmetry_refFour.png"/>
+          </div>
+          <div>
+            <div><i>Reflection in four axes</i> &nbsp;<small>(7 copies)</small></div>
+            <div class="comment wrap">
+              See the comment for reflection in the diagonal axes.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <img alt="Symmetry: rotation by half-turn" src="images/symmetry_rot2.png"/>
+          </div>
+          <div>
+            <i>Rotation by a half-turn</i> &nbsp;<small>(1 copy)</small>
+          </div>
+        </div>
+        <div>
+          <div>
+            <img alt="Symmetry: rotation by quarter-turn" src="images/symmetry_rot4.png"/>
+          </div>
+          <div>
+            <div><i>Rotation by a quarter-turn</i> &nbsp;<small>(3 copies)</small></div>
+            <div class="comment wrap">
+              If the pattern is not square, it is treated as though it were a square formed by
+              extending its smaller dimension equally on both sides.  The square is cropped back
+              to the original rectangle when the pattern is rendered.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h5 id="section5-1-2-3">5.1.2.3&nbsp; Saturation mode</h5>
+      <p class="wrap">
+        When a Pattern 1 is rendered, some of the processing of the colour value of each pixel
+        is done with the HSB colour model.  (HSB stands for <i>hue</i>, <i>saturation</i> and
+        <i>brightness</i>.  It&apos;s also known as HSV, where <i>V</i> stands for
+        <i>value</i>.) The saturation component of a pixel&apos;s colour value is set in one of
+        three ways, according to the <i>saturation mode</i> parameter:
+      </p>
+      <table class="basic">
+        <tr>
+          <td class="definitionTerm">Variable</td>
+          <td class="wrap">
+            The saturation value of a pixel is a combination of the saturation values of the
+            waves from all sources at the pixel.  The saturation value of each contributing
+            source (ie, explicit sources and their copies) is specified by the source&apos;s
+            colour (hue and saturation) parameter.
+          </td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Maximum</td>
+          <td class="wrap">
+            The saturation value of a pixel is always set to its maximum.
+          </td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Brightness</td>
+          <td class="wrap">
+            The saturation value of a pixel is set to the pixel&apos;s brightness value, which
+            is the sum of the amplitudes (heights) of the waves from all sources at the pixel.
+          </td>
+        </tr>
+      </table>
+
+      <h5 id="section5-1-2-4">5.1.2.4&nbsp; Wavelength</h5>
+      <p class="wrap">
+        The wavelength of a wave is the distance between successive repeats of the waveform:
+      </p>
+      <img alt="Wavelength" src="images/wavelength.png"/>
+      <p class="wrap">
+        The two spinners specify the lower and upper bounds of the wavelength range.  The
+        wavelength of each source is selected randomly from this range with a uniform
+        distribution (ie, all values in the range have an equal probability of being selected).
+      </p>
+
+      <h5 id="section5-1-2-5">5.1.2.5&nbsp; Seed</h5>
+      <p class="wrap">
+        This is the value that is used to initialise the pseudo-random number generator that
+        provides random values for some parameters of a Pattern 1.  (No random numbers are used
+        in an animation of the pattern.)  The seed can be any 18-digit number; each of the
+        10<sup>18</sup> possible seeds gives a unique sequence of pseudo-random numbers, which
+        will be the same every time the generator is initialised with a particular seed.
+      </p>
+      <p class="wrap">
+        The <span class="command">Random</span> command generates a &quot;random&quot; seed that
+        is derived from the system time.
+      </p>
+
+      <h5 id="section5-1-2-6">5.1.2.6&nbsp; Sources</h5>
+      <p class="wrap">
+        The table in the <span class="component">Sources</span> panel lists the <i>explicit</i>
+        point sources from which waves will propagate to create the pattern.  Depending on the
+        <a href="#section5-1-2-2">symmetry</a> parameter, each explicit source may be
+        supplemented by symmetrical copies.  You can edit the list of sources with the commands
+        that are issued by the buttons on the right of the table.  The <span
+        class="command">Add</span> and <span class="command">Edit</span> commands bring up a
+        dialog box in which you can specify the parameters of a source.  The components of the
+        <span class="component">Source</span> dialog are described below.
+      </p>
+      <p class="wrap">
+        The <span class="component">Shape</span> drop-down list selects the virtual shape of a
+        source, which is imparted to the wave that propagates from it.  A source can have the
+        following shapes:
+      </p>
+      <table class="basic">
+        <tr>
+          <td class="definitionTerm">Circle</td>
+          <td class="wrap">
+            A circular source has no shape-specific parameter nor an orientation.
+          </td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Ellipse</td>
+          <td class="wrap">
+            The <span class="component">Eccentricity</span> drop-down list selects the
+            <i>eccentricity</i> of the ellipse, which is a measure of how elongated the ellipse
+            is: the greater the eccentricity, the more elongated the ellipse.  The parameter in
+            the range 1..9 corresponds to an actual eccentricity of 0.1 .. 0.9.
+          </td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Polygon</td>
+          <td class="wrap">
+            A polygonal source generates a wave that is a regular polygon with between 3 and 12
+            edges (sides), as selected by the <span class="component">Number of edges</span>
+            drop-down list.
+          </td>
+        </tr>
+      </table>
+      <p class="wrap">
+        The <span class="component">Waveform</span> drop-down list selects the kind of waveform
+        and the <span class="component">Wave coefficient</span> spinner applies an arbitrary
+        parameter to the waveform.  A single period of the resulting wave is displayed in the
+        panel above the two controls.
+      </p>
+      <p class="wrap">
+        The <span class="component">Attenuation coefficient</span> spinner specifies the rate at
+        which the amplitude of a wave diminishes as it travels away from a source: the higher
+        the coefficient, the greater the attenuation.  The attenuation is linear.
+      </p>
+      <p class="wrap">
+        The <span class="component">Constraint</span> drop-down list selects a constraint that
+        will be applied to the position of the source.  The position of a source may be
+        unconstrained, or it may be fixed to either the vertical or horizontal axis of the
+        pattern.
+      </p>
+      <p class="wrap">
+        The <span class="component">Hue and saturation</span> panel contains controls that allow
+        the hue (<i>H</i>) and saturation (<i>S</i>) components of a source&apos;s colour to be
+        specified.  The saturation value of all sources is ignored unless the value of the <a
+        href="#section5-1-2-3">saturation mode</a> parameter is <i>variable</i>.
+      </p>
+
+      <h4 id="section5-1-3">5.1.3&nbsp; Pattern 1 animation</h4>
+      <p class="wrap">
+        A Pattern 1 image is animated by generating a sequence of images (<i>frames</i>) from
+        the definition of the pattern by changing one or more of three attributes of each source
+        &mdash; <i>position</i>, <i>phase offset</i> and <i>orientation</i> &mdash; from one
+        frame to the next.  (The orientation attribute is meaningful only for elliptical and
+        polygonal sources.)  In the dialog that is displayed when the <a class="command"
+        href="#section7-4-2">Sequence &gt; Start animation</a> command is issued, you can choose
+        which of the three attributes to include in the animation.
+      </p>
+      <p class="wrap">
+        The three attributes of a Pattern 1 that can be animated are controlled by parameters
+        that are specified in the <span class="component">Animation</span> panel of the <span
+        class="component">Pattern 1 parameters</span> dialog.  The value of each of the primary
+        parameters &mdash; <i>motion rate</i>, <i>phase increment</i> and <i>rotation period</i>
+        &mdash; is randomly selected from a specified range, and the values for each explicit
+        source are selected independently.
+      </p>
+      <p class="wrap">
+        An animation can be generated from the set of pattern parameters that are contained in a
+        Pattern 1 <a href="#section4-1">parameter document</a>, as you might expect, but there
+        is also enough information in a Pattern 1 <a href="#section4-2">definition document</a>
+        to generate an animation because the animation does not require a source of random
+        numbers.  This has one notable consequence: if a definition document is created with the
+        <a class="command" href="#section6-2-1">Create a document</a> command while a Pattern 1
+        animation is paused, it can then be used to generate an animation.
+      </p>
+      <p class="wrap">
+        Any frame of a Pattern 1 animation can be generated from the definition of the pattern
+        without the need to generate intermediate frames, so that an animation can be started
+        equally quickly from any frame in the sequence.
+      </p>
+
+      <h5 id="section5-1-3-1">5.1.3.1&nbsp; Motion rate</h5>
+      <p class="wrap">
+        Animation of the position attribute is called <i>motion</i> as a shorthand for linear
+        motion.  If position animation is enabled, the <a href="#p1AttrPosition">position</a>
+        attribute of a source changes from frame to frame along a line from the original
+        position to the edge of the pattern.  When the source reaches the edge, it is reflected
+        back into the pattern at an angle equal to the angle of incidence.  The initial
+        direction of motion is randomly selected when the pattern is generated, though
+        directions that are parallel or almost parallel to the edges of the pattern are
+        disallowed.  The appropriate symmetry is applied to the directions of symmetrical copies
+        of a source.
+      </p>
+      <p class="wrap">
+        The rate of motion is selected randomly for each source from the range specified with
+        the <span class="component">Motion rate</span> spinners.
+      </p>
+      <p class="wrap">
+        By default, the rate of motion is constant, but an <i>envelope</i> can be applied to the
+        rate of every source.  The envelope consists of linear segments and is periodic (ie, it
+        is applied repeatedly at a specified interval).  The envelope is enabled with the <span
+        class="component">Motion rate envelope</span> check box, and the envelope can be edited
+        in the dialog that is displayed when the <span class="command">Edit</span> command is
+        issued from the button adjacent to the check box.
+      </p>
+      <p class="wrap">
+        The main component in the <span class="component">Animation motion-rate envelope</span>
+        dialog is a plot of the envelope in which lines are drawn between successive pairs of
+        envelope nodes.  Below this are two fields for specifying the scale factors of the
+        <i>x</i> and <i>y</i> axes of the envelope plot:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          The <i>x</i> range specifies the period of the envelope in frames (ie, the number of
+          frames between repeats).
+        </li>
+        <li class="wrap">
+          The <i>y</i> range specifies the maximum displacement of the source along the
+          direction of motion.  The units are the <i>spatial units</i> of the pattern: the
+          length of the pattern&apos;s diagonal.
+        </li>
+      </ul>
+      <p class="wrap">
+        The nodes of an envelope can be edited with the left mouse button using tools that are
+        selected from a context menu.  The menu is invoked from within the envelope plot in a
+        system-dependent manner (eg, with the right mouse button).  The toolkit comprises the
+        following tools:
+      </p>
+      <table class="basic">
+        <tr>
+          <td class="definitionTerm">Select</td>
+          <td class="wrap">
+            A node can be selected by clicking on it or moved by dragging it.  This is the
+            default tool.
+          </td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Draw</td>
+          <td class="wrap">
+            Clicking in the envelope area creates a new node.
+          </td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Erase</td>
+          <td class="wrap">
+            A node is removed by clicking on it.  An envelope must have at least two nodes.
+          </td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Edit value</td>
+          <td class="wrap">
+            Clicking on a node brings up a dialog box in which the coordinate values of the node
+            can be edited.
+          </td>
+        </tr>
+      </table>
+      <p class="wrap">
+        An envelope can be used to create an emphasis at some point in a repeating interval by
+        increasing the rate of motion of the sources at that point.  For example, if an
+        animation of a pattern were accompanied by a soundtrack consisting of a sequence of bars
+        with a 4/4 time signature at a constant tempo, the snares on the upbeats of a bar could
+        be emphasised with an envelope whose period was set to the duration of a bar and that
+        had peaks at &frac14; and &frac34; of its length.
+      </p>
+
+      <h5 id="section5-1-3-2">5.1.3.2&nbsp; Phase increment</h5>
+      <p class="wrap">
+        The phase increment is a value that is added to the <a href="#p1AttrPhaseOffset">phase
+        offset</a> attribute from one frame to the next.  A changing phase offset gives the
+        appearance that the wave is moving away from the source if the phase increment is
+        positive or towards the source if the phase increment is negative.
+      </p>
+      <p class="wrap">
+        The phase increment is selected randomly for each source from the range specified with
+        the <span class="component">Phase increment</span> spinners.
+      </p>
+      <p class="wrap">
+        The scale of the phase increment is logarithmic, with sign inversion.  Zero represents
+        no increment, while -100 represents a positive increment of a quarter of a cycle
+        (&pi;/2) and 100 represents a negative increment of a quarter of a cycle
+        (&minus;&pi;/2).
+      </p>
+      <p class="wrap">
+        To make rendering a bit faster, phase animation may be disabled with the <a
+        class="configProperty" href="#cp-pattern1-phaseAnimation">pattern1.phaseAnimation</a>
+        configuration property.  If phase animation is disabled, this property may still be
+        edited but it will have no effect.
+      </p>
+
+      <h5 id="section5-1-3-3">5.1.3.3&nbsp; Rotation period and sense</h5>
+      <p class="wrap">
+        Animation of the <a href="#p1AttrOrientation">orientation</a> attribute is called
+        <i>rotation</i>, and it has meaning only for elliptical and polygonal sources.  Rotation
+        is achieved by changing the orientation of a source by a constant amount from one frame
+        to the next, in either a clockwise or anticlockwise (counterclockwise) sense.  The
+        rotation period is the number of frames over which a source completes a full revolution.
+      </p>
+      <p class="wrap">
+        The rotation period is selected randomly for each source from the range specified with
+        the <span class="component">Rotation period</span> spinners.
+      </p>
+      <p class="wrap">
+        A rotation period in the specified range is generated by inverting the bounds of the
+        range to give a range of rotation rates, then taking a uniformly distributed random
+        sample from the rate range.  The specified rotation sense &mdash; <i>clockwise</i>,
+        <i>anticlockwise</i> or <i>any</i> (clockwise or anticlockwise, randomly selected)
+        &mdash; is applied to the rotation rate.
+      </p>
+
+      <h3 id="section5-2">5.2&nbsp; Pattern 2</h3>
+
+      <p class="wrap">
+        Unlike Pattern 1, which can easily be classified, Pattern 2 does not belong to an
+        obvious class; it can be described as <i>a set of non-intersecting polygonal paths whose
+        vertices and edges correspond to those of an isometric grid</i>.  In other words, the
+        pattern consists of connected line segments drawn on a regular <a
+        href="#section5-2-1">grid</a> of equilateral triangles, although the grid itself is not
+        visible.
+      </p>
+      <p class="wrap">
+        Most of the <a href="#section5-2-2">parameters</a> of a Pattern 2, such as the
+        background colour and the thickness of paths, are specified by the user.  The paths
+        themselves are then generated randomly with the aim of covering all the edges of the
+        grid with paths.  The directions of a path&apos;s edges are constrained by a set of
+        user-specified probabilities.  The paths are generated by a heuristic &mdash; a greedy
+        algorithm that quickly gives good but not optimal coverage of the grid.  When the
+        generation of paths has finished, any vertices of the grid that remain empty may
+        optionally be filled with zero-length paths, which are drawn as discs.
+      </p>
+      <p class="wrap">
+        The form of Pattern 2 is perhaps best illustrated by some examples; the following images
+        are two examples of Pattern 2.  The first image shows the essential aspects of Pattern
+        2: non-intersecting paths on an invisible isometric grid.  The second image illustrates
+        some features of Pattern 2: the ability to weight the probabilities of the directions of
+        paths (in this example, there are no paths orthogonal to the image) and to emphasise
+        terminal vertices (some of the ends of the paths are enlarged).
+      </p>
+      <table class="imageArray">
+        <tr>
+          <td><img alt="Pattern 2, example 1" src="images/pattern2Example1.png"/></td>
+          <td><img alt="Pattern 2, example 2" src="images/pattern2Example2.png"/></td>
+        </tr>
+      </table>
+      <p class="wrap">
+        It will be apparent from the two examples that Pattern 2 doesn&apos;t offer much in the
+        way of variety.
+      </p>
+      <p class="wrap">
+        Pattern 2 images are drawn with the floating-point graphics methods of the Java runtime
+        environment.  The speed and quality of rendering will vary with the Java implementation.
+        (The two examples above and those that are included in the PatternGenerator distribution
+        were generated with Oracle&apos;s JRE on Linux and Windows.)  Depending on the Java
+        implementation, the <a class="configProperty"
+        href="#cp-pattern2-pathRendering">pattern2.pathRendering</a> configuration property may
+        allow you to modify the way in which paths are rendered.
+      </p>
+      <p class="wrap">
+        A Pattern 2 image can be <a href="#section5-2-4">exported in vector graphics (SVG)
+        format</a> with the <a class="command" href="#section7-1-10">File &gt; Export as SVG
+        file</a> command.
+      </p>
+
+      <h4 id="section5-2-1">5.2.1&nbsp; The grid</h4>
+      <p class="wrap">
+        The invisible grid on which the paths are drawn may be oriented either vertically or
+        horizontally, as shown in the images below.  The orientation of the grid is a <a
+        href="#section5-2-2-2">parameter</a> of the pattern.  The grid is composed of three sets
+        of parallel lines at an angle of 60 degrees to each other &mdash; the grey lines in the
+        images.  One of these sets of lines may be either vertical or horizontal relative to the
+        image; it is this set of lines that defines the orientation of the grid.
+      </p>
+      <table class="imageArray">
+        <tr>
+          <td id="p2GridVImage">
+            <img alt="Pattern 2 grid, vertical" src="images/pattern2GridV.png"/>
+          </td>
+          <td id="p2GridHImage">
+            <img alt="Pattern 2 grid, horizontal" src="images/pattern2GridH.png"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="caption">Vertical orientation</td>
+          <td class="caption">Horizontal orientation</td>
+        </tr>
+      </table>
+      <p class="wrap">
+        The edges of paths correspond to edges of the grid, and the vertices of paths correspond
+        to the grid&apos;s vertices, which are at the intersections of the grey lines in the
+        images.  A vertically oriented grid may have vertical paths but not horizontal paths
+        whereas a horizontally oriented grid may have horizontal paths but not vertical paths.
+      </p>
+      <p class="wrap">
+        A Pattern 2 grid actually extends beyond the visible image: there is an invisible margin
+        on each of the four sides of the image.  The purpose of the margin is to improve the
+        homogeneity of the image by hiding the terminal vertices of paths that are located at
+        the periphery of the grid.  The four margins are paired as <i>end margins</i> and
+        <i>side margins</i>: the end margins are the top and bottom margins of a vertically
+        oriented grid but the left and right margins of a horizontally oriented grid, and vice
+        versa for the side margins.  The size of each pair of margins is a parameter of the
+        pattern.  The unit size of a margin is the <i>grid interval</i> (major or minor), which
+        is the distance between successive vertical or horizontal lines in the images above: the
+        <i>major interval</i> is the distance between successive parallel grey lines and the
+        <i>minor interval</i> is the distance between successive light blue lines.
+      </p>
+      <p class="wrap">
+        When a Pattern 2 is rendered, the image is centered in relation to the grid so that the
+        distances from the outermost vertices of the grid to the edges of the image are
+        distributed evenly in both dimensions.
+      </p>
+
+      <h4 id="section5-2-2">5.2.2&nbsp; Pattern 2 parameters</h4>
+      <p class="wrap">
+        When you create a new Pattern 2 with the <a class="command" href="#section7-1-1">File
+        &gt; New &gt; Pattern 2</a> command or edit the parameters of a Pattern 2 with the <a
+        class="command" href="#section7-2-3">Edit &gt; Edit pattern parameters</a> command, a
+        dialog box is displayed in which you can specify the values or ranges of values of the
+        pattern&apos;s parameters.  The parameters of the static image are described in the
+        following sections whereas the animation parameters are described in the <a
+        href="#section5-2-3">section on animation</a>.
+      </p>
+
+      <h5 id="section5-2-2-1">5.2.2.1&nbsp; Size</h5>
+      <p class="wrap">
+        The two <span class="component">Size</span> spinners specify the width and height of the
+        pattern image in pixels.
+      </p>
+
+      <h5 id="section5-2-2-2">5.2.2.2&nbsp; Orientation</h5>
+      <p class="wrap">
+        The paths of a pattern have a notional forward direction, which is relevant when you
+        assign relative probabilities to the directions of the edges of paths.  The
+        <i>orientation</i> parameter specifies the forward direction for paths and, implicitly,
+        the orientation of the <a href="#section5-2-1">grid</a>: if it is <i>up</i> or
+        <i>down</i>, the grid is oriented vertically; if it is <i>left</i> or <i>right</i>, the
+        grid is oriented horizontally.
+      </p>
+
+      <h5 id="section5-2-2-3">5.2.2.3&nbsp; End margin</h5>
+      <p class="wrap">
+        The role of the margins is described in the section on the <a
+        href="#section5-2-1">grid</a>.  If the pattern has a vertical <a
+        href="#section5-2-2-2">orientation</a> (up or down), the end margins are the top and
+        bottom margins; if the pattern has a horizontal orientation (left or right), the end
+        margins are the left and right margins.  The units of the end margins are the <i>minor
+        grid interval</i>.
+      </p>
+
+      <h5 id="section5-2-2-4">5.2.2.4&nbsp; Side margin</h5>
+      <p class="wrap">
+        The role of the margins is described in the section on the <a
+        href="#section5-2-1">grid</a>.  If the pattern has a vertical <a
+        href="#section5-2-2-2">orientation</a> (up or down), the side margins are the left and
+        right margins; if the pattern has a horizontal orientation (left or right), the side
+        margins are the top and bottom margins.  The units of the side margins are the <i>major
+        grid interval</i>.
+      </p>
+
+      <h5 id="section5-2-2-5">5.2.2.5&nbsp; Grid interval</h5>
+      <p class="wrap">
+        This parameter specifies the <i>major</i> grid interval: the distance between successive
+        parallel lines of the <a href="#section5-2-1">grid</a>.  If the pattern has a vertical
+        <a href="#section5-2-2-2">orientation</a> (up or down), it&apos;s the distance between
+        successive vertical lines; if the pattern has a horizontal orientation (left or right),
+        it&apos;s the distance between successive horizontal lines.  The units of the interval
+        are pixels.
+      </p>
+
+      <h5 id="section5-2-2-6">5.2.2.6&nbsp; Path thickness</h5>
+      <p class="wrap">
+        This parameter specifies the thickness of the paths in pixels.
+      </p>
+
+      <h5 id="section5-2-2-7">5.2.2.7&nbsp; Expected path length</h5>
+      <p class="wrap">
+        This parameter is used by the first stage of the algorithm that generates paths.  When
+        the initial population of paths is generated, the length of each path is a random sample
+        from a <a class="external"
+        href="https://en.wikipedia.org/wiki/Poisson_distribution">Poisson distribution</a> that
+        has this parameter as its &lambda; value (the expected value of the distribution).  The
+        expected path length is only a guide for the algorithm; because of constraints on the
+        actual lengths of paths and the effect of later stages of the algorithm on path lengths,
+        there is no guarantee that the mean length of the paths will be close to the expected
+        length.
+      </p>
+
+      <h5 id="section5-2-2-8">5.2.2.8&nbsp; Show empty paths</h5>
+      <p class="wrap">
+        An empty path is a path whose length is zero.  Such paths arise in static (ie,
+        non-animated) images as a result of a failure by the path-generation algorithm to extend
+        any of the adjacent non-empty paths into an unoccupied vertex of the grid.  They can
+        arise in animated images when a path of length 1 shrinks.  If this parameter is
+        selected, empty paths are shown as discs (filled circles).  For the purpose of <a
+        href="#section5-2-2-9">terminal emphasis</a>, an empty path is treated as though it had
+        two terminal vertices at the same grid vertex.
+      </p>
+
+      <h5 id="section5-2-2-9">5.2.2.9&nbsp; Terminal emphasis</h5>
+      <p class="wrap">
+        The terminal vertices of paths can be emphasised by drawing discs (filled circles) of a
+        specified <a href="#section5-2-2-10">diameter</a> over them; the &quot;emphasis&quot; is
+        supposed to occur if the diameter of the disc is greater than the thickness of the path.
+        This parameter controls which of the terminal vertices will have discs drawn over them.
+        The start and end of a path are determined by the notional forward direction of the
+        pattern that is set with the <a href="#section5-2-2-2">orientation</a> parameter.
+      </p>
+
+      <h5 id="section5-2-2-10">5.2.2.10&nbsp; Terminal diameter</h5>
+      <p class="wrap">
+        This parameter specifies the diameter of the discs that are drawn over selected terminal
+        vertices of paths.  If the diameter of the disc is greater than the thickness of the
+        path, the vertex appears to be emphasised.  The units of the diameter are pixels.
+      </p>
+
+      <h5 id="section5-2-2-11">5.2.2.11&nbsp; Seed</h5>
+      <p class="wrap">
+        This is the value that is used to initialise the pseudo-random number generator that
+        provides random values for generating the paths of a Pattern 2 and for animating the
+        paths.  The seed can be any 18-digit number; each of the 10<sup>18</sup> possible seeds
+        gives a unique sequence of pseudo-random numbers, which will be the same every time the
+        generator is initialised with a particular seed.
+      </p>
+      <p class="wrap">
+        The <span class="command">Random</span> command generates a &quot;random&quot; seed that
+        is derived from the system time.
+      </p>
+
+      <h5 id="section5-2-2-12">5.2.2.12&nbsp; Colours</h5>
+      <p class="wrap">
+        The components of the <span class="component">Colours</span> panel allow you to specify
+        the colours of the pattern: a single background colour and up to 40 path colours.  The
+        colour of a path is selected randomly from the set of available colours, with each
+        colour having an equal probability of being chosen.  You can weight the selection by
+        setting multiple path colours to the same value (eg, by using the <span
+        class="command">Set</span> command).
+      </p>
+      <p class="wrap">
+        The samples of the path colours are shown in buttons that are arranged in five rows.
+        Clicking on one of the buttons (or pressing Space when the button has keyboard focus)
+        will bring up a colour-selection dialog in which you can choose the path colour.
+      </p>
+      <p class="wrap">
+        The selection of a colour-sample button can be toggled by clicking the left mouse button
+        on it while the Ctrl key is pressed or by pressing Ctrl+Space when the button has
+        keyboard focus.  A selected button is drawn with an orange border.  The button with a
+        left-pointing double arrow to the right of each row of colour-sample buttons selects all
+        the buttons in the row.
+      </p>
+      <p class="wrap">
+        The four buttons to the right of the row-selection buttons issue commands that apply to
+        the selected colours:
+      </p>
+      <table class="basic">
+        <tr>
+          <td class="command">Set</td>
+          <td class="wrap">
+            The command brings up a colour-selection dialog in which you can choose a colour to
+            which all the selected path colours will be set.
+          </td>
+        </tr>
+        <tr>
+          <td class="command">Graduate</td>
+          <td class="wrap">
+            The command brings up a dialog with a <a href="#section6-3-4">colour-range panel</a>
+            in which you can choose a range of colours.  The selected colours will be set to a
+            gradation over the range: the first colour will be set to the first bound of the
+            range, the last colour will be set to the second bound of the range, and the colours
+            in between will be set to intermediate values (using the HSB colour model) such that
+            the steps between successive colours are equal.
+          </td>
+        </tr>
+        <tr>
+          <td class="command">Randomise</td>
+          <td class="wrap">
+            The command brings up a dialog with a <a href="#section6-3-4">colour-range panel</a>
+            in which you can choose a range of colours.  The selected colours will be set to
+            colours that are sampled randomly from the range with a uniform distribution, using
+            the HSB colour model.
+          </td>
+        </tr>
+        <tr>
+          <td class="command">Clear selection</td>
+          <td class="wrap">
+            The command deselects all the selected colours.
+          </td>
+        </tr>
+      </table>
+
+      <h5 id="section5-2-2-13">5.2.2.13&nbsp; Direction probabilities</h5>
+      <p class="wrap">
+        Each edge (line segment) of a path has a <i>direction</i>, from its start vertex to its
+        end vertex.  Whenever an edge is generated, either during the initial generation of
+        paths or when a path is lengthened during an animation, its direction is chosen by
+        taking a random sample from the probability distribution that is specified in the <span
+        class="component">Direction probabilities</span> panel.
+      </p>
+      <p class="wrap">
+        The probability distribution maps directions to probabilities.  The directions may be
+        either absolute or relative, depending on the value that you select from the <span
+        class="component">Direction mode</span> drop-down list:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          If the mode is <i>absolute</i>, the directions are determined by the orientation of
+          the pattern: the forward direction is the value of the <a
+          href="#section5-2-2-2">orientation</a> parameter.
+        </li>
+        <li class="wrap">
+          If the mode is <i>relative</i>, the directions are relative to the direction of an
+          edge at a terminal vertex of the path: if it&apos;s the end vertex, the directions are
+          relative to the last edge of the path; if it&apos;s the start vertex, the directions
+          are relative to a virtual incoming edge.  The backward direction is always impossible,
+          so it is disabled.  The initial direction of a path (ie, the direction of its first
+          edge) is randomly selected, with all directions having an equal probability.
+        </li>
+      </ul>
+      <p class="wrap">
+        Depending on the direction mode, there are five or six possible directions out of every
+        grid vertex, and these directions are assigned weights that determine how likely it is
+        that any particular direction will be chosen when an edge is added to a path.  The
+        weights, which are specified with spinners, are values between 0 and 100.  The
+        probabilities corresponding to the weights are displayed in a box below each spinner,
+        and the set of probabilities is updated as you edit a weight.  You can choose any set of
+        weight values that will give you the desired probability distribution; for example, if
+        you want a probability distribution of {&nbsp;0.333, 0.333, 0.333, 0.0, 0.0, 0.0&nbsp;},
+        you could choose the weights {&nbsp;40, 40, 40, 0, 0, 0&nbsp;}.
+      </p>
+      <p class="wrap">
+        The spinners and their adjoining boxes are labelled with directions according to the
+        following key:
+      </p>
+      <table class="basic">
+        <tr>
+          <td class="definitionTerm">FL</td>
+          <td>Forward-left</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">F</td>
+          <td>Forward</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">FR</td>
+          <td>Forward-right</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">BL</td>
+          <td>Backward-left</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">B</td>
+          <td>Backward</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">BR</td>
+          <td>Backward-right</td>
+        </tr>
+      </table>
+      <p class="wrap">
+        Above the spinners, as an alternative means of editing the direction weights, is
+        graphical representation of the weights in the form of bars within spokes that emanate
+        from a hub.  The arrangement of the spokes corresponds roughly to the arrangement of the
+        spinners, the uppermost spoke being the forward direction.  The weight for each
+        direction can be changed by dragging the bar along its spoke with the mouse.
+      </p>
+      <p class="wrap">
+        If the <span class="component">L-R symmetrical</span> check box is selected, any change
+        to the weight of one of the lateral directions (FL, FR, BL, BR) will be mirrored in the
+        corresponding weight on the opposite side.
+      </p>
+
+      <h4 id="section5-2-3">5.2.3&nbsp; Pattern 2 animation</h4>
+      <p class="wrap">
+        A Pattern 2 image is animated by generating a sequence of images (<i>frames</i>) from
+        the definition of the pattern.  In the sequence, the lengths of some of the paths change
+        from one frame to the next: as one path lengthens, an adjacent path will become shorter
+        to make room for its growing neighbour.  The animation aims to maintain an <i>active
+        fraction</i> of paths &mdash; paths that are growing or shrinking.  On each frame, some
+        currently inactive terminal vertices of paths may be randomly selected to grow by adding
+        a new edge to the path at that vertex.  An adjacent grid vertex is selected, subject to
+        constraints on the direction of growth, as the new terminal vertex.  The new terminal
+        location will usually be occupied by the terminal vertex of another path, which will
+        have to be shortened as the first path is lengthened.  Over the next few frames, the
+        selected path is lengthened in the direction of its new terminal vertex, and, if
+        necessary, an adjacent path is correspondingly shortened.
+      </p>
+      <p class="wrap">
+        Under some circumstances, a long path may be shortened or even split into two to reduce
+        its potential to block the growth of neighbouring paths.  If a path is shortened, an
+        empty path is created at the grid vertex that was vacated.
+      </p>
+      <p class="wrap">
+        Because of the frame-by-frame selection of paths for lengthening, an arbitrary frame of
+        a Pattern 2 animation cannot be generated directly from the definition of the pattern;
+        all of the previous frames must be generated too.  Thus, in order to start a Pattern 2
+        animation at a specified frame, the application must &quot;fast-forward&quot; through
+        the animation from the beginning by updating the state of the paths on each frame.  (The
+        procedure is called &quot;fast-forward&quot; because none of the intermediate frames is
+        rendered.)
+      </p>
+      <p class="wrap">
+        An animation can be generated from the set of pattern parameters that are contained in a
+        Pattern 2 <a href="#section4-1">parameter document</a>.  However, there is not enough
+        information in a Pattern 2 <a href="#section4-2">definition document</a> to generate an
+        animation because, in addition to the initial state of the paths, the animation requires
+        a source of random numbers for selecting the paths whose length will be changed.
+      </p>
+
+      <h5 id="section5-2-3-1">5.2.3.1&nbsp; Active fraction</h5>
+      <p class="wrap">
+        During an animation, a path is considered to be <i>active</i> while it is being
+        lengthened or shortened; that is, if at least one of its terminal vertices is in
+        transition between grid vertices.  The <i>active fraction</i> parameter specifies the
+        fraction of the total set of paths that should be active when the paths are updated on
+        each frame.  If the actual fraction of active paths falls below the desired value, the
+        animation algorithm tries to select more paths for lengthening, though it may not be
+        possible to achieve the desired fraction because of constraints on the lengthening of
+        paths.
+      </p>
+      <p class="wrap">
+        The <span class="component">Active fraction</span> spinner specifies the fraction as a
+        percentage of the total number of paths in the pattern.
+      </p>
+
+      <h5 id="section5-2-3-2">5.2.3.2&nbsp; Transition interval</h5>
+      <p class="wrap">
+        The <i>transition interval</i> is the number of frames over which the transition of a
+        terminal vertex of a path from one grid vertex to another occurs.  When a terminal
+        vertex is selected for lengthening &mdash; and, to make room for it, an adjacent
+        terminal vertex of another path is selected to be shortened &mdash;, the transition
+        interval is randomly selected from the range specified by the <span
+        class="component">Transition interval</span> spinners.
+      </p>
+
+      <h4 id="section5-2-4">5.2.4&nbsp; Vector graphics image</h4>
+      <p class="wrap">
+        A Pattern 2 image can be exported in <a class="external"
+        href="https://en.wikipedia.org/wiki/Scalable_Vector_Graphics">Scalable Vector
+        Graphics</a> (SVG) format with the <a class="command" href="#section7-1-10">File &gt;
+        Export as SVG file</a> command.  The exported SVG file has the following structure:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          The background rectangle and the set of paths are grouped separately using SVG
+          <code>&lt;g&gt;</code> elements.
+        </li>
+        <li class="wrap">
+          In the foreground group, each path is represented by a <code>&lt;path&gt;</code>
+          element and each terminal vertex by a <code>&lt;circle&gt;</code> element.
+        </li>
+        <li class="wrap">
+          The <code>fill</code>, <code>stroke-width</code>, <code>stroke-linecap</code> and
+          <code>stroke-linejoin</code> properties of paths are set by applying common styles
+          from an internal CSS style sheet to all foreground <code>&lt;path&gt;</code> elements.
+        </li>
+        <li class="wrap">
+          The pattern extends beyond the visible image, as <a href="#section5-2-1">described
+          above</a>.  All the paths of the pattern &mdash; even those that lie completely
+          outside the bounds of the image &mdash; are represented in the SVG file, and the paths
+          are clipped to the bounds of the image by applying a clipping rectangle that is
+          defined with a <code>&lt;clipPath&gt;</code> element.
+        </li>
+      </ul>
+      <p class="noBottomMargin wrap">
+        The clipping of the paths to the bounds of the image can be removed by editing the the
+        SVG file; either
+      </p>
+      <ol class="continuationList">
+        <li class="wrap">
+          using a text editor, delete the <code>clip-path</code> attribute from the foreground
+          <code>&lt;g&gt;</code> element, or
+        </li>
+        <li class="wrap">
+          using <a class="external" href="https://en.wikipedia.org/wiki/Inkscape">Inkscape</a>,
+          ungroup the foreground group with the <span class="command">Object &gt; Ungroup</span>
+          command, which will remove the clipping rectangle and make all the paths visible.
+        </li>
+      </ol>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- The display -->
+
+    <div class="section">
+      <h2 id="section6">6&nbsp; The display</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <h3 id="section6-1">6.1&nbsp; The main window</h3>
+
+      <p class="wrap">
+        PatternGenerator uses a tabbed document interface to display multiple documents.  This
+        kind of interface has a single tabbed window in which only one document &mdash; referred
+        to as the <i>current document</i> &mdash; is visible at any one time.  You can select a
+        document by clicking on its tab, or you can select a document from the alphabetically
+        ordered list that is displayed by clicking on the down-arrow button at the right of the
+        tab bar.  You can move between documents by pressing Ctrl+PageUp and Ctrl+PageDown.
+      </p>
+      <p class="wrap">
+        The main window can be resized in a platform-dependent manner (eg, by dragging a corner
+        of the window).  It can also be resized to the image of the current document with the <a
+        class="command" href="#section7-5-1">View &gt; Resize window to image</a> command.
+      </p>
+
+      <h3 id="section6-2">6.2&nbsp; The sequence window</h3>
+
+      <p class="wrap">
+        A slide show or an animation is displayed in a <i>sequence window</i>.  When a <a
+        class="command" href="#section7-4-1">Sequence &gt; Start slide show</a> or <a
+        class="command" href="#section7-4-2">Sequence &gt; Start animation</a> command is
+        issued, the main window is hidden and a sequence window is displayed.  When a sequence
+        is stopped, the sequence window disappears and the main window is made visible again.
+      </p>
+      <p class="wrap">
+        A sequence window has no frame.  It can be moved by dragging it with the mouse cursor
+        while the left mouse button is pressed.
+      </p>
+      <p class="wrap">
+        The window may be kept on top of the windows of other applications if this is supported
+        by the platform, or it may behave like a normal window in allowing other windows to lie
+        above it.  This behaviour is controlled by the <a class="configProperty"
+        href="#cp-general-keepSequenceWindowOnTop">general.keepSequenceWindowOnTop</a>
+        configuration property.
+      </p>
+      <p class="wrap">
+        At the bottom of the sequence window is a control panel that is visible when the mouse
+        cursor hovers over the area of the control panel or when the sequence is paused.  The
+        control panel has three buttons for issuing commands, only two of which are available at
+        any one time: the <span class="command">Pause</span> and <span
+        class="command">Stop</span> commands are available when a sequence is playing; the <span
+        class="command">Play</span> and <span class="command">Stop</span> commands are available
+        when a sequence is paused.  The commands are also accessible from a context menu that is
+        displayed in a platform-dependent manner (eg, by clicking the right mouse button).
+      </p>
+
+      <h4 id="section6-2-1">6.2.1&nbsp; The <span class="command">Create a document</span> command</h4>
+      <p class="wrap">
+        While the sequence is paused, the context menu of the sequence window has a command,
+        <span class="command">Create a document</span> (Ctrl+D), that creates a
+        <i>definition</i> document from the current image in the sequence.  This command can be
+        used to take a snapshot of a particular frame of an animation.
+      </p>
+
+      <h3 id="section6-3">6.3&nbsp; Graphical components in dialog boxes</h3>
+
+      <p class="wrap">
+        Dialog boxes are displayed in response to some of PatternGenerator&apos;s commands.
+        Some of the dialogs contain non-standard graphical components or standard components
+        that have unusual features.
+      </p>
+
+      <h4 id="section6-3-1">6.3.1&nbsp; Spinner</h4>
+      <p class="wrap">
+        A <i>spinner</i> is a graphical component for editing a numerical value.  It consists of
+        a text field adjacent to a pair of small buttons.  The value in the text field may be
+        edited manually, or it may be incremented and decremented by one of the following
+        methods:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          clicking on the small up/down buttons;
+        </li>
+        <li class="wrap">
+          pressing the up/down arrow keys;
+        </li>
+        <li class="wrap">
+          rotating the mouse wheel with the mouse cursor over the spinner when the text field
+          has keyboard focus (ie, the caret is displayed in the field).
+        </li>
+      </ul>
+      <p class="wrap">
+        Using the last two methods, the amount by which the value is incremented or decremented
+        can be modified by holding down the Ctrl, Shift or Ctrl+Shift keys, which correspond to
+        increments of 10, 100 and 1000 respectively.
+      </p>
+
+      <h4 id="section6-3-2">6.3.2&nbsp; Slider</h4>
+      <p class="wrap">
+        A <i>slider</i> is a graphical component for editing a numerical value.  It is usually
+        located adjacent to a spinner as an alternative means of editing the spinner&apos;s
+        value.  The position of the slider is controlled with a knob, which is usually hidden
+        but appears when the mouse cursor is in the region of the position marker.
+      </p>
+      <p class="wrap">
+        The slider value may be edited by using the left mouse button.  If the left button is
+        pressed when the mouse cursor is within the knob, the knob can be dragged; otherwise, if
+        the left button is pressed when the mouse cursor is inside the border of the slider, the
+        knob is moved to the mouse cursor, and the knob can be then dragged.  The slider value
+        may be edited with the arrow keys when the slider has keyboard focus:
+      </p>
+      <table class="basic">
+        <tr>
+          <td class="definitionTerm">Left</td>
+          <td>Decrement the value by one unit</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Ctrl+Left</td>
+          <td>Decrement the value by one block</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Home</td>
+          <td>Set the value to its minimum</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Right</td>
+          <td>Increment the value by one unit</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Ctrl+Right</td>
+          <td>Increment the value by one block</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">End</td>
+          <td>Set the value to its maximum</td>
+        </tr>
+      </table>
+
+      <h4 id="section6-3-3">6.3.3&nbsp; Range bar</h4>
+      <p class="wrap">
+        A <i>range bar</i> is a graphical component for editing a pair of numerical values
+        &mdash; a lower bound and an upper bound &mdash; that denote a range.  It is usually
+        invoked with a button adjacent to a pair of spinners for the two bounds, and it is
+        displayed in a small, frameless dialog box consisting of a horizontal bar with
+        arrowheads above and below it to indicate the upper and lower bounds respectively, and a
+        button to the right of the bar that closes the dialog.  The dialog is modal, so it is
+        not possible to edit the bounds in the spinners while the range bar is displayed.
+      </p>
+      <p class="wrap">
+        In the range-bar dialog, the lower and upper bounds may be edited by clicking or
+        dragging the left mouse button over the range bar.  The bounds may be edited with the
+        arrow keys:
+      </p>
+      <table class="basic">
+        <tr>
+          <td class="definitionTerm">Left</td>
+          <td>Decrement the lower bound by one unit</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Ctrl+Left</td>
+          <td>Decrement the lower bound by one block</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Right</td>
+          <td>Increment the lower bound by one unit</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Ctrl+Right</td>
+          <td>Increment the lower bound by one block</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Down</td>
+          <td>Decrement the upper bound by one unit</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Ctrl+Down</td>
+          <td>Decrement the upper bound by one block</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Up</td>
+          <td>Increment the upper bound by one unit</td>
+        </tr>
+        <tr>
+          <td class="definitionTerm">Ctrl+Down</td>
+          <td>Increment the upper bound by one block</td>
+        </tr>
+      </table>
+
+      <h4 id="section6-3-4">6.3.4&nbsp; Colour-range panel</h4>
+      <p class="wrap">
+        A <i>colour-range panel</i> is a graphical component for editing a range of colour
+        values.  The panel uses the <a class="external"
+        href="https://en.wikipedia.org/wiki/HSL_and_HSV">HSB colour model</a> to represent the
+        colours in the range, which is specified as two hue&ndash;saturation pairs for the
+        bounds along with an overall brightness value.
+      </p>
+      <p class="wrap">
+        The panel is displayed in response to two commands in the <span
+        class="component">Pattern2 parameters dialog</span>.  It is described here because it
+        has some unusual behaviour.
+      </p>
+      <p class="wrap">
+        The panel consists of a <i>colour area</i> and some <a href="#section6-3-1">spinners</a>
+        for editing the colour components.  There are two sets of components for the hue and
+        saturation of the two range bounds.  The spinners for both bounds are permanently
+        enabled, but one bound &mdash; the primary bound &mdash; is selected with the radio
+        buttons to the left of the spinners, labelled <span class="component">Bound 1</span> and
+        <span class="component">Bound 2</span>.
+      </p>
+      <p class="wrap">
+        The colour area is a representation of <em>two</em> revolutions of the curved surface of
+        a cylinder; its horizontal dimension represents <i>hue</i> and its vertical dimension
+        represents <i>saturation</i>.  The duplicated portion of the area avoids the need for
+        scrolling when the range wraps around in the hue dimension.  The range is shown in the
+        colour area as a rectangle that degenerates to a single pixel when the two bounds are
+        equal.  The range is controlled with the mouse buttons: the left button controls the
+        primary bound and the right button controls the secondary bound.  (The primary bound is
+        selected with the radio buttons adjacent to the hue and saturation spinners.)  As a
+        result of the duplication of the hue dimension in the colour area, the tracking of mouse
+        movements by the horizontal dimension of the range rectangle is rather strange, and it
+        may take you a while to get used to it.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Commands -->
+
+    <div class="section">
+      <h2 id="section7">7&nbsp; Commands</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        PatternGenerator&apos;s main commands are accessible from its main menu.  Some of the
+        commands are also accessible from a pop-up menu that is activated in a system-dependent
+        manner (eg, by pressing or releasing the right mouse button) while the mouse cursor is
+        over a pattern view of an open document.
+      </p>
+
+      <h3 id="section7-1">7.1&nbsp; <span class="component">File</span> menu</h3>
+
+      <h4 id="section7-1-1">7.1.1&nbsp; <span class="command">New</span></h4>
+      <p class="wrap">
+        The <span class="command">New</span> command creates a new pattern via a subcommand for
+        each kind of pattern.  The subcommand brings up a dialog in which the parameters for the
+        selected kind of pattern can be edited.  A pattern will be generated from the
+        parameters, and an image will be rendered and displayed in a new tab within the main
+        window.
+      </p>
+      <p class="wrap">
+        The document that is created by the <span class="command">New</span> command is a
+        <i>parameter</i> document.
+      </p>
+      <p class="wrap">
+        The command is disabled if the maximum number of documents are open in the application.
+      </p>
+
+      <h4 id="section7-1-2">7.1.2&nbsp; <span class="command">Open file</span></h4>
+      <p class="wrap">
+        The <span class="command">Open file</span> command (Ctrl+O) brings up a file-selection
+        dialog in which you can choose the file that you want to open.  You can open either a
+        parameter document or a definition document by first selecting the appropriate file
+        type.  If the document has the correct format, the document is loaded, a pattern image
+        is generated and displayed in a new tab within the main window.
+      </p>
+      <p class="wrap">
+        If you select a file that is already open in PatternGenerator, the file is not opened
+        again.  You can use the <a class="command" href="#section7-1-3">Revert file</a> command
+        to reload a file that is already open, discarding any changes.
+      </p>
+      <p class="wrap">
+        The initial file type in the file-selection dialog is set from the <a
+        class="configProperty"
+        href="#cp-general-defaultDocumentKind">general.defaultDocumentKind</a> configuration
+        property.
+      </p>
+      <p class="wrap">
+        The command is disabled if the maximum number of documents are open in the application.
+      </p>
+
+      <h4 id="section7-1-3">7.1.3&nbsp; <span class="command">Revert file</span></h4>
+      <p class="wrap">
+        The <span class="command">Revert file</span> command reads the current document again
+        from the file system, replacing the modified document in PatternGenerator.  Any changes
+        that you have made to the current document will be lost.
+      </p>
+      <p class="wrap">
+        The command is disabled if the current document has not changed from when it was last
+        opened or saved.
+      </p>
+
+      <h4 id="section7-1-4">7.1.4&nbsp; <span class="command">Close file</span></h4>
+      <p class="wrap">
+        The <span class="command">Close file</span> command (Ctrl+W) closes the current
+        document.  If the document has unsaved changes, you will be prompted to save the
+        document before it is closed.
+      </p>
+
+      <h4 id="section7-1-5">7.1.5&nbsp; <span class="command">Close all files</span></h4>
+      <p class="wrap">
+        The <span class="command">Close all files</span> command closes all open documents.  You
+        will be prompted to save any documents that have unsaved changes.
+      </p>
+
+      <h4 id="section7-1-6">7.1.6&nbsp; <span class="command">Save file</span></h4>
+      <p class="wrap">
+        The <span class="command">Save file</span> command (Ctrl+S) writes the current document
+        to a file.  The kind of document (parameter or definition) and the pathname of the file
+        will be those that were selected when the document was last opened or saved.
+      </p>
+      <p class="wrap">
+        The command is disabled if the current document has not changed from when it was last
+        opened or saved.
+      </p>
+
+      <h4 id="section7-1-7">7.1.7&nbsp; <span class="command">Save file as</span></h4>
+      <p class="wrap">
+        The <span class="command">Save file as</span> command brings up a dialog in which you
+        can choose the kind of document that will be saved and the file to which the document
+        will be written.
+      </p>
+      <p class="wrap">
+        You can choose the kind of document that will be saved by selecting from the available
+        file types in the file-selection dialog.  A parameter document can be saved as either a
+        parameter document or a definition document but a definition document can be saved only
+        as a definition document because it has no parameters.  If you do not specify a file
+        type in the dialog, the document is saved as its inherent kind.
+      </p>
+      <p class="wrap">
+        Before a file is written, a warning is displayed if the selected file already exists.
+      </p>
+
+      <h4 id="section7-1-8">7.1.8&nbsp; <span class="command">Export image</span></h4>
+      <p class="wrap">
+        The <span class="command">Export image</span> command (Ctrl+E) exports the current
+        document as a PNG image file.  The command brings up a dialog in which you select the
+        file to which the image will be written.
+      </p>
+
+      <h4 id="section7-1-9">7.1.9&nbsp; <span class="command">Export image sequence</span></h4>
+      <p class="wrap">
+        The <span class="command">Export image sequence</span> command (Ctrl+Shift+E) exports an
+        animation of the current document as a sequence of PNG image files that can be used to
+        create a video with a tool such as FFmpeg.
+      </p>
+      <p class="wrap">
+        The command brings up a dialog in which you specify some parameters for the image
+        sequence:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          The <span class="component">Directory</span> field specifies the directory to which
+          the image files will be written.  The contents of the field can be set by dragging and
+          dropping.
+        </li>
+        <li class="wrap">
+          The <span class="component">Filename stem</span> field specifies the stem of the name
+          of the image files to which the index of the file and the suffix <code>.png</code>
+          will be appended to form the filename.  For example, if the filename stem were
+          <code>myVideo</code> and a sequence of 3000 image files were generated, the files
+          would be named <code>myVideo0000.png</code>, <code>myVideo0001.png</code> &hellip;
+          <code>myVideo2999.png</code>.
+        </li>
+        <li class="wrap">
+          The <span class="component">Frame size</span> is the size (width &times; height in
+          pixels) of each output image.  The frame size may not be less than the size of the
+          pattern.  If the frame is larger than the pattern in either dimension, the pattern
+          image will be centered in a black frame.
+        </li>
+        <li class="wrap">
+          <span class="component">First frame</span> is the index of the first image in the
+          animation that will be output; it is <em>not</em> the index of the first filename,
+          which is always zero.  If the first frame index is greater than zero, the animation
+          &quot;fast-forwards&quot; to the first frame, skipping the generation of image files
+          for the intervening frames.
+        </li>
+        <li class="wrap">
+          The <span class="component">Number of frames</span> spinner specifies the number of
+          frames in the image sequence (ie, the number of image files that will be written).
+        </li>
+        <li class="wrap">
+          <span class="component">Fade in</span> and <span class="component">Fade out</span>
+          specify the number of frames in the fade-in region and fade-out region at,
+          respectively, the start and end of the image sequence.  The fade is linear, from and
+          to black.
+        </li>
+      </ul>
+      <p class="wrap">
+        The output files are numbered from zero, which is what is expected by FFmpeg.
+      </p>
+
+      <h4 id="section7-1-10">7.1.10&nbsp; <span class="command">Export as SVG file</span></h4>
+      <p class="wrap">
+        The <span class="command">Export as SVG file</span> command exports the current document
+        as a <a class="external"
+        href="https://en.wikipedia.org/wiki/Scalable_Vector_Graphics">Scalable Vector
+        Graphics</a> (SVG) file.  The command is supported only by Pattern 2, which is a
+        vector-based pattern.  The command brings up a dialog in which you select the file to
+        which the SVG image will be written.
+      </p>
+
+      <h4 id="section7-1-11">7.1.11&nbsp; <span class="command">Exit</span></h4>
+      <p class="wrap">
+        The <span class="command">Exit</span> command terminates the application.  Before the
+        program shuts down, you will be prompted to save any open documents that have unsaved
+        changes.
+      </p>
+
+      <h3 id="section7-2">7.2&nbsp; <span class="component">Edit</span> menu</h3>
+
+      <h4 id="section7-2-1">7.2.1&nbsp; <span class="command">Undo</span>/<span class="command">Redo</span></h4>
+      <p class="wrap">
+        The edits that you make to a document &mdash; the changes that you make to a
+        document&apos;s parameters or description &mdash; can be undone and redone.  The edits
+        to a document are stored in a list called the document&apos;s <i>history</i>.  The
+        length of this list is limited by the <a class="configProperty"
+        href="#cp-general-maxEditListLength">general.maxEditListLength</a> configuration
+        property.  The edits that are stored in a document&apos;s history are those made with
+        the following commands:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          <span class="command">Edit &gt; Edit pattern parameters</span>
+        </li>
+        <li class="wrap">
+          <span class="command">Edit &gt; Edit description</span>
+        </li>
+        <li class="wrap">
+          <span class="command">Pattern &gt; Regenerate pattern with new seed</span>
+        </li>
+        <li class="wrap">
+          <span class="command">Sequence &gt; Start slide show</span>
+        </li>
+      </ul>
+      <p class="wrap">
+        The <span class="command">Undo</span> command reverses the last change to the current
+        document.
+      </p>
+      <p class="wrap">
+        If an edit is undone with the <span class="command">Undo</span> command, it can
+        subsequently be restored with the <span class="command">Redo</span> command provided
+        that no other edits have been made since it was undone.  If <a class="configProperty"
+        href="#cp-general-clearEditListOnSave">general.clearEditListOnSave</a> configuration
+        property is <code>true</code>, the history of edits is cleared when a document is saved.
+      </p>
+
+      <h4 id="section7-2-2">7.2.2&nbsp; <span class="command">Clear edit history</span></h4>
+      <p class="wrap">
+        The <span class="command">Clear edit history</span> command clears the history of edits
+        to the current document.  The command may be used to make more memory available if a
+        &quot;Not enough memory&quot; error occurs.
+      </p>
+
+      <h4 id="section7-2-3">7.2.3&nbsp; <span class="command">Edit pattern parameters</span></h4>
+      <p class="wrap">
+        If the current document is a parameter document, the <span class="command">Edit pattern
+        parameters</span> command (Ctrl+P) brings up a dialog box in which the document&apos;s
+        parameters can be edited.  The parameter dialogs are described in the sections on <a
+        href="#section5-1-2">Pattern 1 parameters</a> and <a href="#section5-2-2">Pattern 2
+        parameters</a>.
+      </p>
+
+      <h4 id="section7-2-4">7.2.4&nbsp; <span class="command">Edit description</span></h4>
+      <p class="wrap">
+        The <span class="command">Edit description</span> command (Ctrl+D) brings up a dialog
+        box in which the document&apos;s description can be edited.  The description applies to
+        both parameter documents and definition documents.
+      </p>
+
+      <h3 id="section7-3">7.3&nbsp; <span class="component">Pattern</span> menu</h3>
+
+      <h4 id="section7-3-1">7.3.1&nbsp; <span class="command">Regenerate pattern with new seed</span></h4>
+      <p class="wrap">
+        If the current document is a parameter document, the <span class="command">Regenerate
+        pattern with new seed</span> command (F5) sets the document&apos;s seed to a new, random
+        value and regenerates the pattern using the new seed.  The new seed that is generated
+        for each invocation of this command is virtually certain to be different from previous
+        seeds.  Thus, if you issue this command on the same parameter document on two occasions,
+        you&apos;ll get a different pattern on each occasion.
+      </p>
+
+      <h4 id="section7-3-2">7.3.2&nbsp; <span class="command">Show image rendering time</span></h4>
+      <p class="wrap">
+        The <span class="command">Show image rendering time</span> command (Ctrl+T) brings up a
+        dialog box in which the mean rendering time for the current document is displayed.  The
+        rendering time is shown as nanoseconds per pixel.  The time is updated when a pattern is
+        regenerated.  In the <span class="component">Image rendering time</span> dialog, the
+        <span class="command">Reset</span> command resets the mean rendering time for the
+        current document.
+      </p>
+
+      <h3 id="section7-4">7.4&nbsp; <span class="component">Sequence</span> menu</h3>
+
+      <h4 id="section7-4-1">7.4.1&nbsp; <span class="command">Start slide show</span></h4>
+      <p class="wrap">
+        The <span class="command">Start slide show</span> command (F6), which is enabled only if
+        the current document is a parameter document, starts an automated sequence of images in
+        which each image is generated from the pattern parameters with a new, randomly generated
+        seed.  The sequence is equivalent to issuing a sequence of <span
+        class="command">Regenerate pattern with new seed</span> commands.  The sequence of seeds
+        that are generated for each invocation of the <span class="command">Start slide
+        show</span> command is virtually certain to be different from any previous sequence, so
+        each slide show will be unique.
+      </p>
+      <p class="wrap">
+        The command first brings up a dialog box in which parameters that affect a slide show
+        can be edited.  There is only one parameter: the interval between successive images (ie,
+        the length of time for which each image is displayed).
+      </p>
+      <p class="wrap">
+        The images of a slide show are displayed in a <a class="component"
+        href="#section6-2">sequence window</a>.  When a slide show is paused, the index of the
+        current image in the sequence is displayed in the top left corner of the sequence
+        window.  While a slide show is paused, the <span class="command">Create a
+        document</span> command from the context menu of the sequence window (Ctrl+D) will
+        create a new <em>definition</em> document from the current image.
+      </p>
+      <p class="wrap">
+        After a slide show is stopped, the sequence window disappears and the image of the
+        document in the main window is updated with the last image of the slide show.  The <a
+        class="command" href="#section7-2-1">Edit &gt; Undo</a> and <span class="command">Edit
+        &gt; Redo</span> commands can then be used to step backwards and forwards through the
+        images in the slide show, up to the limit imposed by the <a class="configProperty"
+        href="#cp-general-maxEditListLength">general.maxEditListLength</a> configuration
+        property.
+      </p>
+
+      <h4 id="section7-4-2">7.4.2&nbsp; <span class="command">Start animation</span></h4>
+      <p class="wrap">
+        The <span class="command">Start animation</span> command (F7) starts an animation of the
+        current document.  The way in which a pattern is animated is described in the sections
+        on <a href="#section5-1-3">Pattern 1 animation</a> and <a href="#section5-2-3">Pattern 2
+        animation</a>.
+      </p>
+      <p class="wrap">
+        The command first brings up a dialog box in which parameters that affect an animation
+        can be edited.  The number of parameters differ according to the pattern kind:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          (<i>Pattern 1 only</i>) a set of attributes of the pattern &mdash; phase, position and
+          orientation &mdash; that will be animated,
+        </li>
+        <li class="wrap">
+          the frame rate of the animation in frames per second,
+        </li>
+        <li class="wrap">
+          the zero-based index of the first frame that will be displayed.
+        </li>
+      </ul>
+      <p class="wrap">
+        In the <span class="component">Animation kinds</span> panel for a Pattern 1 document,
+        the <span class="command">Phase</span> option is disabled if the <a
+        class="configProperty" href="#cp-pattern1-phaseAnimation">pattern1.phaseAnimation</a>
+        configuration property is <code>false</code>.  Each option can be toggled with a key
+        press:
+      </p>
+      <table class="basic">
+        <tr>
+          <td>Position</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>Phase</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>Orientation</td>
+          <td>3</td>
+        </tr>
+      </table>
+      <p class="wrap">
+        If the current document is a Pattern 2 document and the first frame of the animation
+        (see <a class="command" href="#section7-4-4">Edit animation parameters</a>) is not zero,
+        a progress dialog will be displayed while PatternGenerator fast-forwards to the first
+        frame.
+      </p>
+      <p class="wrap">
+        The rate at which animation frames are generated and the index of the first frame to be
+        displayed can be set with the <a class="command" href="#section7-4-4">Edit animation
+        parameters</a> command.
+      </p>
+      <p class="wrap">
+        The frames of an animation are displayed in a <a class="component"
+        href="#section6-2">sequence window</a>.  When an animation is paused, the absolute index
+        of the current frame is displayed in the top left corner of the sequence window.  While
+        an animation is paused, the <span class="command">Create a document</span> command from
+        the context menu of the sequence window (Ctrl+D) will create a new <em>definition</em>
+        document from the current frame.
+      </p>
+
+      <h4 id="section7-4-3">7.4.3&nbsp; <span class="command">Optimise animation</span></h4>
+      <p class="wrap">
+        The <span class="command">Optimise animation</span> command (Ctrl+F7) is enabled only
+        for Pattern 1 documents.  There is only one available optimisation: the smoothing of
+        transitions in brightness between animation frames.
+      </p>
+      <p class="wrap">
+        By default, the brightness values of the pixels of a Pattern 1 image are scaled to give
+        the widest possible range of brightness (ie, the brightest pixel of the image has the
+        maximum brightness value and the dullest pixel has the minimum brightness value).  This
+        is desirable when rendering a single image, but it can result in unwanted shifts in
+        brightness between successive frames of an animation as the maximum and minimum values
+        change.  Instead of performing the scaling using the brightest and dullest pixels of a
+        single image, the optimisation measures the maximum and minimum brightness over a range
+        of images (the <i>sample</i>) and uses the resulting interval when rendering all the
+        frames of a subsequent animation.
+      </p>
+      <p class="wrap">
+        There are two problems with the normalisation of brightness:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          The variance in brightness of any frame that does not contain the brightest and
+          dullest pixels of the sample will be reduced.
+        </li>
+        <li class="wrap">
+          If the animation (the sample space) is longer than the sample, there may be some
+          pixels outside the sample that are brighter or duller than the pixels in the sample;
+          the brightness values of those pixels will be clamped to the maximum and minimum
+          brightness of the sample.  This problem is avoided by sampling the entire animation.
+        </li>
+      </ul>
+      <p class="wrap">
+        For each document, PatternGenerator maintains a mapping from a set of animation aspects
+        and a first frame to a brightness range.  The keys of this mapping &mdash; the set of
+        animation aspects and first frames for which a brightness range has been recorded
+        &mdash; are displayed in the table at the top of the <span class="component">Normalise
+        animation brightness</span> dialog.  In this dialog, the parameters have the same
+        meaning as those in the <span class="component">Animation parameters</span> dialog that
+        is displayed in response to the <a class="command" href="#section7-4-2">Start
+        animation</a> command, and the following commands are available:
+      </p>
+      <dl class="basic">
+        <dt><span class="command">Set</span></dt>
+        <dd class="wrap">
+          The <span class="command">Set</span> command generates a sequence of pattern images
+          with the specified set of animation aspects (position, phase and orientation), first
+          frame and length, and it records the minimum and maximum brightness values of the
+          pixels in the sequence of images.  The brightness range is added to the mapping,
+          replacing any existing range for the current key (the set of animation aspects and
+          first frame).
+        </dd>
+
+        <dt><span class="command">Delete</span></dt>
+        <dd class="wrap">
+          The <span class="command">Delete</span> command deletes the brightness ranges for the
+          keys that are selected in the key table.  (You can select all the keys in the table by
+          pressing Ctrl+A when the key table has keyboard focus.)  The command is disabled if no
+          keys are selected.
+        </dd>
+      </dl>
+
+      <h3 id="section7-5">7.5&nbsp; <span class="component">View</span> menu</h3>
+
+      <h4 id="section7-5-1">7.5.1&nbsp; <span class="command">Resize window to image</span></h4>
+      <p class="wrap">
+        The <span class="command">Resize window to image</span> command (F12) sets the size of
+        the main window so that its viewport is the same size of the image of the current
+        document, though the width and height of the viewport cannot be smaller than 128 pixels
+        and 64 pixels respectively.
+      </p>
+
+      <h3 id="section7-6">7.6&nbsp; <span class="component">Options</span> menu</h3>
+
+      <h4 id="section7-6-1">7.6.1&nbsp; <span class="command">Preferences</span></h4>
+      <p class="wrap">
+        The <span class="command">Preferences</span> command brings up a tabbed dialog box in
+        which the configuration properties of PatternGenerator can be edited.  The properties on
+        the various tabbed pages are described below.
+      </p>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section7-6-1-a">General</div>
+        </div>
+
+        <div>
+          <div id="cp-general-defaultDocumentKind">
+            <dl>
+              <dt>Default document kind</dt>
+              <dd class="wrap">
+                This property controls the kind of document &mdash; <a
+                href="#section4-1">parameter document</a> or <a href="#section4-1">definition
+                document</a> &mdash; that is initially selected as the file type in the
+                file-selection dialog that is displayed in response to an <a class="command"
+                href="#section7-1-2">File &gt; Open file</a> command.  In subsequent invocations
+                of the <span class="command">File &gt; Open file</span> command, the
+                file-selection dialog will displayed with the file type that was selected when
+                the dialog was last displayed.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Parameters</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-showUnixPathnames">
+            <dl>
+              <dt>Display UNIX-style pathnames</dt>
+              <dd>
+                <div class="wrap">
+                  If you select <code>Yes</code>, pathnames are displayed in a reduced
+                  &quot;UNIX style&quot; in some parts of the GUI.  A pathname is converted from
+                  its platform-specific form in two steps:
+                </div>
+                <ol class="noTopMargin">
+                  <li class="wrap">
+                    If the pathname starts with the user&apos;s home directory, the latter is
+                    replaced by <code>~</code>.
+                  </li>
+                  <li class="wrap">
+                    The file-separator character (<code>\</code> on Windows systems) is replaced
+                    by <code>/</code>.
+                  </li>
+                </ol>
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-selectTextOnFocusGained">
+            <dl>
+              <dt>Select text when focus is gained</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, all the text in a text field will be
+                automatically selected when the field gains keyboard focus, regardless of how
+                the focus is transferred.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-mainWindowLocation">
+            <dl>
+              <dt>Save location of main window</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, the location of the main window on the screen
+                will be saved to the configuration file when you exit the application.  The next
+                time that PatternGenerator is run, its main window will be positioned at the
+                previously saved location.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-maxEditListLength">
+            <dl>
+              <dt>Maximum size of edit history</dt>
+              <dd class="wrap">
+                This is the maximum number of edits that can be stored in a document&apos;s
+                history for use by the <span class="command">Edit &gt; Undo</span> and <span
+                class="command">Edit &gt; Redo</span> commands.  The history of edits can be
+                explicitly cleared with the <a class="command" href="#section7-2-2">Edit &gt;
+                Clear edit history</a> command.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is 100.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-clearEditListOnSave">
+            <dl>
+              <dt>Clear edit history on save</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, a document&apos;s history of edits (see <a
+                class="command" href="#section7-2-1">Edit &gt; Undo/Redo</a>) is cleared when
+                the document is saved.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-keepSequenceWindowOnTop">
+            <dl>
+              <dt>Keep sequence window on top</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, PatternGenerator tries to keep a <a
+                href="#section6-2">sequence window</a> (the window in which a slide show or
+                animation is displayed) on top of windows that belong to other applications.
+                The ability to keep the animation window on top of other windows is
+                platform-dependent.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section7-6-1-b">Appearance</div>
+        </div>
+
+        <div>
+          <div id="cp-appearance-lookAndFeel">
+            <dl>
+              <dt>Look-and-feel</dt>
+              <dd class="wrap">
+                The look-and-feel (LAF) can be selected from a list of the LAFs that are
+                available on the current system.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is the cross-platform LAF, currently called Metal.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-textAntialiasing">
+            <dl>
+              <dt>Text antialiasing</dt>
+              <dd class="wrap">
+                This determines the kind of antialiasing that is performed when text is drawn in
+                custom or partially customised user-interface components (eg, in drop-down
+                lists).  Note that antialiasing is only a hint in Java; the implementation is
+                not required to perform the chosen antialiasing.
+              </dd>
+              <dd class="spaceAbove wrap">
+                This property has no effect on the antialiasing of text in standard UI
+                components, such as labels and menus, which is determined by the Java
+                implementation and the desktop setting for antialiasing text (often referred to
+                as &quot;font smoothing&quot;).  You can override the desktop setting with the
+                unsupported system property <code><a class="external"
+                href="https://docs.oracle.com/javase/7/docs/technotes/guides/2d/flags.html#aaFonts">awt.useSystemAAFontSettings</a></code>.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The text antialiasing property can have the following values:
+              </dd>
+              <dd>
+                <dl class="inner1">
+                  <dt>Default</dt>
+                  <dd class="wrap">
+                    The desktop setting for text antialiasing (font smoothing) is used, if the
+                    Java implementation recognises one; otherwise, no antialiasing is performed.
+                  </dd>
+
+                  <dt>None</dt>
+                  <dd class="wrap">
+                    No antialiasing is performed.
+                  </dd>
+
+                  <dt>Standard</dt>
+                  <dd class="wrap">
+                    This selects pixel-oriented antialiasing rather than subpixel antialiasing.
+                    It is suitable for non-LCD displays.
+                  </dd>
+
+                  <dt>Subpixel, horizontal RGB</dt>
+                  <dt>Subpixel, horizontal BGR</dt>
+                  <dt>Subpixel, vertical RGB</dt>
+                  <dt>Subpixel, vertical BGR</dt>
+                  <dd class="wrap">
+                    These four options are intended to optimise the rendering of text for LCD
+                    displays using subpixel antialiasing with subpixels in the chosen
+                    arrangement.  Selecting an option that does not correspond to the actual
+                    arrangement of subpixels in your LCD display may result in blurred text.
+                    The most common arrangement of subpixels is horizontal RGB.
+                  </dd>
+                </dl>
+              </dd>
+              <dd class="wrap">
+                The default value is <code>Default</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section7-6-1-c">Pattern</div>
+        </div>
+
+        <div>
+          <div id="cp-pattern-name-pattern1">
+            <dl>
+              <dt>Pattern 1 : Name</dt>
+              <dd class="wrap">
+                This is the generic name that will be used for Pattern 1 patterns in various
+                places within the user interface.  The length of the name may not exceed 24
+                characters.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Pattern 1</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-pattern-defaultSize-pattern1">
+            <dl>
+              <dt>Pattern 1 : Default size</dt>
+              <dd class="wrap">
+                This is the default size (width &times; height in pixels) of a pattern in the
+                Pattern 1 parameters dialog that is displayed in response to a <a
+                class="command" href="#section7-1-1">File &gt; New &gt; Pattern&nbsp;1</a>
+                command.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is 320 &times; 240 pixels.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-pattern-numSlideShowThreads-pattern1">
+            <dl>
+              <dt>Pattern 1 : Number of slide-show threads</dt>
+              <dd class="wrap">
+                This is the number of processor threads that will be used to render the images
+                of a Pattern 1 slide show.  If the value is 0, the number of threads will be the
+                number of processors that are available to the system.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is 0 (ie, the number of available processors).
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-pattern1-numRenderingThreads">
+            <dl>
+              <dt>Pattern 1 : Number of rendering threads</dt>
+              <dd class="wrap">
+                This is the number of processor threads that will be used to render a single
+                Pattern 1 image.  If the value is 0, the number of threads will be the number of
+                processors that are available to the system.  You can optimise this value to
+                minimise the rendering time per pixel that is displayed in the <span
+                class="component">Image rendering time</span> dialog.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is 0 (ie, the number of available processors).
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-pattern1-phaseAnimation">
+            <dl>
+              <dt>Pattern 1 : Enable phase animation</dt>
+              <dd class="wrap">
+                <i>Phase animation</i> means that the phase offset of the wave that propagates
+                from a point source changes by a constant amount between successive frames of an
+                animation.  If you select <code>Yes</code>, the phase of each point source can
+                be animated in addition to the other two animation parameters (source location
+                and orientation).  A source&apos;s wave table is generated and used in different
+                ways according to whether phase animation is enabled or disabled.  If you select
+                <code>No</code>, pattern images are rendered slightly faster than if phase
+                animation is enabled, but the small improvement in performance is likely to be
+                worthwhile only in rare circumstances.
+              </dd>
+              <dd class="spaceAbove wrap">
+                This property will take effect on open documents only after the pattern
+                parameters are edited.  (The edit need not contain any changes, however; issuing
+                a <a class="command" href="#section7-2-3">Edit &gt; Edit pattern parameters</a>
+                command and immediately closing the dialog with <span class="command">OK</span>
+                will suffice.)
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-pattern-name-pattern2">
+            <dl>
+              <dt>Pattern 2 : Name</dt>
+              <dd class="wrap">
+                This is the generic name that will be used for Pattern 2 patterns in various
+                places within the user interface.  The length of the name may not exceed 24
+                characters.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Pattern 2</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-pattern-defaultSize-pattern2">
+            <dl>
+              <dt>Pattern 2 : Default size</dt>
+              <dd class="wrap">
+                This is the default size (width &times; height in pixels) of a pattern in the
+                Pattern 2 parameters dialog that is displayed in response to a <a
+                class="command" href="#section7-1-1">File &gt; New &gt; Pattern&nbsp;2</a>
+                command.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is 640 &times; 480 pixels.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-pattern-numSlideShowThreads-pattern2">
+            <dl>
+              <dt>Pattern 2 : Number of slide-show threads</dt>
+              <dd class="wrap">
+                This is the number of processor threads that will be used to render the images
+                of a Pattern 2 slide show.  If the value is 0, the number of threads will be the
+                number of processors that are available to the system.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is 0 (ie, the number of available processors).
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-pattern2-pathRendering">
+            <dl>
+              <dt>Pattern 2 : Path rendering</dt>
+              <dd>
+                <div class="wrap">
+                  Pattern 2 images are rendered by Java&apos;s 2D graphics methods, whose
+                  behaviour may be modified by several <i>rendering hints</i>.  (They are called
+                  hints because a Java implementation isn&apos;t required to support them.)  One
+                  such hint applies to the way in which lines and curves are drawn.  It has two
+                  options, <i>pure</i> and <i>normalised</i>, which are described thus in the
+                  Java documentation:
+                </div>
+                <ul class="list">
+                  <li class="wrap">
+                    <i>pure</i> : &quot;geometry should be left unmodified and rendered with
+                    sub-pixel accuracy.&quot;
+                  </li>
+                  <li class="wrap">
+                    <i>normalised</i> : &quot;geometry should be normali[s]ed to improve
+                    uniformity or spacing of lines and overall aesthetics.&quot;
+                  </li>
+                </ul>
+              </dd>
+              <dd class="wrap">
+                Based on observations of Oracle&apos;s JRE on Linux and Windows, the <i>pure</i>
+                setting seems preferable because of two problems with the <i>normalised</i>
+                setting: paths and terminal-emphasis discs are slightly misaligned, and there is
+                some shakiness in a moving path owing to the adjustment of path coordinates in
+                opposite directions between frames.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Pure</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section7-6-1-d">Fonts</div>
+        </div>
+
+        <div>
+          <div id="cp-font">
+            <dl>
+              <dd class="wrap">
+                These are the fonts that are used in PatternGenerator&apos;s display.  Remember
+                that font names may be platform-dependent, so that a configuration that
+                specifies font names may not work across platforms.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>main</i> font is used for various components including labels (static
+                text), menus, buttons and list boxes.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>text field</i> font is used for text fields, spinners and some other text
+                components.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>combo box</i> font is used for drop-down lists and related components.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>scale</i> font is used for the scale text in an envelope panel.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default values of all the font properties are those of the default fonts for
+                the platform and look-and-feel.  A default font size is specified by leaving the
+                <span class="component">Size</span> field empty (the minimum position on the
+                spinner).  A default font is used if no font name is specified in
+                PatternGenerator&apos;s configuration or if the named font is not available.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <p class="wrap">
+        Some of the configuration properties will take effect when the <span
+        class="component">Preferences</span> dialog is accepted (by closing it with <span
+        class="command">OK</span>); other properties (eg, the look-and-feel and fonts) will not
+        take effect until the next time that PatternGenerator is run.
+      </p>
+      <p class="wrap">
+        The <a href="#section3-2">configuration file</a> is normally saved automatically when
+        PatternGenerator exits, if the configuration has changed.  The <span
+        class="command">Save configuration</span> command in the <span
+        class="component">Preferences</span> dialog can be used to save a configuration file
+        explicitly.
+      </p>
+
+      <h4 id="section7-6-2">7.6.2&nbsp; <span class="command">Show full pathnames</span></h4>
+      <p class="wrap">
+        The <span class="command">Show full pathnames</span> option controls whether the full
+        pathname of the current document or only its filename is displayed in the title bar of
+        the main window.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Special constructs in pathnames -->
+
+    <div class="section">
+      <h2 id="sectionA">Appendix A:&nbsp; Special constructs in pathnames</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        Where indicated elsewhere in this document, pathname parameters and properties in
+        PatternGenerator can contain special constructs for system properties, environment
+        variables and the user&apos;s home directory.  The special constructs are expanded when
+        the pathname is used.
+      </p>
+
+      <dl class="basic">
+        <dt>System properties and environment variables</dt>
+        <dd class="wrap">
+          Java system properties (eg, the user&apos;s home directory, <code>user.home</code>)
+          and environment variables (eg, <code>PATH</code>) are referenced by enclosing them
+          between <code>${</code> and <code>}</code>; that is, they must have the form
+          <code>${&lt;<i>name</i>&gt;}</code>.  A Java system property takes precedence over an
+          environment variable with the same name.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${user.home}/projects</code>
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${HOME}/projects</code>
+        </dd>
+        <dd class="wrap">
+          A Java system property can be specified by prefixing <code>sys.</code> to it.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${sys.user.home}/projects</code>
+        </dd>
+        <dd class="wrap">
+          An environment variable can be specified by prefixing <code>env.</code> to it.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${env.HOME}/projects</code>
+        </dd>
+
+        <dt>User&apos;s home directory</dt>
+        <dd class="wrap">
+          A leading <code>~</code> in a pathname is expanded into the user&apos;s home directory
+          using the <code>user.home</code> system property, which is usually equivalent to the
+          environment variable <code>$HOME</code> on Linux/UNIX systems or
+          <code>%USERPROFILE%</code> on Windows systems.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>~/projects</code>
+        </dd>
+      </dl>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Configuration properties -->
+
+    <div class="section">
+      <h2 id="sectionB">Appendix B:&nbsp; Configuration properties</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        The table below lists the configuration properties of PatternGenerator.  Apart from the
+        <span class="configProperty">app.configDir</span> property, which, for obvious reasons,
+        cannot be used within a configuration file, all properties can be used in the two
+        configuration locations: command-line properties and configuration file.
+      </p>
+      <p class="wrap">
+        When used in a <code>-D</code> command-line property, <code>app.</code> must be prefixed
+        to the property key (eg, <span
+        class="configProperty">app.general.mainWindowLocation</span>).
+      </p>
+      <p class="wrap">
+        Any commas (<code>,</code>) or backslash characters (<code>\</code>) in the name of a
+        font must be escaped by prefixing a <code>\</code> character to them.
+      </p>
+      <p class="noBottomMargin wrap">
+        In the table below, the initial character of an italicised component of a property value
+        denotes its data type according to the following convention:
+      </p>
+
+      <table class="dataType">
+        <tr>
+          <td><i>f</i></td>
+          <td>floating-point number</td>
+        </tr>
+        <tr>
+          <td><i>i</i></td>
+          <td>integer</td>
+        </tr>
+        <tr>
+          <td><i>p</i></td>
+          <td>
+            platform-specific pathname, which may contain <a href="#sectionA">special
+            constructs</a>
+          </td>
+        </tr>
+        <tr>
+          <td><i>s</i></td>
+          <td>string</td>
+        </tr>
+      </table>
+
+      <table class="configProperties">
+        <tr>
+          <th>Property key</th>
+          <th>Property value</th>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">configDir</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">animation.rate</td>
+          <td class="propertyValue"><i>fFramesPerSecond</i></td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">appearance.lookAndFeel</td>
+          <td class="propertyValue"><i>sName</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textAntialiasing</td>
+          <td class="propertyValue">
+            default | none | normal | subpixelHRgb | subpixelHBgr | subpixelVRgb | subpixelVBgr
+          </td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">font.comboBox</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.main</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.scale</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.textField</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">general.clearEditListOnSave</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.defaultDocumentKind</td>
+          <td class="propertyValue">definition | parameters</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.keepSequenceWindowOnTop</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.ignoreFilenameCase</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.mainWindowLocation</td>
+          <td class="propertyValue">
+            <i>iX</i>, <i>iY</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.mainWindowSize</td>
+          <td class="propertyValue">
+            <i>iWidth</i>, <i>iHeight</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.maxEditListLength</td>
+          <td class="propertyValue"><i>iLength</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.selectTextOnFocusGained</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.showFullPathnames</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.showUnixPathnames</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">path.exportImageDirectory</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">path.exportImageSequenceDirectory</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">path.exportSvgDirectory</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">path.openPatternDirectory</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">path.savePatternDirectory</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">pattern.name.pattern1</td>
+          <td class="propertyValue"><i>sName</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">pattern.name.pattern2</td>
+          <td class="propertyValue"><i>sName</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">pattern.defaultSize.pattern1</td>
+          <td class="propertyValue">
+            <i>iWidth</i>, <i>iHeight</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">pattern.defaultSize.pattern2</td>
+          <td class="propertyValue">
+            <i>iWidth</i>, <i>iHeight</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">pattern.numSlideShowThreads.pattern1</td>
+          <td class="propertyValue"><i>iNumThreads</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">pattern.numSlideShowThreads.pattern2</td>
+          <td class="propertyValue"><i>iNumThreads</i></td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">pattern1.numRenderingThreads</td>
+          <td class="propertyValue"><i>iNumThreads</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">pattern1.phaseAnimation</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">pattern2.pathRendering</td>
+          <td class="propertyValue">pure | normalised</td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">slideShow.interval</td>
+          <td class="propertyValue"><i>iSeconds</i></td>
+        </tr>
+      </table>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Footer -->
+
+    <div id="lastModified">
+      <div>
+        <div>
+         Last modified: 2023-08-12
+        </div>
+        <div class="image">
+          <a class="hideHover" href="http://validator.w3.org/check?uri=referer">
+            <img alt="XHTML 1.1" src="images/valid-xhtml11-blue.png"/>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
