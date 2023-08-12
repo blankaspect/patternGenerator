@@ -2,7 +2,7 @@
 
 MotionRateEnvelopeDialog.java
 
-Motion-rate envelope dialog box class.
+Motion-rate envelope dialog class.
 
 \*====================================================================*/
 
@@ -50,30 +50,34 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import uk.blankaspect.common.envelope.Envelope;
-import uk.blankaspect.common.envelope.EnvelopeNodeValueDialog;
-import uk.blankaspect.common.envelope.EnvelopeScrollPane;
+import uk.blankaspect.common.envelope.EnvelopeKind;
+import uk.blankaspect.common.envelope.NodeId;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.envelope.EnvelopeNodeValueDialog;
+import uk.blankaspect.ui.swing.envelope.EnvelopeScrollPane;
+import uk.blankaspect.ui.swing.envelope.SimpleViewEnvelope;
+import uk.blankaspect.ui.swing.envelope.SimpleViewNode;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.spinner.FDoubleSpinner;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.textfield.DoubleValueField;
+import uk.blankaspect.ui.swing.spinner.FDoubleSpinner;
+
+import uk.blankaspect.ui.swing.textfield.DoubleValueField;
 
 //----------------------------------------------------------------------
 
 
-// MOTION-RATE ENVELOPE DIALOG BOX CLASS
+// MOTION-RATE ENVELOPE DIALOG CLASS
 
 
 class MotionRateEnvelopeDialog
@@ -210,14 +214,13 @@ class MotionRateEnvelopeDialog
 		public void stateChanged(ChangeEvent event)
 		{
 			EnvelopeView envelopeView = (EnvelopeView)event.getSource();
-			Envelope.NodeId id = envelopeView.getSelectedNodeId();
+			NodeId id = envelopeView.getSelectedNodeId();
 			if (id == null)
 				setText(null);
 			else
 			{
-				Envelope.SimpleNode node = (Envelope.SimpleNode)envelopeView.getNode(id);
-				setText(AppConstants.FORMAT_1_3F.format(node.x) + ", " +
-																AppConstants.FORMAT_1_2F.format(node.y));
+				SimpleViewNode node = envelopeView.getNode(id);
+				setText(AppConstants.FORMAT_1_3F.format(node.x) + ", " + AppConstants.FORMAT_1_2F.format(node.y));
 			}
 			setBackground(envelopeView.getXScale().getBackground());
 		}
@@ -381,7 +384,7 @@ class MotionRateEnvelopeDialog
 
 
 	private static class EnvelopeView
-		extends uk.blankaspect.common.envelope.EnvelopeView
+		extends uk.blankaspect.ui.swing.envelope.EnvelopeView<SimpleViewNode, SimpleViewEnvelope>
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -532,13 +535,27 @@ class MotionRateEnvelopeDialog
 	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	Point	location;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	boolean				accepted;
+	private	SimpleViewEnvelope	envelope;
+	private	CoefficientField	xCoeffField;
+	private	CoefficientField	yCoeffField;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
 	private MotionRateEnvelopeDialog(Window             owner,
 									 MotionRateEnvelope envelope)
 	{
-
 		// Call superclass constructor
 		super(owner, TITLE_STR, Dialog.ModalityType.APPLICATION_MODAL);
 
@@ -571,7 +588,7 @@ class MotionRateEnvelopeDialog
 		envelopePanel.add(nodeValueField);
 
 		// Envelope view
-		this.envelope = new Envelope.Simple(Envelope.Kind.LINEAR);
+		this.envelope = new SimpleViewEnvelope(EnvelopeKind.LINEAR);
 		this.envelope.setMinDeltaX(1.0 / (double)(EnvelopeView.NUM_X_DIVS * EnvelopeView.X_DIV_WIDTH));
 		this.envelope.setNodes(envelope.getNodes(), false, false);
 
@@ -795,7 +812,6 @@ class MotionRateEnvelopeDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -835,9 +851,7 @@ class MotionRateEnvelopeDialog
 
 	public MotionRateEnvelope getEnvelope()
 	{
-		return (accepted ? new MotionRateEnvelope(Envelope.SimpleNode.copyList(envelope.getNodes()),
-												  xCoeffField.getValue(), yCoeffField.getValue())
-						 : null);
+		return accepted ? new MotionRateEnvelope(envelope.getNodes(), xCoeffField.getValue(), yCoeffField.getValue()) : null;
 	}
 
 	//------------------------------------------------------------------
@@ -912,21 +926,6 @@ class MotionRateEnvelopeDialog
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	Point	location;
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	boolean				accepted;
-	private	Envelope.Simple		envelope;
-	private	CoefficientField	xCoeffField;
-	private	CoefficientField	yCoeffField;
 
 }
 

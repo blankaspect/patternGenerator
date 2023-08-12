@@ -43,7 +43,9 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.Colours;
+
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
@@ -93,17 +95,15 @@ class DirectionProbabilityPanel
 ////////////////////////////////////////////////////////////////////////
 
 	public DirectionProbabilityPanel(Pattern2ParamsDialog                  paramsDialog,
-									  Map<Pattern2Image.Direction, Integer> probabilities,
-									  Pattern2Image.Direction.Mode          directionMode,
-									  boolean                               symmetrical)
+									 Map<Pattern2Image.Direction, Integer> probabilities,
+									 Pattern2Image.Direction.Mode          directionMode,
+									 boolean                               symmetrical)
 	{
 		// Initialise instance variables
 		this.paramsDialog = paramsDialog;
 		this.probabilities = new EnumMap<>(Pattern2Image.Direction.class);
 		for (Pattern2Image.Direction direction : Pattern2Image.Direction.values())
-			this.probabilities.put(direction,
-								   probabilities.containsKey(direction) ? probabilities.get(direction)
-																		: 0);
+			this.probabilities.put(direction, probabilities.getOrDefault(direction, 0));
 		this.directionMode = directionMode;
 		this.symmetrical = symmetrical;
 
@@ -122,13 +122,7 @@ class DirectionProbabilityPanel
 //  Instance methods : MouseListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void mouseClicked(MouseEvent event)
-	{
-		// do nothing
-	}
-
-	//------------------------------------------------------------------
-
+	@Override
 	public void mouseEntered(MouseEvent event)
 	{
 		// do nothing
@@ -136,6 +130,7 @@ class DirectionProbabilityPanel
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseExited(MouseEvent event)
 	{
 		// do nothing
@@ -143,6 +138,7 @@ class DirectionProbabilityPanel
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mousePressed(MouseEvent event)
 	{
 		requestFocusInWindow();
@@ -170,6 +166,7 @@ class DirectionProbabilityPanel
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseReleased(MouseEvent event)
 	{
 		if (SwingUtilities.isLeftMouseButton(event) && isAdjusting())
@@ -181,10 +178,19 @@ class DirectionProbabilityPanel
 
 	//------------------------------------------------------------------
 
+	@Override
+	public void mouseClicked(MouseEvent event)
+	{
+		// do nothing
+	}
+
+	//------------------------------------------------------------------
+
 ////////////////////////////////////////////////////////////////////////
 //  Instance methods : MouseMotionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseDragged(MouseEvent event)
 	{
 		if (SwingUtilities.isLeftMouseButton(event) && isAdjusting())
@@ -193,6 +199,7 @@ class DirectionProbabilityPanel
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseMoved(MouseEvent event)
 	{
 		// do nothing
@@ -216,10 +223,11 @@ class DirectionProbabilityPanel
 	protected void paintComponent(Graphics gr)
 	{
 		// Create copy of graphics context
-		gr = gr.create();
-		Graphics2D gr2d = (Graphics2D)gr;
-		gr2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		gr2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
+
+		// Set rendering hints
+		gr2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,   RenderingHints.VALUE_ANTIALIAS_ON);
+		gr2d.setRenderingHint(RenderingHints.KEY_RENDERING,      RenderingHints.VALUE_RENDER_QUALITY);
 		gr2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
 		// Draw background
@@ -229,22 +237,19 @@ class DirectionProbabilityPanel
 
 		// Draw hub
 		gr2d.setColor(HUB_COLOUR);
-		gr2d.fill(new Ellipse2D.Double((double)(CENTRE_X - HUB_DIAMETER / 2),
-									   (double)(CENTRE_Y - HUB_DIAMETER / 2),
+		gr2d.fill(new Ellipse2D.Double((double)(CENTRE_X - HUB_DIAMETER / 2), (double)(CENTRE_Y - HUB_DIAMETER / 2),
 									   HUB_DIAMETER, HUB_DIAMETER));
 
 		// Fill spokes
 		Stroke stroke = gr2d.getStroke();
-		gr2d.setStroke(new BasicStroke((float)SPOKE_WIDTH, BasicStroke.CAP_BUTT,
-									   BasicStroke.JOIN_MITER));
+		gr2d.setStroke(new BasicStroke((float)SPOKE_WIDTH, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
 		for (Pattern2Image.Direction direction : STROKE_LINE_POINTS.keySet())
 		{
 			Point2D.Double[] points = STROKE_LINE_POINTS.get(direction);
 			if (isDirectionEnabled(direction))
 			{
 				gr2d.setColor(SPOKE_FILL_COLOUR);
-				double prob = (double)probabilities.get(direction) /
-														(double)Pattern2Params.MAX_DIRECTION_PROBABILITY;
+				double prob = (double)probabilities.get(direction) / (double)Pattern2Params.MAX_DIRECTION_PROBABILITY;
 				Line2D.Double line = new Line2D.Double(points[0].x, points[0].y,
 													   points[0].x + (points[1].x - points[0].x) * prob,
 													   points[0].y + (points[1].y - points[0].y) * prob);

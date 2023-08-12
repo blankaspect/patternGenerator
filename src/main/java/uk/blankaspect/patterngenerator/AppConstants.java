@@ -58,9 +58,6 @@ interface AppConstants
 	String	ALREADY_EXISTS_STR	= "\nThe file already exists.\nDo you want to replace it?";
 	String	XML_VERSION_STR		= "1.0";
 
-	// Temporary-file prefix
-	String	TEMP_FILE_PREFIX	= "_$_";
-
 	// Filename suffixes
 	String	PG_DEF_FILE_SUFFIX	= ".pgdef.xml";
 	String	PG_PAR_FILE_SUFFIX	= ".pgpar.xml";

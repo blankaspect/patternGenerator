@@ -51,20 +51,20 @@ import uk.blankaspect.common.misc.MaxValueMap;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.button.FixedWidthRadioButton;
+import uk.blankaspect.ui.swing.button.FixedWidthRadioButton;
 
-import uk.blankaspect.common.swing.colour.Colours;
-import uk.blankaspect.common.swing.colour.ColourUtils;
+import uk.blankaspect.ui.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.ColourUtils;
 
-import uk.blankaspect.common.swing.container.IntegerSpinnerSliderPanel;
+import uk.blankaspect.ui.swing.container.IntegerSpinnerSliderPanel;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.slider.HorizontalSlider;
+import uk.blankaspect.ui.swing.slider.HorizontalSlider;
 
-import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
+import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
 //----------------------------------------------------------------------
 

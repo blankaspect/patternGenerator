@@ -36,8 +36,8 @@ import uk.blankaspect.common.property.Property;
 
 import uk.blankaspect.common.range.IntegerRange;
 
-import uk.blankaspect.common.swing.colour.ColourProperty;
-import uk.blankaspect.common.swing.colour.ColourUtils;
+import uk.blankaspect.ui.swing.colour.ColourProperty;
+import uk.blankaspect.ui.swing.colour.ColourUtils;
 
 //----------------------------------------------------------------------
 

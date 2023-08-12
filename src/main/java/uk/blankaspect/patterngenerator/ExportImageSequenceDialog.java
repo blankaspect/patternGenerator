@@ -2,7 +2,7 @@
 
 ExportImageSequenceDialog.java
 
-Export image sequence dialog box class.
+Export image sequence dialog class.
 
 \*====================================================================*/
 
@@ -51,25 +51,25 @@ import javax.swing.event.ChangeListener;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.container.DimensionsSpinnerPanel;
-import uk.blankaspect.common.swing.container.PathnamePanel;
+import uk.blankaspect.ui.swing.container.DimensionsSpinnerPanel;
+import uk.blankaspect.ui.swing.container.PathnamePanel;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
+import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
-import uk.blankaspect.common.swing.textfield.FTextField;
+import uk.blankaspect.ui.swing.textfield.FTextField;
 
 //----------------------------------------------------------------------
 
 
-// EXPORT IMAGE SEQUENCE DIALOG BOX CLASS
+// EXPORT IMAGE SEQUENCE DIALOG CLASS
 
 
 class ExportImageSequenceDialog

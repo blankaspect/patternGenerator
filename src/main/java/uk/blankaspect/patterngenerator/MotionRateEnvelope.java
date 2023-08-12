@@ -19,12 +19,16 @@ package uk.blankaspect.patterngenerator;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import uk.blankaspect.common.envelope.Envelope;
 import uk.blankaspect.common.envelope.EnvelopeEvaluator;
+import uk.blankaspect.common.envelope.EnvelopeKind;
+import uk.blankaspect.common.envelope.SimpleNode;
 
 import uk.blankaspect.common.exception.UnexpectedRuntimeException;
+
+import uk.blankaspect.ui.swing.envelope.SimpleViewNode;
 
 //----------------------------------------------------------------------
 
@@ -40,14 +44,16 @@ class MotionRateEnvelope
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	public MotionRateEnvelope(List<Envelope.SimpleNode> nodes,
-							  double                    xCoeff,
-							  double                    yCoeff)
+	public MotionRateEnvelope(Collection<? extends SimpleNode> nodes,
+							  double                           xCoeff,
+							  double                           yCoeff)
 	{
-		this.nodes = nodes;
+		this.nodes = new ArrayList<>();
+		for (SimpleNode node : nodes)
+			this.nodes.add(new SimpleViewNode(node));
 		this.xCoeff = xCoeff;
 		this.yCoeff = yCoeff;
-		envelopeEvaluator = new EnvelopeEvaluator(nodes, Envelope.Kind.LINEAR);
+		envelopeEvaluator = new EnvelopeEvaluator(nodes, EnvelopeKind.LINEAR);
 	}
 
 	//------------------------------------------------------------------
@@ -72,9 +78,8 @@ class MotionRateEnvelope
 			String[] coordStrs = strs[i].substring(1).trim().split("\\s*,\\s*", -1);
 			if (coordStrs.length != 2)
 				throw new IllegalArgumentException();
-			nodes.add(new Envelope.SimpleNode(Double.parseDouble(coordStrs[0]),
-											  Double.parseDouble(coordStrs[1]),
-											  (i == 0) || (i == strs.length - 2)));
+			nodes.add(new SimpleViewNode(Double.parseDouble(coordStrs[0]), Double.parseDouble(coordStrs[1]),
+										 (i == 0) || (i == strs.length - 2)));
 		}
 
 		// Test x coordinates of first and last nodes
@@ -97,7 +102,7 @@ class MotionRateEnvelope
 			throw new IllegalArgumentException();
 
 		// Initialise remaining instance variables
-		envelopeEvaluator = new EnvelopeEvaluator(nodes, Envelope.Kind.LINEAR);
+		envelopeEvaluator = new EnvelopeEvaluator(nodes, EnvelopeKind.LINEAR);
 	}
 
 	//------------------------------------------------------------------
@@ -126,7 +131,7 @@ class MotionRateEnvelope
 	public String toString()
 	{
 		StringBuilder buffer = new StringBuilder(256);
-		for (Envelope.SimpleNode node : nodes)
+		for (SimpleNode node : nodes)
 		{
 			buffer.append('(');
 			buffer.append(AppConstants.FORMAT_1_8.format(node.x));
@@ -146,7 +151,7 @@ class MotionRateEnvelope
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	public List<Envelope.SimpleNode> getNodes()
+	public List<SimpleViewNode> getNodes()
 	{
 		return nodes;
 	}
@@ -183,10 +188,10 @@ class MotionRateEnvelope
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-	private	List<Envelope.SimpleNode>	nodes;
-	private	double						xCoeff;
-	private	double						yCoeff;
-	private	EnvelopeEvaluator			envelopeEvaluator;
+	private	List<SimpleViewNode>	nodes;
+	private	double					xCoeff;
+	private	double					yCoeff;
+	private	EnvelopeEvaluator		envelopeEvaluator;
 
 }
 

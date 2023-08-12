@@ -58,13 +58,13 @@ import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 import uk.blankaspect.common.exception.TempFileException;
 
+import uk.blankaspect.common.filesystem.FilenameUtils;
+
 import uk.blankaspect.common.misc.FileWritingMode;
 
 import uk.blankaspect.common.number.NumberUtils;
 
 import uk.blankaspect.common.string.StringUtils;
-
-import uk.blankaspect.common.swing.image.PngOutputFile;
 
 import uk.blankaspect.common.ui.progress.IProgressView;
 
@@ -74,6 +74,8 @@ import uk.blankaspect.common.xml.XmlFile;
 import uk.blankaspect.common.xml.XmlParseException;
 import uk.blankaspect.common.xml.XmlUtils;
 import uk.blankaspect.common.xml.XmlWriter;
+
+import uk.blankaspect.ui.swing.image.PngOutputFile;
 
 //----------------------------------------------------------------------
 
@@ -88,25 +90,25 @@ abstract class PatternDocument
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		int	MIN_MAX_EDIT_LIST_LENGTH		= 1;
-	public static final		int	MAX_MAX_EDIT_LIST_LENGTH		= 9999;
-	public static final		int	DEFAULT_MAX_EDIT_LIST_LENGTH	= 100;
+	public static final		int		MIN_MAX_EDIT_LIST_LENGTH		= 1;
+	public static final		int		MAX_MAX_EDIT_LIST_LENGTH		= 9999;
+	public static final		int		DEFAULT_MAX_EDIT_LIST_LENGTH	= 100;
 
-	public static final		int	MIN_NUM_SLIDE_SHOW_THREADS		= 0;
-	public static final		int	MAX_NUM_SLIDE_SHOW_THREADS		= 32;
-	public static final		int	DEFAULT_NUM_SLIDE_SHOW_THREADS	= 0;
+	public static final		int		MIN_NUM_SLIDE_SHOW_THREADS		= 0;
+	public static final		int		MAX_NUM_SLIDE_SHOW_THREADS		= 32;
+	public static final		int		DEFAULT_NUM_SLIDE_SHOW_THREADS	= 0;
 
-	public static final		int	MIN_SLIDE_SHOW_INTERVAL		= 500;
-	public static final		int	MAX_SLIDE_SHOW_INTERVAL		= 60000;
-	public static final		int	DEFAULT_SLIDE_SHOW_INTERVAL	= 3000;
+	public static final		int		MIN_SLIDE_SHOW_INTERVAL		= 500;
+	public static final		int		MAX_SLIDE_SHOW_INTERVAL		= 60000;
+	public static final		int		DEFAULT_SLIDE_SHOW_INTERVAL	= 3000;
 
 	protected static final	String	GENERATE_STR	= "Generate ";
 	protected static final	String	RENDERING_STR	= "Rendering image " + AppConstants.ELLIPSIS_STR;
 	protected static final	String	WRITING_STR		= "Writing";
 
-	private static final	int	MIN_SUPPORTED_VERSION	= 0;
-	private static final	int	MAX_SUPPORTED_VERSION	= 0;
-	private static final	int	VERSION					= 0;
+	private static final	int		MIN_SUPPORTED_VERSION	= 0;
+	private static final	int		MAX_SUPPORTED_VERSION	= 0;
+	private static final	int		VERSION					= 0;
 
 	private static final	String	NAMESPACE_PREFIX		= "http://ns.blankaspect.uk/patternGenerator-definition/";
 	private static final	String	NAMESPACE_PREFIX_REGEX	= "http://ns\\.[a-z.]+/patternGenerator-definition/(\\w+)";
@@ -228,7 +230,7 @@ abstract class PatternDocument
 
 		private Command(String key)
 		{
-			command = new uk.blankaspect.common.swing.action.Command(this);
+			command = new uk.blankaspect.ui.swing.action.Command(this);
 			putValue(Action.ACTION_COMMAND_KEY, key);
 		}
 
@@ -340,7 +342,7 @@ abstract class PatternDocument
 	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
-		private	uk.blankaspect.common.swing.action.Command	command;
+		private	uk.blankaspect.ui.swing.action.Command	command;
 
 	}
 
@@ -370,6 +372,9 @@ abstract class PatternDocument
 		FILE_ACCESS_NOT_PERMITTED
 		("Access to the file was not permitted."),
 
+		FAILED_TO_CREATE_DIRECTORY
+		("Failed to create the directory."),
+
 		FAILED_TO_CREATE_TEMPORARY_FILE
 		("Failed to create a temporary file."),
 
@@ -378,9 +383,6 @@ abstract class PatternDocument
 
 		FAILED_TO_RENAME_FILE
 		("Failed to rename the temporary file to the specified filename."),
-
-		FAILED_TO_CREATE_DIRECTORY
-		("Failed to create the directory."),
 
 		UNEXPECTED_DOCUMENT_FORMAT
 		("The document does not have the expected format."),
@@ -1051,6 +1053,7 @@ abstract class PatternDocument
 	//  Instance methods : Runnable interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void run()
 		{
 			long inTaskIndex = 0;
@@ -1068,7 +1071,7 @@ abstract class PatternDocument
 				{
 					try
 					{
-						executor.submit(new InputTask(inTaskIndex, getParameters()));
+						executor.execute(new InputTask(inTaskIndex, getParameters()));
 						++inTaskIndex;
 					}
 					catch (RejectedExecutionException e)
@@ -1123,8 +1126,10 @@ abstract class PatternDocument
 				Thread.yield();
 			}
 
-			// Stop task threads
-			executor.shutdownNow();
+			// Shut down executor
+			executor.shutdown();
+
+			// Wait for tasks to terminate
 			try
 			{
 				executor.awaitTermination(30, TimeUnit.SECONDS);
@@ -1132,6 +1137,11 @@ abstract class PatternDocument
 			catch (InterruptedException e)
 			{
 				// ignore
+			}
+			finally
+			{
+				if (!executor.isTerminated())
+					executor.shutdownNow();
 			}
 
 			// Enable commands
@@ -1190,7 +1200,7 @@ abstract class PatternDocument
 		private DoAnimation(double rate,
 							int    startFrameIndex)
 		{
-			interval = Math.round(1000000000.0 / rate);
+			interval = Math.round(1_000_000_000.0 / rate);
 			this.startFrameIndex = startFrameIndex;
 		}
 
@@ -1200,6 +1210,7 @@ abstract class PatternDocument
 	//  Instance methods : Runnable interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void run()
 		{
 			int frameIndex = 0;
@@ -1847,11 +1858,26 @@ abstract class PatternDocument
 		boolean oldFileDeleted = false;
 		try
 		{
+			// Create parent directory of output file
+			File directory = file.getAbsoluteFile().getParentFile();
+			if ((directory != null) && !directory.exists())
+			{
+				try
+				{
+					if (!directory.mkdirs())
+						throw new FileException(ErrorId.FAILED_TO_CREATE_DIRECTORY, directory);
+				}
+				catch (SecurityException e)
+				{
+					throw new FileException(ErrorId.FAILED_TO_CREATE_DIRECTORY, directory, e);
+				}
+			}
+
 			// Create temporary file
 			try
 			{
-				tempFile = File.createTempFile(AppConstants.TEMP_FILE_PREFIX, null,
-											   file.getAbsoluteFile().getParentFile());
+				tempFile = FilenameUtils.tempLocation(file);
+				tempFile.createNewFile();
 			}
 			catch (Exception e)
 			{
@@ -2111,11 +2137,26 @@ abstract class PatternDocument
 		this.timestamp = 0;
 		try
 		{
+			// Create parent directory of output file
+			File directory = file.getAbsoluteFile().getParentFile();
+			if ((directory != null) && !directory.exists())
+			{
+				try
+				{
+					if (!directory.mkdirs())
+						throw new FileException(ErrorId.FAILED_TO_CREATE_DIRECTORY, directory);
+				}
+				catch (SecurityException e)
+				{
+					throw new FileException(ErrorId.FAILED_TO_CREATE_DIRECTORY, directory, e);
+				}
+			}
+
 			// Create temporary file
 			try
 			{
-				tempFile = File.createTempFile(AppConstants.TEMP_FILE_PREFIX, null,
-											   file.getAbsoluteFile().getParentFile());
+				tempFile = FilenameUtils.tempLocation(file);
+				tempFile.createNewFile();
 			}
 			catch (Exception e)
 			{

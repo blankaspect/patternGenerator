@@ -2,7 +2,7 @@
 
 RenderingTimeDialog.java
 
-Image rendering time dialog box class.
+Image rendering time dialog class.
 
 \*====================================================================*/
 
@@ -37,6 +37,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import java.util.Objects;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -45,24 +47,22 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import uk.blankaspect.common.string.StringUtils;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.colour.Colours;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
-
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
 
-// IMAGE RENDERING TIME DIALOG BOX CLASS
+// IMAGE RENDERING TIME DIALOG CLASS
 
 
 class RenderingTimeDialog
@@ -183,7 +183,7 @@ class RenderingTimeDialog
 
 		public void setText(String text)
 		{
-			if (!StringUtils.equal(text, this.text))
+			if (!Objects.equals(text, this.text))
 			{
 				this.text = text;
 				repaint();

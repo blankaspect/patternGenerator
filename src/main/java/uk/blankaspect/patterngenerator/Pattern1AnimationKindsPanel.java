@@ -42,15 +42,16 @@ import javax.swing.KeyStroke;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.Colours;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiConstants;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
@@ -67,18 +68,19 @@ class Pattern1AnimationKindsPanel
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	ICON_MARGIN	= 2;
-	private static final	int	ICON_WIDTH	= 2 * ICON_MARGIN + Icons.CROSS_10_10.getIconWidth();
-	private static final	int	ICON_HEIGHT	= 2 * ICON_MARGIN + Icons.CROSS_10_10.getIconHeight();
+	private static final	int		ICON_MARGIN	= 2;
+	private static final	int		ICON_WIDTH	= 2 * ICON_MARGIN + Icons.CROSS_10_10.getIconWidth();
+	private static final	int		ICON_HEIGHT	= 2 * ICON_MARGIN + Icons.CROSS_10_10.getIconHeight();
 
-	private static final	int	VERTICAL_MARGIN	= 3;
-	private static final	int	LEFT_MARGIN		= 4;
-	private static final	int	RIGHT_MARGIN	= 8;
-	private static final	int	HORIZONTAL_GAP	= 6;
+	private static final	int		VERTICAL_MARGIN	= 3;
+	private static final	int		LEFT_MARGIN		= 4;
+	private static final	int		RIGHT_MARGIN	= 8;
+	private static final	int		HORIZONTAL_GAP	= 6;
 
 	private static final	Color	BORDER_COLOUR					= new Color(160, 176, 160);
 	private static final	Color	SELECTED_BORDER_COLOUR			= new Color(224, 144, 96);
-	private static final	Color	FOCUSED_BORDER_COLOUR			= Color.BLACK;
+	private static final	Color	FOCUSED_BORDER_COLOUR1			= Color.WHITE;
+	private static final	Color	FOCUSED_BORDER_COLOUR2			= Color.BLACK;
 	private static final	Color	DISABLED_BORDER_COLOUR			= Colours.LINE_BORDER;
 	private static final	Color	BACKGROUND_COLOUR				= new Color(224, 232, 224);
 	private static final	Color	SELECTED_BACKGROUND_COLOUR		= Colours.FOCUSED_SELECTION_BACKGROUND;
@@ -113,10 +115,8 @@ class Pattern1AnimationKindsPanel
 			// Initialise instance variables
 			AppFont.MAIN.apply(this);
 			FontMetrics fontMetrics = getFontMetrics(getFont());
-			width = LEFT_MARGIN + ICON_WIDTH + HORIZONTAL_GAP + fontMetrics.stringWidth(text) +
-																							RIGHT_MARGIN;
-			height = 2 * VERTICAL_MARGIN + Math.max(ICON_HEIGHT,
-													fontMetrics.getAscent() + fontMetrics.getDescent());
+			width = LEFT_MARGIN + ICON_WIDTH + HORIZONTAL_GAP + fontMetrics.stringWidth(text) + RIGHT_MARGIN;
+			height = 2 * VERTICAL_MARGIN + Math.max(ICON_HEIGHT, fontMetrics.getAscent() + fontMetrics.getDescent());
 			if ((height - ICON_HEIGHT) % 2 != 0)
 				++height;
 
@@ -142,51 +142,62 @@ class Pattern1AnimationKindsPanel
 		protected void paintComponent(Graphics gr)
 		{
 			// Create copy of graphics context
-			gr = gr.create();
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 			// Draw background
 			int width = getWidth();
 			int height = getHeight();
-			gr.setColor(isEnabled() ? isSelected() ? SELECTED_BACKGROUND_COLOUR : BACKGROUND_COLOUR
-									: getBackground());
-			gr.fillRect(0, 0, width, height);
+			gr2d.setColor(isEnabled()
+								? isSelected()
+										? SELECTED_BACKGROUND_COLOUR
+										: BACKGROUND_COLOUR
+								: getBackground());
+			gr2d.fillRect(0, 0, width, height);
 
 			// Draw button background
 			int x = LEFT_MARGIN;
 			int y = (height - ICON_HEIGHT) / 2;
 			if (getModel().isArmed())
 			{
-				gr.setColor(HIGHLIGHTED_BACKGROUND_COLOUR);
-				gr.fillRect(x + 1, y + 1, ICON_WIDTH - 2, ICON_HEIGHT - 2);
+				gr2d.setColor(HIGHLIGHTED_BACKGROUND_COLOUR);
+				gr2d.fillRect(x + 1, y + 1, ICON_WIDTH - 2, ICON_HEIGHT - 2);
 			}
 
 			// Draw button border
-			gr.setColor(isEnabled() ? isSelected() ? SELECTED_BORDER_COLOUR : BORDER_COLOUR
-									: DISABLED_BORDER_COLOUR);
-			gr.drawRect(x, y, ICON_WIDTH - 1, ICON_HEIGHT - 1);
+			gr2d.setColor(isEnabled()
+								? isSelected()
+										? SELECTED_BORDER_COLOUR
+										: BORDER_COLOUR
+								: DISABLED_BORDER_COLOUR);
+			gr2d.drawRect(x, y, ICON_WIDTH - 1, ICON_HEIGHT - 1);
 
 			// Draw cross
 			if (isSelected())
-				gr.drawImage(Icons.CROSS_10_10.getImage(), LEFT_MARGIN + ICON_MARGIN, y + ICON_MARGIN,
-							 null);
+				gr2d.drawImage(Icons.CROSS_10_10.getImage(), LEFT_MARGIN + ICON_MARGIN, y + ICON_MARGIN, null);
 
 			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
+			TextRendering.setHints(gr2d);
 
 			// Draw text
-			gr.setColor(isEnabled() ? FOREGROUND_COLOUR : DISABLED_FOREGROUND_COLOUR);
-			gr.drawString(getText(), LEFT_MARGIN + ICON_WIDTH + HORIZONTAL_GAP,
-						  FontUtils.getBaselineOffset(height, gr.getFontMetrics()));
+			gr2d.setColor(isEnabled() ? FOREGROUND_COLOUR : DISABLED_FOREGROUND_COLOUR);
+			gr2d.drawString(getText(), LEFT_MARGIN + ICON_WIDTH + HORIZONTAL_GAP,
+							FontUtils.getBaselineOffset(height, gr2d.getFontMetrics()));
 
 			// Draw border
-			gr.setColor(isEnabled() ? isSelected() ? SELECTED_BORDER_COLOUR : BORDER_COLOUR
-									: DISABLED_BORDER_COLOUR);
-			gr.drawRect(0, 0, width - 1, height - 1);
+			gr2d.setColor(isEnabled()
+								? isSelected()
+										? SELECTED_BORDER_COLOUR
+										: BORDER_COLOUR
+								: DISABLED_BORDER_COLOUR);
+			gr2d.drawRect(0, 0, width - 1, height - 1);
 			if (isFocusOwner())
 			{
-				((Graphics2D)gr).setStroke(GuiUtils.getBasicDash());
-				gr.setColor(FOCUSED_BORDER_COLOUR);
-				gr.drawRect(1, 1, width - 3, height - 3);
+				gr2d.setColor(FOCUSED_BORDER_COLOUR1);
+				gr2d.drawRect(1, 1, width - 3, height - 3);
+
+				gr2d.setStroke(GuiConstants.BASIC_DASH);
+				gr2d.setColor(FOCUSED_BORDER_COLOUR2);
+				gr2d.drawRect(1, 1, width - 3, height - 3);
 			}
 		}
 

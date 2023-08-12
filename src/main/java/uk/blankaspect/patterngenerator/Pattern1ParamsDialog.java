@@ -2,7 +2,7 @@
 
 Pattern1ParamsDialog.java
 
-Pattern 1 parameters dialog box class.
+Pattern 1 parameters dialog class.
 
 \*====================================================================*/
 
@@ -73,39 +73,39 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.border.TitledBorder;
+import uk.blankaspect.ui.swing.border.TitledBorder;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.checkbox.FCheckBox;
+import uk.blankaspect.ui.swing.checkbox.FCheckBox;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.Colours;
 
-import uk.blankaspect.common.swing.combobox.FComboBox;
+import uk.blankaspect.ui.swing.combobox.FComboBox;
 
-import uk.blankaspect.common.swing.container.DimensionsSpinnerPanel;
+import uk.blankaspect.ui.swing.container.DimensionsSpinnerPanel;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.range.DoubleRangeBarPanel;
-import uk.blankaspect.common.swing.range.IntegerRangeBarPanel;
-import uk.blankaspect.common.swing.range.RangeBarPanel;
+import uk.blankaspect.ui.swing.range.DoubleRangeBarPanel;
+import uk.blankaspect.ui.swing.range.IntegerRangeBarPanel;
+import uk.blankaspect.ui.swing.range.RangeBarPanel;
 
-import uk.blankaspect.common.swing.spinner.FDoubleSpinner;
-import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
+import uk.blankaspect.ui.swing.spinner.FDoubleSpinner;
+import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
 
-// PATTERN 1 PARAMETERS DIALOG BOX CLASS
+// PATTERN 1 PARAMETERS DIALOG CLASS
 
 
 class Pattern1ParamsDialog
@@ -1306,20 +1306,12 @@ class Pattern1ParamsDialog
 		public boolean isCellEditable(EventObject event)
 		{
 			// Test for a mouse event
-			if (event instanceof MouseEvent)
-			{
-				MouseEvent mouseEvent = (MouseEvent)event;
-				return (SwingUtilities.isLeftMouseButton(mouseEvent) &&
-						 (mouseEvent.getClickCount() > 1));
-			}
+			if (event instanceof MouseEvent mouseEvent)
+				return SwingUtilities.isLeftMouseButton(mouseEvent) && (mouseEvent.getClickCount() > 1);
 
 			// Test for a key event
-			if (event instanceof KeyEvent)
-			{
-				KeyEvent keyEvent = (KeyEvent)event;
-				return ((keyEvent.getKeyCode() == KeyEvent.VK_SPACE) &&
-						 (keyEvent.getModifiersEx() == 0));
-			}
+			if (event instanceof KeyEvent keyEvent)
+				return (keyEvent.getKeyCode() == KeyEvent.VK_SPACE) && (keyEvent.getModifiersEx() == 0);
 
 			return false;
 		}

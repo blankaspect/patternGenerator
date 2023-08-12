@@ -65,14 +65,14 @@ import uk.blankaspect.common.range.IntegerRange;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.colour.Colours;
-import uk.blankaspect.common.swing.colour.ColourUtils;
+import uk.blankaspect.ui.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.ColourUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
@@ -89,7 +89,7 @@ class ColourSetPanel
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	NUM_COLUMNS	= 8;
+	private static final	int		NUM_COLUMNS	= 8;
 
 	private static final	Insets	BUTTON_MARGINS	= new Insets(1, 4, 1, 4);
 
@@ -104,8 +104,8 @@ class ColourSetPanel
 	private static final	Color	COLOUR_BUTTON_BORDER_COLOUR				= Colours.LINE_BORDER;
 	private static final	Color	COLOUR_BUTTON_DISABLED_BORDER_COLOUR	= new Color(200, 200, 200);
 	private static final	Color	COLOUR_BUTTON_SELECTED_BORDER_COLOUR	= new Color(240, 160, 64);
-	private static final	Color	COLOUR_BUTTON_FOCUSED_BORDER1_COLOUR	= Color.WHITE;
-	private static final	Color	COLOUR_BUTTON_FOCUSED_BORDER2_COLOUR	= Color.BLACK;
+	private static final	Color	COLOUR_BUTTON_FOCUSED_BORDER_COLOUR1	= Color.WHITE;
+	private static final	Color	COLOUR_BUTTON_FOCUSED_BORDER_COLOUR2	= Color.BLACK;
 
 	private static final	Stroke	DASH	= new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
 															  10.0f, new float[] { 2.0f, 2.0f }, 0.5f);
@@ -252,9 +252,11 @@ class ColourSetPanel
 		{
 			// Fill background
 			Rectangle rect = gr.getClipBounds();
-			gr.setColor(isEnabled() ? (isSelected() != getModel().isArmed()) ? HIGHLIGHTED_BACKGROUND_COLOUR
-																			 : BACKGROUND_COLOUR
-									: getBackground());
+			gr.setColor(isEnabled()
+							? (isSelected() != getModel().isArmed())
+									? HIGHLIGHTED_BACKGROUND_COLOUR
+									: BACKGROUND_COLOUR
+							: getBackground());
 			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
 
 			// Draw icon
@@ -279,7 +281,7 @@ class ColourSetPanel
 	//==================================================================
 
 
-	// HUE AND SATURATION RANGE DIALOG BOX CLASS
+	// HUE AND SATURATION RANGE DIALOG CLASS
 
 
 	private static class HueSaturationRangeDialog
@@ -648,7 +650,7 @@ class ColourSetPanel
 		protected void paintComponent(Graphics gr)
 		{
 			// Create copy of graphics context
-			gr = (Graphics2D)gr.create();
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 			// Get dimensions
 			int width = getWidth();
@@ -657,16 +659,17 @@ class ColourSetPanel
 			// Fill background
 			int x = OUTER_BORDER_WIDTH + INNER_BORDER_WIDTH;
 			int y = OUTER_BORDER_WIDTH + INNER_BORDER_WIDTH;
-			gr.setColor(isEnabled() ? (buttonState == ButtonState.ARMED) ? ColourUtils.invert(getForeground())
-																		 : getForeground()
-									: getBackground());
-			gr.fillRect(x, y, width - 2 * x, height - 2 * y);
+			gr2d.setColor(isEnabled()
+								? (buttonState == ButtonState.ARMED)
+										? ColourUtils.invert(getForeground())
+										: getForeground()
+								: getBackground());
+			gr2d.fillRect(x, y, width - 2 * x, height - 2 * y);
 
 			// Draw cross if button is disabled
 			if (!isEnabled())
 			{
 				// Set rendering hints
-				Graphics2D gr2d = (Graphics2D)gr;
 				RenderingHints renderingHints = gr2d.getRenderingHints();
 				gr2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 				gr2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -676,9 +679,9 @@ class ColourSetPanel
 				int x2 = width - x1 - 1;
 				int y1 = OUTER_BORDER_WIDTH + INNER_BORDER_WIDTH;
 				int y2 = height - y1 - 1;
-				gr.setColor(COLOUR_BUTTON_DISABLED_BORDER_COLOUR);
-				gr.drawLine(x1, y1, x2, y2);
-				gr.drawLine(x2, y1, x1, y2);
+				gr2d.setColor(COLOUR_BUTTON_DISABLED_BORDER_COLOUR);
+				gr2d.drawLine(x1, y1, x2, y2);
+				gr2d.drawLine(x2, y1, x1, y2);
 
 				gr2d.setRenderingHints(renderingHints);
 			}
@@ -690,28 +693,25 @@ class ColourSetPanel
 			int y2 = height - 2 * y1 - 1;
 			if (isFocusOwner())
 			{
-				gr.setColor(COLOUR_BUTTON_FOCUSED_BORDER1_COLOUR);
-				gr.drawRect(x1, y1, x2, y2);
+				gr2d.setColor(COLOUR_BUTTON_FOCUSED_BORDER_COLOUR1);
+				gr2d.drawRect(x1, y1, x2, y2);
 
-				Graphics2D gr2d = (Graphics2D)gr;
 				Stroke stroke = gr2d.getStroke();
 				gr2d.setStroke(DASH);
-				gr.setColor(COLOUR_BUTTON_FOCUSED_BORDER2_COLOUR);
-				gr.drawRect(x1, y1, x2, y2);
-
+				gr2d.setColor(COLOUR_BUTTON_FOCUSED_BORDER_COLOUR2);
+				gr2d.drawRect(x1, y1, x2, y2);
 				gr2d.setStroke(stroke);
 			}
 			else
 			{
-				gr.setColor(isEnabled() ? COLOUR_BUTTON_BORDER_COLOUR
-										: COLOUR_BUTTON_DISABLED_BORDER_COLOUR);
-				gr.drawRect(x1, y1, x2, y2);
+				gr2d.setColor(isEnabled() ? COLOUR_BUTTON_BORDER_COLOUR : COLOUR_BUTTON_DISABLED_BORDER_COLOUR);
+				gr2d.drawRect(x1, y1, x2, y2);
 			}
 
 			// Draw outer border
-			gr.setColor(selected ? COLOUR_BUTTON_SELECTED_BORDER_COLOUR : getBackground());
-			gr.drawRect(0, 0, width - 1, height - 1);
-			gr.drawRect(1, 1, width - 3, height - 3);
+			gr2d.setColor(selected ? COLOUR_BUTTON_SELECTED_BORDER_COLOUR : getBackground());
+			gr2d.drawRect(0, 0, width - 1, height - 1);
+			gr2d.drawRect(1, 1, width - 3, height - 3);
 		}
 
 		//--------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 Pattern1SourceDialog.java
 
-Pattern 1 source dialog box class.
+Pattern 1 source dialog class.
 
 \*====================================================================*/
 
@@ -54,29 +54,29 @@ import javax.swing.event.ChangeListener;
 
 import uk.blankaspect.common.misc.MaxValueMap;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.border.TitledBorder;
+import uk.blankaspect.ui.swing.border.TitledBorder;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.Colours;
 
-import uk.blankaspect.common.swing.combobox.FComboBox;
+import uk.blankaspect.ui.swing.combobox.FComboBox;
 
-import uk.blankaspect.common.swing.container.IntegerSpinnerSliderPanel;
-import uk.blankaspect.common.swing.container.SpinnerSliderPanel;
+import uk.blankaspect.ui.swing.container.IntegerSpinnerSliderPanel;
+import uk.blankaspect.ui.swing.container.SpinnerSliderPanel;
 
-import uk.blankaspect.common.swing.label.FixedWidthLabel;
+import uk.blankaspect.ui.swing.label.FixedWidthLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.slider.HorizontalSlider;
+import uk.blankaspect.ui.swing.slider.HorizontalSlider;
 
 //----------------------------------------------------------------------
 
 
-// PATTERN 1 SOURCE DIALOG BOX CLASS
+// PATTERN 1 SOURCE DIALOG CLASS
 
 
 class Pattern1SourceDialog

@@ -2,7 +2,7 @@
 
 Pattern1AnimationKindsDialog.java
 
-Pattern1 animation kinds dialog box class.
+Pattern1 animation kinds dialog class.
 
 \*====================================================================*/
 
@@ -47,18 +47,18 @@ import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.border.TitledBorder;
+import uk.blankaspect.ui.swing.border.TitledBorder;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
 
-// PATTERN 1 ANIMATION KINDS DIALOG BOX CLASS
+// PATTERN 1 ANIMATION KINDS DIALOG CLASS
 
 
 class Pattern1AnimationKindsDialog

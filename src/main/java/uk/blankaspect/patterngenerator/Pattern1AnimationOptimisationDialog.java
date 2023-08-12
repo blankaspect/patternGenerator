@@ -2,7 +2,7 @@
 
 Pattern1AnimationOptimisationDialog.java
 
-Pattern 1 animation optimisation dialog box class.
+Pattern 1 animation optimisation dialog class.
 
 \*====================================================================*/
 
@@ -76,30 +76,28 @@ import javax.swing.table.TableColumnModel;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.string.StringUtils;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.border.TitledBorder;
 
-import uk.blankaspect.common.swing.border.TitledBorder;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.colour.Colours;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
-import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
-
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
 
-// PATTERN 1 ANIMATION OPTIMISATION DIALOG BOX CLASS
+// PATTERN 1 ANIMATION OPTIMISATION DIALOG CLASS
 
 
 class Pattern1AnimationOptimisationDialog
@@ -317,7 +315,7 @@ class Pattern1AnimationOptimisationDialog
 						break;
 
 					case START_FRAME:
-						text = StringUtils.createCharString('0', START_FRAME_FIELD_LENGTH);
+						text = "0".repeat(START_FRAME_FIELD_LENGTH);
 						cellRenderer = new TextRenderer(text, id.alignment);
 						break;
 				}

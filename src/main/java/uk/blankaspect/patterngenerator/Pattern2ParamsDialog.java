@@ -2,7 +2,7 @@
 
 Pattern2ParamsDialog.java
 
-Pattern 2 parameters dialog box class.
+Pattern 2 parameters dialog class.
 
 \*====================================================================*/
 
@@ -65,39 +65,39 @@ import uk.blankaspect.common.exception.AppException;
 
 import uk.blankaspect.common.observer.Observable;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.border.TitledBorder;
+import uk.blankaspect.ui.swing.border.TitledBorder;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.checkbox.FCheckBox;
+import uk.blankaspect.ui.swing.checkbox.FCheckBox;
 
-import uk.blankaspect.common.swing.colour.ColourUtils;
+import uk.blankaspect.ui.swing.colour.ColourUtils;
 
-import uk.blankaspect.common.swing.combobox.FComboBox;
+import uk.blankaspect.ui.swing.combobox.FComboBox;
 
-import uk.blankaspect.common.swing.container.DimensionsSpinnerPanel;
-import uk.blankaspect.common.swing.container.DoubleSpinnerSliderPanel;
+import uk.blankaspect.ui.swing.container.DimensionsSpinnerPanel;
+import uk.blankaspect.ui.swing.container.DoubleSpinnerSliderPanel;
 
-import uk.blankaspect.common.swing.icon.ColourSampleIcon;
+import uk.blankaspect.ui.swing.icon.ColourSampleIcon;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.range.IntegerRangeBarPanel;
+import uk.blankaspect.ui.swing.range.IntegerRangeBarPanel;
 
-import uk.blankaspect.common.swing.slider.HorizontalSlider;
+import uk.blankaspect.ui.swing.slider.HorizontalSlider;
 
-import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
+import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
 
-// PATTERN 2 PARAMETERS DIALOG BOX CLASS
+// PATTERN 2 PARAMETERS DIALOG CLASS
 
 
 class Pattern2ParamsDialog

@@ -2,7 +2,7 @@
 
 Pattern1AnimationParamsDialog.java
 
-Pattern1 animation parameters dialog box class.
+Pattern1 animation parameters dialog class.
 
 \*====================================================================*/
 
@@ -35,6 +35,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -50,24 +51,24 @@ import javax.swing.KeyStroke;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.border.TitledBorder;
+import uk.blankaspect.ui.swing.border.TitledBorder;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.combobox.UnsignedIntegerComboBox;
+import uk.blankaspect.ui.swing.combobox.UnsignedIntegerComboBox;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.spinner.FDoubleSpinner;
+import uk.blankaspect.ui.swing.spinner.FDoubleSpinner;
 
 //----------------------------------------------------------------------
 
 
-// PATTERN 1 ANIMATION PARAMETERS DIALOG BOX CLASS
+// PATTERN 1 ANIMATION PARAMETERS DIALOG CLASS
 
 
 class Pattern1AnimationParamsDialog
@@ -305,7 +306,7 @@ class Pattern1AnimationParamsDialog
 		// Combo box: start frame
 		startFrameComboBox = new UnsignedIntegerComboBox(START_FRAME_FIELD_LENGTH, MAX_NUM_START_FRAMES,
 														 startFrameIndices, startFrameIndex);
-		startFrameComboBox.setDefaultComparator();
+		startFrameComboBox.setComparator(Comparator.naturalOrder());
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;

@@ -25,7 +25,7 @@ import java.awt.Rectangle;
 
 import javax.swing.JComponent;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.Colours;
 
 //----------------------------------------------------------------------
 

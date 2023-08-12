@@ -55,8 +55,6 @@ import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.UnexpectedRuntimeException;
 import uk.blankaspect.common.exception.ValueOutOfBoundsException;
 
-import uk.blankaspect.common.indexedsub.IndexedSub;
-
 import uk.blankaspect.common.misc.IStringKeyed;
 import uk.blankaspect.common.misc.NoYes;
 
@@ -66,8 +64,6 @@ import uk.blankaspect.common.range.IntegerRange;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.colour.ColourUtils;
-
 import uk.blankaspect.common.ui.progress.IProgressView;
 
 import uk.blankaspect.common.xml.Attribute;
@@ -76,13 +72,15 @@ import uk.blankaspect.common.xml.XmlParseException;
 import uk.blankaspect.common.xml.XmlUtils;
 import uk.blankaspect.common.xml.XmlWriter;
 
+import uk.blankaspect.ui.swing.colour.ColourUtils;
+
 //----------------------------------------------------------------------
 
 
 // PATTERN 2 IMAGE CLASS
 
 
-strictfp class Pattern2Image
+class Pattern2Image
 	extends PatternImage
 	implements Cloneable
 {
@@ -91,18 +89,18 @@ strictfp class Pattern2Image
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		int	MIN_ACTIVE_FRACTION		= 1;
-	public static final		int	MAX_ACTIVE_FRACTION		= 100;
-	public static final		int	DEFAULT_ACTIVE_FRACTION	= 50;
+	public static final		int		MIN_ACTIVE_FRACTION		= 1;
+	public static final		int		MAX_ACTIVE_FRACTION		= 100;
+	public static final		int		DEFAULT_ACTIVE_FRACTION	= 50;
 
-	public static final		int	MIN_TRANSITION_INTERVAL	= 1;
-	public static final		int	MAX_TRANSITION_INTERVAL	= 600;
+	public static final		int		MIN_TRANSITION_INTERVAL	= 1;
+	public static final		int		MAX_TRANSITION_INTERVAL	= 600;
 
 	public static final		IntegerRange	DEFAULT_TRANSITION_INTERVAL_RANGE	= new IntegerRange(50, 75);
 
-	private static final	int	MIN_SUPPORTED_VERSION	= 0;
-	private static final	int	MAX_SUPPORTED_VERSION	= 0;
-	private static final	int	VERSION					= 0;
+	private static final	int		MIN_SUPPORTED_VERSION	= 0;
+	private static final	int		MAX_SUPPORTED_VERSION	= 0;
+	private static final	int		VERSION					= 0;
 
 	private static final	double	MAX_CUMULATIVE_PROBABILITY	= 0.9999;
 
@@ -122,13 +120,13 @@ strictfp class Pattern2Image
 
 	private static final	double	ACTIVE_FRACTION_FACTOR	= 100.0;
 
-	private static final	int	NUM_RESERVED_SEEDS	= 16;
+	private static final	int		NUM_RESERVED_SEEDS	= 16;
 
-	private static final	int	PRNG_GENERAL			= 0;
-	private static final	int	PRNG_TERMINAL_EMPHASIS	= 1;
-	private static final	int	PRNG_COLOUR				= 2;
-	private static final	int	PRNG_TRANSITION_LENGTH	= 3;
-	private static final	int	PRNG_ANIMATION			= NUM_RESERVED_SEEDS - 1;
+	private static final	int		PRNG_GENERAL			= 0;
+	private static final	int		PRNG_TERMINAL_EMPHASIS	= 1;
+	private static final	int		PRNG_COLOUR				= 2;
+	private static final	int		PRNG_TRANSITION_LENGTH	= 3;
+	private static final	int		PRNG_ANIMATION			= NUM_RESERVED_SEEDS - 1;
 
 	private static final	String	CLIP_STR			= "clip";
 	private static final	String	CLIP_PATH_REF_STR	= "url(#" + CLIP_STR + ")";
@@ -144,7 +142,7 @@ strictfp class Pattern2Image
 		"  g#foreground > path",
 		"  {",
 		"    fill: none;",
-		"    stroke-width: %1;",
+		"    stroke-width: %s;",
 		"    stroke-linecap: round;",
 		"    stroke-linejoin: round;",
 		"  }",
@@ -813,7 +811,10 @@ strictfp class Pattern2Image
 		private static final	int	MIN_I1	= 0;
 		private static final	int	MAX_I1	= 10000;
 
-		private static final	Comparator<Path>	LENGTH_COMPARATOR;
+		private static final	Comparator<Path>	LENGTH_COMPARATOR =
+				Comparator.<Path>comparingInt(Path::getLength)
+								.thenComparing(Comparator.<Path>comparingInt(path ->
+										Math.max(path.start.lengthenFrameIndex, path.end.lengthenFrameIndex)).reversed());
 
 		private enum Change
 		{
@@ -1400,27 +1401,6 @@ strictfp class Pattern2Image
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Static initialiser
-	////////////////////////////////////////////////////////////////////
-
-		static
-		{
-			LENGTH_COMPARATOR = (path1, path2) ->
-			{
-				// Compare path lengths: shortest is first
-				int result = Integer.compare(path1.getLength(), path2.getLength());
-
-				// If lengths are equal, compare times of last lengthening: most recent is first
-				if (result == 0)
-					result = Integer.compare(StrictMath.max(path2.start.lengthenFrameIndex,
-															path2.end.lengthenFrameIndex),
-											 StrictMath.max(path1.start.lengthenFrameIndex,
-															path1.end.lengthenFrameIndex));
-				return result;
-			};
-		}
-
-	////////////////////////////////////////////////////////////////////
 	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
@@ -1503,7 +1483,7 @@ strictfp class Pattern2Image
 			{
 				StringBuilder buffer = new StringBuilder(256);
 				int numSpaces = indent + 1 + ElementName.PATH.length() + 1 + Svg.AttrName.D.length() + 2;
-				char[] spaces = StringUtils.createCharArray(' ', numSpaces);
+				String spaces = " ".repeat(numSpaces);
 				PathIterator it = path.getPathIterator(null);
 				double[] coords = new double[6];
 				int vertexCount = 0;
@@ -2404,7 +2384,7 @@ strictfp class Pattern2Image
 		for (String str : PATH_STYLE_STRS)
 		{
 			writer.writeSpaces(indent + XmlWriter.INDENT_INCREMENT);
-			writer.write(IndexedSub.sub(str, OutputShape.FORMAT.format(pathThickness)));
+			writer.write(String.format(str, OutputShape.FORMAT.format(pathThickness)));
 			writer.writeEol();
 		}
 
@@ -2980,11 +2960,11 @@ strictfp class Pattern2Image
 							break;
 
 						case LENGTHEN:
-							colour = ColourUtils.interpolate(backgroundColour, path.colour, path.start.changeFraction);
+							colour = ColourUtils.interpolateHsb(backgroundColour, path.colour, path.start.changeFraction);
 							break;
 
 						case SHORTEN:
-							colour = ColourUtils.interpolate(path.colour, backgroundColour, path.start.changeFraction);
+							colour = ColourUtils.interpolateHsb(path.colour, backgroundColour, path.start.changeFraction);
 							break;
 					}
 

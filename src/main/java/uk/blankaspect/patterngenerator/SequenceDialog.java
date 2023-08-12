@@ -2,7 +2,7 @@
 
 SequenceDialog.java
 
-Sequence dialog box class.
+Sequence dialog class.
 
 \*====================================================================*/
 
@@ -62,20 +62,18 @@ import javax.swing.Timer;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.indexedsub.IndexedSub;
+import uk.blankaspect.ui.swing.colour.Colours;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.menu.FMenuItem;
 
-import uk.blankaspect.common.swing.menu.FMenuItem;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
-
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
 
-// SEQUENCE DIALOG BOX CLASS
+// SEQUENCE DIALOG CLASS
 
 
 class SequenceDialog
@@ -87,19 +85,19 @@ class SequenceDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	IMAGE_LAYER			= 1;
-	private static final	int	BELOW_IMAGE_LAYER	= IMAGE_LAYER - 1;
-	private static final	int	ABOVE_IMAGE_LAYER	= IMAGE_LAYER + 1;
+	private static final	int		IMAGE_LAYER			= 1;
+	private static final	int		BELOW_IMAGE_LAYER	= IMAGE_LAYER - 1;
+	private static final	int		ABOVE_IMAGE_LAYER	= IMAGE_LAYER + 1;
 
-	private static final	int	BUTTON_PANEL_VERTICAL_MARGIN	= 2;
-	private static final	int	PREFERRED_BUTTON_PANEL_GAP		= 8;
+	private static final	int		BUTTON_PANEL_VERTICAL_MARGIN	= 2;
+	private static final	int		PREFERRED_BUTTON_PANEL_GAP		= 8;
 
-	private static final	int	BUTTON_PANEL_DELAY	= 1000;
+	private static final	int		BUTTON_PANEL_DELAY	= 1000;
 
 	private static final	Color	BUTTON_PANEL_BORDER_COLOUR		= new Color(176, 184, 176);
 	private static final	Color	BUTTON_PANEL_BACKGROUND_COLOUR	= new Color(200, 208, 200);
 
-	private static final	String	DOCUMENT_CREATED_STR	= "The document \"%1\" was created.";
+	private static final	String	DOCUMENT_CREATED_STR	= "The document '%s' was created.";
 
 ////////////////////////////////////////////////////////////////////////
 //  Enumerated types
@@ -250,8 +248,7 @@ class SequenceDialog
 		private static final	Color	BORDER_COLOUR					= BUTTON_PANEL_BORDER_COLOUR;
 		private static final	Color	BACKGROUND_COLOUR				= BUTTON_PANEL_BACKGROUND_COLOUR;
 		private static final	Color	HIGHLIGHTED_BACKGROUND_COLOUR	= new Color(224, 232, 224);
-		private static final	Color	ACTIVE_BACKGROUND_COLOUR		= Colours.
-																			FOCUSED_SELECTION_BACKGROUND;
+		private static final	Color	ACTIVE_BACKGROUND_COLOUR		= Colours.FOCUSED_SELECTION_BACKGROUND;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -279,6 +276,7 @@ class SequenceDialog
 	//  Instance methods : MouseListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void mouseClicked(MouseEvent event)
 		{
 			// do nothing
@@ -286,6 +284,7 @@ class SequenceDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseEntered(MouseEvent event)
 		{
 			mouseOver = true;
@@ -293,6 +292,7 @@ class SequenceDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseExited(MouseEvent event)
 		{
 			mouseOver = false;
@@ -300,6 +300,7 @@ class SequenceDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mousePressed(MouseEvent event)
 		{
 			mouseOver = contains(event.getPoint());
@@ -307,6 +308,7 @@ class SequenceDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseReleased(MouseEvent event)
 		{
 			mouseOver = contains(event.getPoint());
@@ -318,6 +320,7 @@ class SequenceDialog
 	//  Instance methods : MouseMotionListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void mouseDragged(MouseEvent event)
 		{
 			mouseOver = contains(event.getPoint());
@@ -325,6 +328,7 @@ class SequenceDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseMoved(MouseEvent event)
 		{
 			mouseOver = contains(event.getPoint());
@@ -513,6 +517,7 @@ class SequenceDialog
 	//  Instance methods : ActionListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void actionPerformed(ActionEvent event)
 		{
 			listener.actionPerformed(event);
@@ -566,6 +571,7 @@ class SequenceDialog
 	//  Instance methods : AWTEventListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void eventDispatched(AWTEvent event)
 		{
 			if (event instanceof MouseEvent)
@@ -787,6 +793,7 @@ class SequenceDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		Command command = Command.get(event.getActionCommand());
@@ -825,6 +832,7 @@ class SequenceDialog
 //  Instance methods : MouseListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseClicked(MouseEvent event)
 	{
 		// do nothing
@@ -832,6 +840,7 @@ class SequenceDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseEntered(MouseEvent event)
 	{
 		// do nothing
@@ -839,6 +848,7 @@ class SequenceDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseExited(MouseEvent event)
 	{
 		// do nothing
@@ -846,6 +856,7 @@ class SequenceDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mousePressed(MouseEvent event)
 	{
 		if (SwingUtilities.isLeftMouseButton(event))
@@ -859,6 +870,7 @@ class SequenceDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseReleased(MouseEvent event)
 	{
 		if (SwingUtilities.isLeftMouseButton(event))
@@ -876,6 +888,7 @@ class SequenceDialog
 //  Instance methods : MouseMotionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseDragged(MouseEvent event)
 	{
 		if (SwingUtilities.isLeftMouseButton(event) && (mouseCoordinates != null))
@@ -888,6 +901,7 @@ class SequenceDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseMoved(MouseEvent event)
 	{
 		// do nothing
@@ -1021,7 +1035,7 @@ class SequenceDialog
 			{
 				PatternDocument newDocument = document.createDefinitionDocument(false);
 				App.INSTANCE.addDocument(newDocument);
-				String str = IndexedSub.sub(DOCUMENT_CREATED_STR, newDocument.getName(false));
+				String str = String.format(DOCUMENT_CREATED_STR, newDocument.getName(false));
 				JOptionPane.showMessageDialog(this, str, App.SHORT_NAME, JOptionPane.INFORMATION_MESSAGE);
 			}
 		}

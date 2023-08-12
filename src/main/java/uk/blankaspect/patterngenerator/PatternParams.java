@@ -2,7 +2,7 @@
 
 PatternParams.java
 
-Pattern parameters class.
+Class: pattern parameters.
 
 \*====================================================================*/
 
@@ -32,12 +32,12 @@ import uk.blankaspect.common.exception.UnexpectedRuntimeException;
 
 import uk.blankaspect.common.property.Property;
 
-import uk.blankaspect.common.tuple.StringKVPair;
+import uk.blankaspect.common.tuple.StrKVPair;
 
 //----------------------------------------------------------------------
 
 
-// PATTERN PARAMETERS CLASS
+// CLASS: PATTERN PARAMETERS
 
 
 abstract class PatternParams
@@ -50,9 +50,9 @@ abstract class PatternParams
 
 	protected static final	String	FIELD_PREFIX	= "pp";
 
-	private static final	int	VERSION					= 0;
-	private static final	int	MIN_SUPPORTED_VERSION	= 0;
-	private static final	int	MAX_SUPPORTED_VERSION	= 0;
+	private static final	int		VERSION					= 0;
+	private static final	int		MIN_SUPPORTED_VERSION	= 0;
+	private static final	int		MAX_SUPPORTED_VERSION	= 0;
 
 	private static final	String	NAMESPACE_PREFIX		= "http://ns.blankaspect.uk/patternGenerator-parameters/";
 	private static final	String	NAMESPACE_PREFIX_REGEX	= "http://ns\\.[a-z.]+/patternGenerator-parameters/(\\w+)";
@@ -65,11 +65,166 @@ abstract class PatternParams
 	}
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	protected	List<Property>	properties;
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	protected PatternParams()
+	{
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Class methods
+////////////////////////////////////////////////////////////////////////
+
+	public static PatternParams read(
+		File	file)
+		throws AppException
+	{
+		// Read file
+		PropertySet propertySet = new PropertySet();
+		PatternKind patternKind = propertySet.read(file);
+
+		// Instantiate parameters from property set
+		PatternParams params = null;
+		switch (patternKind)
+		{
+			case PATTERN1:
+				params = new Pattern1Params();
+				break;
+
+			case PATTERN2:
+				params = new Pattern2Params();
+				break;
+		}
+
+		// Set parameters from properties
+		params.getProperties(propertySet);
+
+		return params;
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Abstract methods
+////////////////////////////////////////////////////////////////////////
+
+	public abstract PatternKind getPatternKind();
+
+	//------------------------------------------------------------------
+
+	public abstract int getWidth();
+
+	//------------------------------------------------------------------
+
+	public abstract int getHeight();
+
+	//------------------------------------------------------------------
+
+	public abstract Long getSeed();
+
+	//------------------------------------------------------------------
+
+	public abstract void setWidth(
+		int	width);
+
+	//------------------------------------------------------------------
+
+	public abstract void setHeight(
+		int	height);
+
+	//------------------------------------------------------------------
+
+	public abstract void setSeed(
+		Long	seed);
+
+	//------------------------------------------------------------------
+
+	protected abstract List<Property> getProperties();
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods : overriding methods
+////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public PatternParams clone()
+	{
+		try
+		{
+			return (PatternParams)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			throw new UnexpectedRuntimeException(e);
+		}
+	}
+
+	//------------------------------------------------------------------
+
+	@Override
+	public String toString()
+	{
+		PropertyList properties = new PropertyList();
+		for (Property property : getProperties())
+			property.put(properties);
+		return properties.toString();
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods
+////////////////////////////////////////////////////////////////////////
+
+	public void write(
+		File	file)
+		throws AppException
+	{
+		// Put parameters into property set
+		PropertySet propertySet = new PropertySet(getPatternKind());
+		for (Property property : getProperties())
+			property.put(propertySet);
+
+		// Write file
+		propertySet.write(file, null);
+	}
+
+	//------------------------------------------------------------------
+
+	protected void getProperties(
+		Property.ISource...	propertySources)
+	{
+		for (Property property : getProperties())
+		{
+			try
+			{
+				property.get(propertySources);
+			}
+			catch (AppException e)
+			{
+				AppConfig.showWarningMessage(e);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
 //  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
 
-	// ERROR IDENTIFIERS
+	// ENUMERATION: ERROR IDENTIFIERS
 
 
 	private enum ErrorId
@@ -96,10 +251,17 @@ abstract class PatternParams
 		("The version of the document (%1) is not supported by this version of " + App.SHORT_NAME + ".");
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private ErrorId(String message)
+		private ErrorId(
+			String	message)
 		{
 			this.message = message;
 		}
@@ -110,18 +272,13 @@ abstract class PatternParams
 	//  Instance methods : AppException.IId interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public String getMessage()
 		{
 			return message;
 		}
 
 		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
 
 	}
 
@@ -132,7 +289,7 @@ abstract class PatternParams
 ////////////////////////////////////////////////////////////////////////
 
 
-	// PROPERTY SET CLASS
+	// CLASS: PROPERTY SET
 
 
 	private static class PropertySet
@@ -149,7 +306,8 @@ abstract class PatternParams
 
 		//--------------------------------------------------------------
 
-		private PropertySet(PatternKind patternKind)
+		private PropertySet(
+			PatternKind	patternKind)
 			throws AppException
 		{
 			super(ElementName.PATTERN_GENERATOR_PARAMETERS, NAMESPACE_PREFIX + patternKind.getKey(),
@@ -174,7 +332,8 @@ abstract class PatternParams
 	//  Instance methods
 	////////////////////////////////////////////////////////////////////
 
-		private PatternKind read(File file)
+		private PatternKind read(
+			File	file)
 			throws AppException
 		{
 			// Test for file
@@ -223,12 +382,18 @@ abstract class PatternParams
 	//==================================================================
 
 
-	// PROPERTY LIST CLASS
+	// CLASS: PROPERTY LIST
 
 
 	private static class PropertyList
 		implements Property.ITarget
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	List<StrKVPair>	properties;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -245,12 +410,14 @@ abstract class PatternParams
 	//  Instance methods : Property.ITarget interface
 	////////////////////////////////////////////////////////////////////
 
-		public boolean putProperty(String key,
-								   String value)
+		@Override
+		public boolean putProperty(
+			String	key,
+			String	value)
 		{
 			if (get(key) != null)
 				return false;
-			properties.add(new StringKVPair(key, value));
+			properties.add(StrKVPair.of(key, value));
 			return true;
 		}
 
@@ -264,12 +431,12 @@ abstract class PatternParams
 		public String toString()
 		{
 			StringBuilder buffer = new StringBuilder(1024);
-			for (StringKVPair property : properties)
+			for (StrKVPair property : properties)
 			{
-				String value = property.getValue();
+				String value = property.value();
 				if (!value.isEmpty())
 				{
-					buffer.append(property.getKey());
+					buffer.append(property.key());
 					buffer.append(" = ");
 					buffer.append(value);
 					buffer.append('\n');
@@ -284,176 +451,22 @@ abstract class PatternParams
 	//  Instance methods
 	////////////////////////////////////////////////////////////////////
 
-		private String get(String key)
+		private String get(
+			String	key)
 		{
-			for (StringKVPair property : properties)
+			for (StrKVPair property : properties)
 			{
-				if (property.getKey().equals(key))
-					return property.getValue();
+				if (property.key().equals(key))
+					return property.value();
 			}
 			return null;
 		}
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	List<StringKVPair>	properties;
-
 	}
 
 	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	protected PatternParams()
-	{
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class methods
-////////////////////////////////////////////////////////////////////////
-
-	public static PatternParams read(File file)
-		throws AppException
-	{
-		// Read file
-		PropertySet propertySet = new PropertySet();
-		PatternKind patternKind = propertySet.read(file);
-
-		// Instantiate parameters from property set
-		PatternParams params = null;
-		switch (patternKind)
-		{
-			case PATTERN1:
-				params = new Pattern1Params();
-				break;
-
-			case PATTERN2:
-				params = new Pattern2Params();
-				break;
-		}
-
-		// Set parameters from properties
-		params.getProperties(propertySet);
-
-		return params;
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Abstract methods
-////////////////////////////////////////////////////////////////////////
-
-	public abstract PatternKind getPatternKind();
-
-	//------------------------------------------------------------------
-
-	public abstract int getWidth();
-
-	//------------------------------------------------------------------
-
-	public abstract int getHeight();
-
-	//------------------------------------------------------------------
-
-	public abstract Long getSeed();
-
-	//------------------------------------------------------------------
-
-	public abstract void setWidth(int width);
-
-	//------------------------------------------------------------------
-
-	public abstract void setHeight(int height);
-
-	//------------------------------------------------------------------
-
-	public abstract void setSeed(Long seed);
-
-	//------------------------------------------------------------------
-
-	protected abstract List<Property> getProperties();
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods : overriding methods
-////////////////////////////////////////////////////////////////////////
-
-	@Override
-	public PatternParams clone()
-	{
-		try
-		{
-			return (PatternParams)super.clone();
-		}
-		catch (CloneNotSupportedException e)
-		{
-			throw new UnexpectedRuntimeException(e);
-		}
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	public String toString()
-	{
-		PropertyList properties = new PropertyList();
-		for (Property property : getProperties())
-			property.put(properties);
-		return properties.toString();
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods
-////////////////////////////////////////////////////////////////////////
-
-	public void write(File file)
-		throws AppException
-	{
-		// Put parameters into property set
-		PropertySet propertySet = new PropertySet(getPatternKind());
-		for (Property property : getProperties())
-			property.put(propertySet);
-
-		// Write file
-		propertySet.write(file, null);
-	}
-
-	//------------------------------------------------------------------
-
-	protected void getProperties(Property.ISource... propertySources)
-	{
-		for (Property property : getProperties())
-		{
-			try
-			{
-				property.get(propertySources);
-			}
-			catch (AppException e)
-			{
-				AppConfig.showWarningMessage(e);
-			}
-		}
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	protected	List<Property>	properties;
 
 }
 

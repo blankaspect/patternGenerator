@@ -45,7 +45,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import uk.blankaspect.common.envelope.Envelope;
+import uk.blankaspect.common.envelope.SimpleNode;
 
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.ArgumentOutOfBoundsException;
@@ -72,7 +72,7 @@ import uk.blankaspect.common.xml.XmlWriter;
 // PATTERN 1 IMAGE CLASS
 
 
-strictfp class Pattern1Image
+class Pattern1Image
 	extends PatternImage
 	implements Cloneable
 {
@@ -99,11 +99,11 @@ strictfp class Pattern1Image
 	(
 		Arrays.asList
 		(
-			new Envelope.SimpleNode(0.0,  0.0, true),
-			new Envelope.SimpleNode(0.25, 0.0),
-			new Envelope.SimpleNode(0.5,  0.0),
-			new Envelope.SimpleNode(0.75, 0.0),
-			new Envelope.SimpleNode(1.0,  0.0, true)
+			new SimpleNode(0.0,  0.0, true),
+			new SimpleNode(0.25, 0.0),
+			new SimpleNode(0.5,  0.0),
+			new SimpleNode(0.75, 0.0),
+			new SimpleNode(1.0,  0.0, true)
 		),
 		1.0, 1.0
 	);
@@ -2277,16 +2277,15 @@ strictfp class Pattern1Image
 				double length = (double)(waveTable.length - 1);
 				double phaseOffset = (this.phaseOffset + d * frequency) * length % length;
 				int index = (int)phaseOffset;
-				double value = waveTable[index] + (waveTable[index + 1] - waveTable[index]) *
-																			(phaseOffset - (double)index);
+				double value = waveTable[index] + (waveTable[index + 1] - waveTable[index])
+																					* (phaseOffset - (double)index);
 				return (value * StrictMath.exp(attenuationCoeff * d));
 			}
 			else
 			{
 				d *= WAVE_TABLE_FACTOR_FIXED_PHASE;
 				int index = (int)d;
-				return (waveTable[index] + (waveTable[index + 1] - waveTable[index]) *
-																					(d - (double)index));
+				return (waveTable[index] + (waveTable[index + 1] - waveTable[index]) * (d - (double)index));
 			}
 		}
 
@@ -2696,8 +2695,7 @@ strictfp class Pattern1Image
 			if (obj instanceof BrightnessKey)
 			{
 				BrightnessKey bk = (BrightnessKey)obj;
-				return ((animationKindBitField == bk.animationKindBitField) &&
-						 (startFrameIndex == bk.startFrameIndex));
+				return ((animationKindBitField == bk.animationKindBitField) && (startFrameIndex == bk.startFrameIndex));
 			}
 			return false;
 		}
@@ -3101,12 +3099,11 @@ strictfp class Pattern1Image
 			{
 				case NONE:
 				{
-					int interval = Source.MOTION_ANGLE_DIVISIONS_PER_QUADRANT -
-									(Source.MOTION_ANGLE_LOWER_MARGIN + Source.MOTION_ANGLE_UPPER_MARGIN);
-					int divisions = prng2.nextInt(4) * Source.MOTION_ANGLE_DIVISIONS_PER_QUADRANT +
-											Source.MOTION_ANGLE_LOWER_MARGIN + prng2.nextInt(interval);
-					motionAngle = (double)divisions /
-												(double)(4 * Source.MOTION_ANGLE_DIVISIONS_PER_QUADRANT);
+					int interval = Source.MOTION_ANGLE_DIVISIONS_PER_QUADRANT
+											- (Source.MOTION_ANGLE_LOWER_MARGIN + Source.MOTION_ANGLE_UPPER_MARGIN);
+					int divisions = prng2.nextInt(4) * Source.MOTION_ANGLE_DIVISIONS_PER_QUADRANT
+											+ Source.MOTION_ANGLE_LOWER_MARGIN + prng2.nextInt(interval);
+					motionAngle = (double)divisions / (double)(4 * Source.MOTION_ANGLE_DIVISIONS_PER_QUADRANT);
 					break;
 				}
 
@@ -3318,8 +3315,7 @@ strictfp class Pattern1Image
 
 		// Initialise barrier
 		if (barrier == null)
-			barrier = new CyclicBarrier(numRenderingThreads,
-										new Runnable(){ public void run(){ renderingDone = true; } });
+			barrier = new CyclicBarrier(numRenderingThreads, () -> renderingDone = true);
 
 		// Create an array of hue, saturation and brightness values for the principal region
 		hsbValues = new float[regionWidth][regionHeight][3];
@@ -3333,7 +3329,7 @@ strictfp class Pattern1Image
 		renderingDone = false;
 		barrier.reset();
 		for (ImageRenderer renderer : renderers)
-			executor.submit(renderer);
+			executor.execute(renderer);
 		while (!renderingDone)
 		{
 			// Test whether task has been cancelled
@@ -3354,7 +3350,7 @@ strictfp class Pattern1Image
 			renderingDone = false;
 			barrier.reset();
 			for (ImageRenderer renderer : renderers)
-				executor.submit(renderer);
+				executor.execute(renderer);
 			while (!renderingDone)
 			{
 				// Test whether task has been cancelled
@@ -3485,8 +3481,7 @@ strictfp class Pattern1Image
 		}
 		else
 		{
-			DoubleRange brightnessRange = brightnessRanges.
-												get(new BrightnessKey(animationKinds, startFrameIndex));
+			DoubleRange brightnessRange = brightnessRanges.get(new BrightnessKey(animationKinds, startFrameIndex));
 			if (brightnessRange == null)
 				renderingMode = RenderingMode.TWO_PASSES;
 			else
@@ -3538,8 +3533,8 @@ strictfp class Pattern1Image
 	public void updateSourcePositions(int frameIndex)
 	{
 		double motionRateOffset = (motionRateEnvelope == null)
-									? 0.0
-									: motionRateEnvelope.evaluate(frameIndex - animationStartFrameIndex);
+											? 0.0
+											: motionRateEnvelope.evaluate(frameIndex - animationStartFrameIndex);
 		for (Source source : sources)
 			source.updatePosition(frameIndex, width, height, motionRateOffset);
 	}
@@ -3640,8 +3635,7 @@ strictfp class Pattern1Image
 					if (source.y != yMid)
 						sources.add(source.copyModifyY((double)height - source.y));
 					if ((source.x != xMid) || (source.y != yMid))
-						sources.add(source.copyModifyXY1((double)width - source.x,
-														 (double)height - source.y));
+						sources.add(source.copyModifyXY1((double)width - source.x, (double)height - source.y));
 					break;
 
 				case REFLECTION_DIAGONAL_AXES:
@@ -3659,8 +3653,7 @@ strictfp class Pattern1Image
 					for (Source src : srcs)
 					{
 						if ((src.x != xMid) || (src.y != yMid))
-							sources.add(src.copyModifyXY1((double)width - src.x,
-														  (double)height - src.y));
+							sources.add(src.copyModifyXY1((double)width - src.x, (double)height - src.y));
 					}
 					break;
 				}
@@ -3684,16 +3677,14 @@ strictfp class Pattern1Image
 						if (src.y != yMid)
 							sources.add(src.copyModifyY((double)height - src.y));
 						if ((src.x != xMid) || (src.y != yMid))
-							sources.add(src.copyModifyXY1((double)width - src.x,
-														  (double)height - src.y));
+							sources.add(src.copyModifyXY1((double)width - src.x, (double)height - src.y));
 					}
 					break;
 				}
 
 				case ROTATION_HALF:
 					if ((source.x != xMid) || (source.y != yMid))
-						sources.add(source.copyModifyXY1((double)width - source.x,
-														 (double)height - source.y));
+						sources.add(source.copyModifyXY1((double)width - source.x, (double)height - source.y));
 					break;
 
 				case ROTATION_QUARTER:
@@ -3733,8 +3724,8 @@ strictfp class Pattern1Image
 				throw new InterruptedException();
 
 			// Calculate the hue, saturation and brightness of each pixel in a row.
-			// Hues are not additive, so the hue and saturation are converted to RGB values, the weighted
-			// mean of the RGB values is taken, then the result is converted back to a hue and saturation.
+			// Hues are not additive, so the hue and saturation are converted to RGB values, the weighted mean of the
+			// RGB values is taken, then the result is converted back to a hue and saturation.
 			for (int x = 0; x < regionWidth; x++)
 			{
 				Arrays.fill(rgbValuesA, 0.0);
@@ -3748,6 +3739,7 @@ strictfp class Pattern1Image
 					for (int j = 0; j < rgbValuesA.length; j++)
 						rgbValuesA[j] += rgbValuesB[j] * value;
 				}
+
 				Utils.rgbToHs(rgbValuesA, hsValues);
 				hsbValues[x][y][HUE_INDEX] = (float)hsValues[0];
 				hsbValues[x][y][SATURATION_INDEX] = (float)hsValues[1];
@@ -3811,9 +3803,8 @@ strictfp class Pattern1Image
 				// Set x2 coordinate
 				int x2 = width - x1 - 1;
 
-				// Get brighness
-				float brightness = (hsbValues[x1][y1][BRIGHTNESS_INDEX] - (float)minBrightness) *
-																						brightnessFactor;
+				// Get brightness
+				float brightness = (hsbValues[x1][y1][BRIGHTNESS_INDEX] - (float)minBrightness) * brightnessFactor;
 				if (brightness < 0.0f)
 					brightness = 0.0f;
 				if (brightness > 1.0f)
