@@ -127,7 +127,7 @@
         PatternGenerator.
       </p>
       <p class="wrap">
-        The <code>src</code> directory of the distribution contains all the source code and
+        The <code>src</code> directory of the repository contains all the source code and
         resources that constitute the application; there are no external dependencies.  The
         directory conforms to the Maven standard directory layout: the source code is in
         <code>src/main/java</code> and the resources are in <code>src/main/resources</code>.
@@ -966,9 +966,7 @@
       <p class="wrap">
         Pattern 2 images are drawn with the floating-point graphics methods of the Java runtime
         environment.  The speed and quality of rendering will vary with the Java implementation.
-        (The two examples above and those that are included in the PatternGenerator distribution
-        were generated with Oracle&apos;s JRE on Linux and Windows.)  Depending on the Java
-        implementation, the <a class="configProperty"
+        Depending on the Java implementation, the <a class="configProperty"
         href="#cp-pattern2-pathRendering">pattern2.pathRendering</a> configuration property may
         allow you to modify the way in which paths are rendered.
       </p>
@@ -2452,11 +2450,11 @@
                 </ul>
               </dd>
               <dd class="wrap">
-                Based on observations of Oracle&apos;s JRE on Linux and Windows, the <i>pure</i>
-                setting seems preferable because of two problems with the <i>normalised</i>
-                setting: paths and terminal-emphasis discs are slightly misaligned, and there is
-                some shakiness in a moving path owing to the adjustment of path coordinates in
-                opposite directions between frames.
+                In old observations (circa 2012) of Oracle&apos;s JRE on Linux and Windows, the
+                <i>pure</i> setting seemed preferable because of two problems with the
+                <i>normalised</i> setting: paths and terminal-emphasis discs were slightly
+                misaligned, and there was some shakiness in a moving path owing to the
+                adjustment of path coordinates in opposite directions between frames.
               </dd>
               <dd class="spaceAbove wrap">
                 The default value is <code>Pure</code>.
@@ -2815,7 +2813,7 @@
     <div id="lastModified">
       <div>
         <div>
-         Last modified: 2023-08-12
+         Last modified: 2023-08-13
         </div>
         <div class="image">
           <a class="hideHover" href="http://validator.w3.org/check?uri=referer">
