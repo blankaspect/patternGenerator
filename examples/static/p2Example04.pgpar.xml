@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<patternGeneratorParameters
+   xmlns="http://ns.blankaspect.uk/patternGenerator-parameters/pattern2"
+   version="0">
+  <property
+     key="activeFraction"
+     value="50"/>
+  <property
+     key="backgroundColour"
+     value="206, 223, 207"/>
+  <property
+     key="directionMode"
+     value="absolute"/>
+  <property
+     key="directionProbability.back"
+     value="0"/>
+  <property
+     key="directionProbability.backLeft"
+     value="0"/>
+  <property
+     key="directionProbability.backRight"
+     value="0"/>
+  <property
+     key="directionProbability.fore"
+     value="34"/>
+  <property
+     key="directionProbability.foreLeft"
+     value="33"/>
+  <property
+     key="directionProbability.foreRight"
+     value="33"/>
+  <property
+     key="endMargin"
+     value="2"/>
+  <property
+     key="expectedPathLength"
+     value="8"/>
+  <property
+     key="gridInterval"
+     value="30.0"/>
+  <property
+     key="height"
+     value="240"/>
+  <property
+     key="orientation"
+     value="down"/>
+  <property
+     key="pathColour.000"
+     value="191, 93, 12"/>
+  <property
+     key="pathThickness"
+     value="3.0"/>
+  <property
+     key="seed"
+     value="50214284122518140"/>
+  <property
+     key="showEmptyPaths"
+     value="true"/>
+  <property
+     key="sideMargin"
+     value="4"/>
+  <property
+     key="terminalDiameter"
+     value="15.0"/>
+  <property
+     key="terminalEmphasis"
+     value="startAndEnd"/>
+  <property
+     key="transitionIntervalRange"
+     value="50, 75"/>
+  <property
+     key="width"
+     value="320"/>
+</patternGeneratorParameters>

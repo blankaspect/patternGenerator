@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<patternGeneratorParameters
+   xmlns="http://ns.blankaspect.uk/patternGenerator-parameters/pattern1"
+   version="0">
+  <property
+     key="height"
+     value="240"/>
+  <property
+     key="motionRateRange"
+     value="0.8, 1.2"/>
+  <property
+     key="phaseIncrementRange"
+     value="25, 30"/>
+  <property
+     key="rotationPeriodRange"
+     value="200.0, 400.0"/>
+  <property
+     key="rotationSense"
+     value="any"/>
+  <property
+     key="saturationMode"
+     value="variable"/>
+  <property
+     key="seed"
+     value="455255706301322909"/>
+  <property
+     key="source.000"
+     value="circle; cosine-1; 50; 5; none; 50; 100"/>
+  <property
+     key="source.001"
+     value="ellipse; 5; modifiedCosineInverted-1; 30; 30; none; 198; 65"/>
+  <property
+     key="source.002"
+     value="circle; triangleInverted-1; 79; 5; none; 24; 35"/>
+  <property
+     key="symmetry"
+     value="rotationQuarter"/>
+  <property
+     key="wavelengthRange"
+     value="0.06, 0.18"/>
+  <property
+     key="width"
+     value="320"/>
+</patternGeneratorParameters>

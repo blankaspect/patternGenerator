@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<patternGeneratorParameters
+   xmlns="http://ns.blankaspect.uk/patternGenerator-parameters/pattern2"
+   version="0">
+  <property
+     key="activeFraction"
+     value="50"/>
+  <property
+     key="backgroundColour"
+     value="32, 32, 32"/>
+  <property
+     key="directionMode"
+     value="absolute"/>
+  <property
+     key="directionProbability.back"
+     value="0"/>
+  <property
+     key="directionProbability.backLeft"
+     value="32"/>
+  <property
+     key="directionProbability.backRight"
+     value="32"/>
+  <property
+     key="directionProbability.fore"
+     value="40"/>
+  <property
+     key="directionProbability.foreLeft"
+     value="32"/>
+  <property
+     key="directionProbability.foreRight"
+     value="32"/>
+  <property
+     key="endMargin"
+     value="2"/>
+  <property
+     key="expectedPathLength"
+     value="12"/>
+  <property
+     key="gridInterval"
+     value="16.0"/>
+  <property
+     key="height"
+     value="240"/>
+  <property
+     key="orientation"
+     value="left"/>
+  <property
+     key="pathColour.000"
+     value="216, 216, 216"/>
+  <property
+     key="pathColour.001"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.002"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.003"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.004"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.005"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.006"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.007"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.008"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.009"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.010"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.011"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.012"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.013"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.014"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.015"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.016"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.017"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.018"
+     value="104, 104, 104"/>
+  <property
+     key="pathColour.019"
+     value="104, 104, 104"/>
+  <property
+     key="pathThickness"
+     value="7.0"/>
+  <property
+     key="seed"
+     value="934715779574132730"/>
+  <property
+     key="showEmptyPaths"
+     value="true"/>
+  <property
+     key="sideMargin"
+     value="4"/>
+  <property
+     key="terminalDiameter"
+     value="13.0"/>
+  <property
+     key="terminalEmphasis"
+     value="start"/>
+  <property
+     key="transitionIntervalRange"
+     value="50, 75"/>
+  <property
+     key="width"
+     value="320"/>
+</patternGeneratorParameters>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<patternGeneratorParameters
+   xmlns="http://ns.blankaspect.uk/patternGenerator-parameters/pattern2"
+   version="0">
+  <property
+     key="activeFraction"
+     value="50"/>
+  <property
+     key="backgroundColour"
+     value="64, 64, 64"/>
+  <property
+     key="directionMode"
+     value="absolute"/>
+  <property
+     key="directionProbability.back"
+     value="0"/>
+  <property
+     key="directionProbability.backLeft"
+     value="0"/>
+  <property
+     key="directionProbability.backRight"
+     value="0"/>
+  <property
+     key="directionProbability.fore"
+     value="0"/>
+  <property
+     key="directionProbability.foreLeft"
+     value="33"/>
+  <property
+     key="directionProbability.foreRight"
+     value="33"/>
+  <property
+     key="endMargin"
+     value="2"/>
+  <property
+     key="expectedPathLength"
+     value="32"/>
+  <property
+     key="gridInterval"
+     value="3.0"/>
+  <property
+     key="height"
+     value="240"/>
+  <property
+     key="orientation"
+     value="up"/>
+  <property
+     key="pathColour.000"
+     value="240, 192, 0"/>
+  <property
+     key="pathColour.001"
+     value="240, 96, 96"/>
+  <property
+     key="pathColour.002"
+     value="0, 240, 240"/>
+  <property
+     key="pathColour.003"
+     value="0, 192, 128"/>
+  <property
+     key="pathColour.004"
+     value="128, 128, 240"/>
+  <property
+     key="pathColour.005"
+     value="240, 240, 240"/>
+  <property
+     key="pathColour.006"
+     value="240, 192, 192"/>
+  <property
+     key="pathColour.007"
+     value="192, 192, 0"/>
+  <property
+     key="pathThickness"
+     value="1.6"/>
+  <property
+     key="seed"
+     value="189951769678065079"/>
+  <property
+     key="showEmptyPaths"
+     value="true"/>
+  <property
+     key="sideMargin"
+     value="4"/>
+  <property
+     key="terminalDiameter"
+     value="12.0"/>
+  <property
+     key="terminalEmphasis"
+     value="none"/>
+  <property
+     key="transitionIntervalRange"
+     value="50, 75"/>
+  <property
+     key="width"
+     value="320"/>
+</patternGeneratorParameters>
