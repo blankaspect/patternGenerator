@@ -19,7 +19,6 @@ package uk.blankaspect.patterngenerator;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -128,9 +127,8 @@ class Pattern1AnimationKindsDialog
 										 Set<Pattern1Image.AnimationKind> enabledAnimationKinds,
 										 Set<Pattern1Image.AnimationKind> selectedAnimationKinds)
 	{
-
 		// Call superclass constructor
-		super(owner, TITLE_STR, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, TITLE_STR, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -229,7 +227,7 @@ class Pattern1AnimationKindsDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -239,7 +237,6 @@ class Pattern1AnimationKindsDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -307,9 +304,8 @@ class Pattern1AnimationKindsDialog
 
 	public PatternDocument.AnimationParams getAnimationParams()
 	{
-		return (accepted ? new PatternDocument.AnimationParams(Pattern1Image.AnimationKind.
-																		setToBitField(animationKinds))
-						 : null);
+		return accepted ? PatternDocument.AnimationParams.of(Pattern1Image.AnimationKind.setToBitField(animationKinds))
+						: null;
 	}
 
 	//------------------------------------------------------------------

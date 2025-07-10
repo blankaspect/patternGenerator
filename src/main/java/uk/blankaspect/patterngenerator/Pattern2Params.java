@@ -105,8 +105,8 @@ class Pattern2Params
 	public static final	int	MIN_NUM_PATH_COLOURS	= 1;
 	public static final	int	MAX_NUM_PATH_COLOURS	= 40;
 
-	public static final	long	MIN_SEED	= App.MIN_SEED;
-	public static final	long	MAX_SEED	= App.MAX_SEED;
+	public static final	long	MIN_SEED	= PatternGeneratorApp.MIN_SEED;
+	public static final	long	MAX_SEED	= PatternGeneratorApp.MAX_SEED;
 
 	private static final	Map<Pattern2Image.Direction, Integer>	DEFAULT_PROBABILITIES;
 
@@ -1026,7 +1026,7 @@ class Pattern2Params
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showWarningMessage(App.SHORT_NAME, e);
+				PatternGeneratorApp.INSTANCE.showWarningMessage(PatternGeneratorApp.SHORT_NAME, e);
 			}
 		}
 

@@ -20,7 +20,6 @@ package uk.blankaspect.patterngenerator;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -117,15 +116,15 @@ class Pattern1ParamsDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	WIDTH_FIELD_LENGTH	= 4;
-	private static final	int	HEIGHT_FIELD_LENGTH	= 4;
+	private static final	int		WIDTH_FIELD_LENGTH	= 4;
+	private static final	int		HEIGHT_FIELD_LENGTH	= 4;
 
-	private static final	int	NUM_VIEWABLE_SOURCE_TABLE_ROWS	= 6;
+	private static final	int		NUM_VIEWABLE_SOURCE_TABLE_ROWS	= 6;
 
 	private static final	Insets	MOTION_RATE_BUTTON_MARGINS	= new Insets(1, 4, 1, 4);
 
-	private static final	String	TITLE_STR					= PatternKind.PATTERN1.getName() +
-																						" parameters : ";
+	private static final	String	TITLE_PREFIX	= PatternKind.PATTERN1.getName() + " parameters : ";
+
 	private static final	String	NEW_PATTERN_STR				= "New pattern";
 	private static final	String	SIZE_STR					= "Size";
 	private static final	String	SYMMETRY_STR				= "Symmetry";
@@ -154,1419 +153,42 @@ class Pattern1ParamsDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// TABLE COLUMN
-
-
-	private enum Column
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		INDEX
-		(
-			"#",
-			SwingConstants.TRAILING
-		),
-
-		SHAPE
-		(
-			"Shape",
-			SwingConstants.LEADING
-		),
-
-		PARAMETER
-		(
-			"Par",
-			SwingConstants.TRAILING
-		),
-
-		WAVEFORM
-		(
-			"Waveform",
-			SwingConstants.LEADING
-		),
-
-		WAVE_COEFFICIENT
-		(
-			"Coeff",
-			SwingConstants.TRAILING
-		),
-
-		ATTENUATION_COEFFICIENT
-		(
-			"Atten",
-			SwingConstants.TRAILING
-		),
-
-		CONSTRAINT
-		(
-			"Constraint",
-			SwingConstants.LEADING
-		),
-
-		COLOUR
-		(
-			"Colour",
-			SwingConstants.LEADING
-		);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Column(String text,
-					   int    alignment)
-		{
-			this.text = text;
-			this.alignment = alignment;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public String toString()
-		{
-			return text;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-		private	int		alignment;
-
-	}
-
-	//==================================================================
+	private static	Point	location;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// WAVELENGTH RANGE PANEL CLASS
-
-
-	private static class WavelengthRangePanel
-		extends DoubleRangeBarPanel.Horizontal
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	double	OFFSET	= Math.log(Pattern1Params.MIN_WAVELENGTH);
-		private static final	double	FACTOR	= Math.log(Pattern1Params.MAX_WAVELENGTH) - OFFSET;
-
-		private static final	int	BAR_EXTENT	= 200;
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SPINNER CLASS
-
-
-		private static class Spinner
-			extends FDoubleSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	double	DELTA_VALUE	= 0.001;
-
-			private static final	int	FIELD_LENGTH	= 5;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Spinner()
-			{
-				super(Pattern1Params.MIN_WAVELENGTH, Pattern1Params.MIN_WAVELENGTH,
-					  Pattern1Params.MAX_WAVELENGTH, DELTA_VALUE, FIELD_LENGTH, AppConstants.FORMAT_1_3);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private WavelengthRangePanel()
-		{
-			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public double normaliseValue(double value)
-		{
-			return ((Math.log(value) - OFFSET) / FACTOR);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public double denormaliseValue(double value)
-		{
-			return Math.exp(OFFSET + value * FACTOR);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// PHASE-INCREMENT RANGE PANEL CLASS
-
-
-	private static class PhaseIncrementRangePanel
-		extends IntegerRangeBarPanel.Horizontal
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	OFFSET	= Pattern1Image.MIN_PHASE_INCREMENT;
-		private static final	int	FACTOR	= Pattern1Image.MAX_PHASE_INCREMENT - OFFSET;
-
-		private static final	int	BAR_EXTENT	= 200;
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SPINNER CLASS
-
-
-		private static class Spinner
-			extends FIntegerSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	int	FIELD_LENGTH	= 4;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Spinner()
-			{
-				super(Pattern1Image.MIN_PHASE_INCREMENT, Pattern1Image.MIN_PHASE_INCREMENT,
-					  Pattern1Image.MAX_PHASE_INCREMENT, FIELD_LENGTH, true);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private PhaseIncrementRangePanel()
-		{
-			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public double normaliseValue(int value)
-		{
-			return (double)(value - OFFSET) / (double)FACTOR;
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public int denormaliseValue(double value)
-		{
-			return (int)Math.round(value * (double)FACTOR) + OFFSET;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// MOTION-RATE RANGE PANEL CLASS
-
-
-	private static class MotionRateRangePanel
-		extends DoubleRangeBarPanel.Horizontal
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	double	OFFSET	= Math.log(Pattern1Image.MIN_MOTION_RATE);
-		private static final	double	FACTOR	= Math.log(Pattern1Image.MAX_MOTION_RATE) - OFFSET;
-
-		private static final	int	BAR_EXTENT	= 200;
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SPINNER CLASS
-
-
-		private static class Spinner
-			extends FDoubleSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	double	DELTA_VALUE	= 0.01;
-
-			private static final	int	FIELD_LENGTH	= 4;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Spinner()
-			{
-				super(Pattern1Image.MIN_MOTION_RATE, Pattern1Image.MIN_MOTION_RATE,
-					  Pattern1Image.MAX_MOTION_RATE, DELTA_VALUE, FIELD_LENGTH, AppConstants.FORMAT_1_2);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private MotionRateRangePanel()
-		{
-			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public double normaliseValue(double value)
-		{
-			return ((Math.log(value) - OFFSET) / FACTOR);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public double denormaliseValue(double value)
-		{
-			return Math.exp(OFFSET + value * FACTOR);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// ROTATION-PERIOD RANGE PANEL CLASS
-
-
-	private static class RotationPeriodRangePanel
-		extends DoubleRangeBarPanel.Horizontal
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	double	OFFSET	= Math.log(Pattern1Params.MIN_ROTATION_PERIOD);
-		private static final	double	FACTOR	= Math.log(Pattern1Params.MAX_ROTATION_PERIOD) - OFFSET;
-
-		private static final	int	BAR_EXTENT	= 200;
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SPINNER CLASS
-
-
-		private static class Spinner
-			extends FDoubleSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	double	DELTA_VALUE	= 1.0;
-
-			private static final	int	FIELD_LENGTH	= 6;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Spinner()
-			{
-				super(Pattern1Params.MIN_ROTATION_PERIOD, Pattern1Params.MIN_ROTATION_PERIOD,
-					  Pattern1Params.MAX_ROTATION_PERIOD, DELTA_VALUE, FIELD_LENGTH,
-					  AppConstants.FORMAT_1_3);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private RotationPeriodRangePanel()
-		{
-			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public double normaliseValue(double value)
-		{
-			return ((Math.log(value) - OFFSET) / FACTOR);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public double denormaliseValue(double value)
-		{
-			return Math.exp(OFFSET + value * FACTOR);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// SOURCE TABLE CLASS
-
-
-	private static class SourceTable
-		extends JTable
-		implements ActionListener, FocusListener, MouseListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	CELL_VERTICAL_MARGIN	= 1;
-		private static final	int	CELL_HORIZONTAL_MARGIN	= 5;
-		private static final	int	GRID_LINE_WIDTH			= 1;
-
-		// Commands
-		private interface Command
-		{
-			String	FOCUS_PREVIOUS	= "focusPrevious";
-			String	FOCUS_NEXT		= "focusNext";
-		}
-
-		private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
-		{
-			new KeyAction.KeyCommandPair
-			(
-				KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK),
-				Command.FOCUS_PREVIOUS
-			),
-			new KeyAction.KeyCommandPair
-			(
-				KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0),
-				Command.FOCUS_NEXT
-			)
-		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private SourceTable(AbstractTableModel tableModel)
-		{
-			// Call superclass constructor
-			super(tableModel);
-
-			// Set attributes
-			setGridColor(Colours.Table.GRID.getColour());
-			setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			setIntercellSpacing(new Dimension());
-			AppFont.MAIN.apply(getTableHeader());
-			AppFont.MAIN.apply(this);
-			int rowHeight = 2 * CELL_VERTICAL_MARGIN + GRID_LINE_WIDTH +
-																getFontMetrics(getFont()).getHeight();
-			setRowHeight(rowHeight);
-
-			// Initialise columns
-			TableColumnModel columnModel = getColumnModel();
-			CellEditor cellEditor = new CellEditor();
-			for (Column id : Column.values())
-			{
-				TableColumn column = columnModel.getColumn(id.ordinal());
-				column.setIdentifier(id);
-				String text = null;
-				TableCellRenderer headerRenderer = new TextRenderer(id.text, id.alignment);
-				TableCellRenderer cellRenderer = null;
-				switch (id)
-				{
-					case INDEX:
-						text = Integer.toString(Pattern1Params.MAX_NUM_SOURCES);
-						cellRenderer = new TextRenderer(text, id.alignment);
-						break;
-
-					case SHAPE:
-						text = getWidestString(Pattern1Image.Source.Shape.values());
-						cellRenderer = new TextRenderer(text, id.alignment);
-						break;
-
-					case PARAMETER:
-					{
-						int maxValue = 0;
-						int value = Pattern1Image.Source.Ellipse.MAX_ECCENTRICITY;
-						maxValue = Math.max(value, maxValue);
-						value = Pattern1Image.Source.Polygon.MAX_NUM_EDGES;
-						maxValue = Math.max(value, maxValue);
-						text = Integer.toString(maxValue);
-						cellRenderer = new TextRenderer(text, id.alignment);
-						break;
-					}
-
-					case WAVEFORM:
-						text = getWidestString(Pattern1Image.Source.Waveform.values());
-						cellRenderer = new TextRenderer(text, id.alignment);
-						break;
-
-					case WAVE_COEFFICIENT:
-						text = Integer.toString(Pattern1Image.Source.MAX_WAVE_COEFFICIENT);
-						cellRenderer = new TextRenderer(text, id.alignment);
-						break;
-
-					case ATTENUATION_COEFFICIENT:
-						text = Integer.toString(Pattern1Image.Source.MAX_ATTENUATION_COEFFICIENT);
-						cellRenderer = new TextRenderer(text, id.alignment);
-						break;
-
-					case CONSTRAINT:
-						text = getWidestString(Pattern1Image.Source.Constraint.values());
-						cellRenderer = new TextRenderer(text, id.alignment);
-						break;
-
-					case COLOUR:
-						cellRenderer = new ColourRenderer();
-						break;
-				}
-				int width = Math.max(((JComponent)headerRenderer).getPreferredSize().width,
-									 ((JComponent)cellRenderer).getPreferredSize().width);
-				column.setMinWidth(width);
-				column.setMaxWidth(width);
-				column.setPreferredWidth(width);
-				column.setHeaderValue(id);
-				column.setHeaderRenderer(headerRenderer);
-				column.setCellRenderer(cellRenderer);
-				column.setCellEditor(cellEditor);
-			}
-
-			// Set viewport size
-			setPreferredScrollableViewportSize(new Dimension(columnModel.getTotalColumnWidth(),
-															 getRowCount() * rowHeight));
-
-			// Remove keys from input map
-			InputMap inputMap = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-			while (inputMap != null)
-			{
-				inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
-				inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0));
-				inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.SHIFT_DOWN_MASK));
-				inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0));
-				inputMap = inputMap.getParent();
-			}
-
-			// Add listeners
-			addFocusListener(this);
-			getTableHeader().addMouseListener(this);
-
-			// Add commands to action map
-			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, this, KEY_COMMANDS);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ActionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void actionPerformed(ActionEvent event)
-		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.FOCUS_PREVIOUS))
-				onFocusPrevious();
-
-			else if (command.equals(Command.FOCUS_NEXT))
-				onFocusNext();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : FocusListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void focusGained(FocusEvent event)
-		{
-			getTableHeader().repaint();
-			getParent().repaint();
-		}
-
-		//--------------------------------------------------------------
-
-		public void focusLost(FocusEvent event)
-		{
-			getTableHeader().repaint();
-			getParent().repaint();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : MouseListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void mouseClicked(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseEntered(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseExited(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mousePressed(MouseEvent event)
-		{
-			if (SwingUtilities.isLeftMouseButton(event))
-				requestFocusInWindow();
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseReleased(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private String getWidestString(Object[] values)
-		{
-			String widestStr = null;
-			FontMetrics fontMetrics = getFontMetrics(getFont());
-			int maxWidth = 0;
-			for (Object value : values)
-			{
-				String str = value.toString();
-				int width = fontMetrics.stringWidth(str);
-				if (maxWidth < width)
-				{
-					maxWidth = width;
-					widestStr = str;
-				}
-			}
-			return widestStr;
-		}
-
-		//--------------------------------------------------------------
-
-		private void onFocusPrevious()
-		{
-			if (isFocusOwner())
-				transferFocusBackward();
-		}
-
-		//--------------------------------------------------------------
-
-		private void onFocusNext()
-		{
-			if (isFocusOwner())
-				transferFocus();
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// SOURCE TABLE MODEL CLASS
-
-
-	private static class SourceTableModel
-		extends AbstractTableModel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private SourceTableModel(List<Pattern1Image.SourceParams> sources)
-		{
-			this.sources = new ArrayList<>(sources);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public int getRowCount()
-		{
-			return sources.size();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public int getColumnCount()
-		{
-			return Column.values().length;
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public Object getValueAt(int row,
-								 int column)
-		{
-			Pattern1Image.SourceParams source = sources.get(row);
-			if ((column >= 0) && (column < Column.values().length))
-			{
-				switch (Column.values()[column])
-				{
-					case INDEX:
-						return Integer.toString(row + 1);
-
-					case SHAPE:
-						return source.getShape();
-
-					case PARAMETER:
-					{
-						Pattern1Image.SourceParams.Key key = null;
-						switch (source.getShape())
-						{
-							case CIRCLE:
-								// do nothing
-								break;
-
-							case ELLIPSE:
-								key = Pattern1Image.SourceParams.Key.ECCENTRICITY;
-								break;
-
-							case POLYGON:
-								key = Pattern1Image.SourceParams.Key.NUM_EDGES;
-								break;
-						}
-						return ((key == null) ? "" : source.getShapeParamValue(key));
-					}
-
-					case WAVEFORM:
-						return source.getWaveform();
-
-					case WAVE_COEFFICIENT:
-						return source.getWaveCoefficient();
-
-					case ATTENUATION_COEFFICIENT:
-						return source.getAttenuationCoefficient();
-
-					case CONSTRAINT:
-						return source.getConstraint();
-
-					case COLOUR:
-						return source.getColour();
-				}
-			}
-			return null;
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public boolean isCellEditable(int row,
-									  int column)
-		{
-			return (row >= 0);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private void addSource(Pattern1Image.SourceParams source)
-		{
-			int numSources = sources.size();
-			if (numSources < Pattern1Params.MAX_NUM_SOURCES)
-			{
-				sources.add(source);
-				fireTableRowsInserted(numSources, numSources);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private void deleteSource(int index)
-		{
-			int numSources = sources.size();
-			if ((numSources > Pattern1Params.MIN_NUM_SOURCES) && (index < numSources))
-			{
-				sources.remove(index);
-				fireTableRowsDeleted(index, index);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private void setSource(int                        index,
-							   Pattern1Image.SourceParams source)
-		{
-			sources.set(index, source);
-			fireTableRowsUpdated(index, index);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	List<Pattern1Image.SourceParams>	sources;
-
-	}
-
-	//==================================================================
-
-
-	// TEXT RENDERER CLASS
-
-
-	private static class TextRenderer
-		extends JComponent
-		implements TableCellRenderer
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private TextRenderer(String text,
-							 int    alignment)
-		{
-			this.text = text;
-			this.alignment = alignment;
-			AppFont.MAIN.apply(this);
-			setForeground(Colours.Table.FOREGROUND.getColour());
-			setOpaque(true);
-			setFocusable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : TableCellRenderer interface
-	////////////////////////////////////////////////////////////////////
-
-		public Component getTableCellRendererComponent(JTable  table,
-													   Object  value,
-													   boolean isSelected,
-													   boolean hasFocus,
-													   int     row,
-													   int     column)
-		{
-			isHeader = (row < 0);
-			text = (value == null) ? null : value.toString();
-			setBackground(isHeader ? table.isFocusOwner()
-											? Colours.Table.FOCUSED_HEADER_BACKGROUND1.getColour()
-											: Colours.Table.HEADER_BACKGROUND1.getColour()
-								   : isSelected
-											? table.isFocusOwner()
-												? Colours.Table.FOCUSED_SELECTION_BACKGROUND.getColour()
-												: Colours.Table.SELECTION_BACKGROUND.getColour()
-											: Colours.Table.BACKGROUND.getColour());
-			borderColour = table.isFocusOwner() ? Colours.Table.FOCUSED_HEADER_BORDER1.getColour()
-												: Colours.Table.HEADER_BORDER1.getColour();
-			return this;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			FontMetrics fontMetrics = getFontMetrics(getFont());
-			int width = 2 * SourceTable.CELL_HORIZONTAL_MARGIN + SourceTable.GRID_LINE_WIDTH +
-																			fontMetrics.stringWidth(text);
-			int height = 2 * SourceTable.CELL_VERTICAL_MARGIN + SourceTable.GRID_LINE_WIDTH +
-													fontMetrics.getAscent() + fontMetrics.getDescent();
-			return new Dimension(width, height);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Fill background
-			int width = getWidth();
-			int height = getHeight();
-			gr.setColor(getBackground());
-			gr.fillRect(0, 0, width, height);
-
-			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
-
-			// Draw text
-			gr.setColor(getForeground());
-			FontMetrics fontMetrics = gr.getFontMetrics();
-			int x = (alignment == SwingConstants.LEADING)
-						? SourceTable.CELL_HORIZONTAL_MARGIN
-						: width - (fontMetrics.stringWidth(text) + SourceTable.CELL_HORIZONTAL_MARGIN);
-			gr.drawString(text, x, FontUtils.getBaselineOffset(height, fontMetrics));
-
-			// Draw cell border
-			--width;
-			--height;
-			gr.setColor(isHeader ? borderColour : Colours.Table.GRID.getColour());
-			gr.drawLine(width, 0, width, height);
-			gr.drawLine(0, height, width, height);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-		private	int		alignment;
-		private	boolean	isHeader;
-		private	Color	borderColour;
-
-	}
-
-	//==================================================================
-
-
-	// COLOUR RENDERER CLASS
-
-
-	private static class ColourRenderer
-		extends JComponent
-		implements TableCellRenderer
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	SAMPLE_WIDTH	= 32;
-		private static final	int	SAMPLE_HEIGHT	= 12;
-
-		private static final	Color	BORDER_COLOUR	= Colours.LINE_BORDER;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ColourRenderer()
-		{
-			setOpaque(true);
-			setFocusable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : TableCellRenderer interface
-	////////////////////////////////////////////////////////////////////
-
-		public Component getTableCellRendererComponent(JTable  table,
-													   Object  value,
-													   boolean isSelected,
-													   boolean hasFocus,
-													   int     row,
-													   int     column)
-		{
-			colour = (Color)value;
-			setBackground(isSelected ? table.isFocusOwner()
-												? Colours.Table.FOCUSED_SELECTION_BACKGROUND.getColour()
-												: Colours.Table.SELECTION_BACKGROUND.getColour()
-									 : Colours.Table.BACKGROUND.getColour());
-			return this;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			int width = 2 * SourceTable.CELL_HORIZONTAL_MARGIN + SourceTable.GRID_LINE_WIDTH + SAMPLE_WIDTH;
-			int height = 2 * SourceTable.CELL_VERTICAL_MARGIN + SourceTable.GRID_LINE_WIDTH + SAMPLE_HEIGHT;
-			return new Dimension(width, height);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Fill background
-			int width = getWidth();
-			int height = getHeight();
-			gr.setColor(getBackground());
-			gr.fillRect(0, 0, width, height);
-
-			// Draw colour sample
-			int x = SourceTable.CELL_HORIZONTAL_MARGIN;
-			int y = (height - SAMPLE_HEIGHT) / 2;
-			gr.setColor(colour);
-			gr.fillRect(x + 1, y + 1, SAMPLE_WIDTH - 2, SAMPLE_HEIGHT - 2);
-
-			// Draw border of sample
-			gr.setColor(BORDER_COLOUR);
-			gr.drawRect(x, y, SAMPLE_WIDTH - 1, SAMPLE_HEIGHT - 1);
-
-			// Draw cell border
-			--width;
-			--height;
-			gr.setColor(Colours.Table.GRID.getColour());
-			gr.drawLine(width, 0, width, height);
-			gr.drawLine(0, height, width, height);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	Color	colour;
-
-	}
-
-	//==================================================================
-
-
-	// CELL EDITOR CLASS
-
-
-	private static class CellEditor
-		extends AbstractCellEditor
-		implements TableCellEditor
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private CellEditor()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : TableCellEditor interface
-	////////////////////////////////////////////////////////////////////
-
-		public Object getCellEditorValue()
-		{
-			return null;
-		}
-
-		//--------------------------------------------------------------
-
-		public Component getTableCellEditorComponent(JTable  table,
-													 Object  value,
-													 boolean selected,
-													 int     row,
-													 int     column)
-		{
-			SourceTableModel tableModel = (SourceTableModel)table.getModel();
-			Pattern1Image.SourceParams source = tableModel.sources.get(row);
-			source = Pattern1SourceDialog.showDialog(table, row, source);
-			if (source != null)
-				tableModel.setSource(row, source);
-			return null;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public boolean isCellEditable(EventObject event)
-		{
-			// Test for a mouse event
-			if (event instanceof MouseEvent mouseEvent)
-				return SwingUtilities.isLeftMouseButton(mouseEvent) && (mouseEvent.getClickCount() > 1);
-
-			// Test for a key event
-			if (event instanceof KeyEvent keyEvent)
-				return (keyEvent.getKeyCode() == KeyEvent.VK_SPACE) && (keyEvent.getModifiersEx() == 0);
-
-			return false;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// SOURCE PANEL CLASS
-
-
-	private static class SourcePanel
-		extends JPanel
-		implements ActionListener, ListSelectionListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	String	ADD_STR			= "Add";
-		private static final	String	DUPLICATE_STR	= "Duplicate";
-		private static final	String	EDIT_STR		= "Edit";
-		private static final	String	DELETE_STR		= "Delete";
-
-		private interface Command
-		{
-			String	ADD			= "add";
-			String	DUPLICATE	= "duplicate";
-			String	EDIT		= "edit";
-			String	DELETE		= "delete";
-		}
-
-		private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
-		{
-			new KeyAction.KeyCommandPair
-			(
-				KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK),
-				Command.DELETE
-			)
-		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private SourcePanel(List<Pattern1Image.SourceParams> sources)
-		{
-			// Set layout manager
-			GridBagLayout gridBag = new GridBagLayout();
-			GridBagConstraints gbc = new GridBagConstraints();
-
-			setLayout(gridBag);
-
-			int gridX = 0;
-
-
-			//----  Source table scroll pane
-
-			tableModel = new SourceTableModel(sources);
-
-			table = new SourceTable(tableModel);
-			table.getSelectionModel().addListSelectionListener(this);
-			KeyAction.create(table, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, this, KEY_COMMANDS);
-
-			JScrollPane tableScrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-														  JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-			Dimension viewSize = new Dimension(table.getPreferredScrollableViewportSize().width,
-											   NUM_VIEWABLE_SOURCE_TABLE_ROWS * table.getRowHeight());
-			tableScrollPane.getViewport().setPreferredSize(viewSize);
-			tableScrollPane.getViewport().setFocusable(false);
-			tableScrollPane.getVerticalScrollBar().setFocusable(false);
-			tableScrollPane.getHorizontalScrollBar().setFocusable(false);
-
-			gbc.gridx = gridX++;
-			gbc.gridy = 0;
-			gbc.gridwidth = 1;
-			gbc.gridheight = 1;
-			gbc.weightx = 0.5;
-			gbc.weighty = 0.0;
-			gbc.anchor = GridBagConstraints.NORTH;
-			gbc.fill = GridBagConstraints.NONE;
-			gbc.insets = new Insets(0, 0, 0, 4);
-			gridBag.setConstraints(tableScrollPane, gbc);
-			add(tableScrollPane);
-
-
-			//----  Button panel
-
-			JPanel buttonPanel = new JPanel(new GridLayout(0, 1, 0, 8));
-
-			// Button: add
-			addButton = new FButton(ADD_STR + AppConstants.ELLIPSIS_STR);
-			addButton.setMnemonic(KeyEvent.VK_A);
-			addButton.setActionCommand(Command.ADD);
-			addButton.addActionListener(this);
-			buttonPanel.add(addButton);
-
-			// Button: duplicate
-			duplicateButton = new FButton(DUPLICATE_STR);
-			duplicateButton.setMnemonic(KeyEvent.VK_D);
-			duplicateButton.setActionCommand(Command.DUPLICATE);
-			duplicateButton.addActionListener(this);
-			buttonPanel.add(duplicateButton);
-
-			// Button: edit
-			editButton = new FButton(EDIT_STR + AppConstants.ELLIPSIS_STR);
-			editButton.setMnemonic(KeyEvent.VK_E);
-			editButton.setActionCommand(Command.EDIT);
-			editButton.addActionListener(this);
-			buttonPanel.add(editButton);
-
-			// Button: delete
-			deleteButton = new FButton(DELETE_STR);
-			deleteButton.setMnemonic(KeyEvent.VK_L);
-			deleteButton.setActionCommand(Command.DELETE);
-			deleteButton.addActionListener(this);
-			buttonPanel.add(deleteButton);
-
-			gbc.gridx = gridX++;
-			gbc.gridy = 0;
-			gbc.gridwidth = 1;
-			gbc.gridheight = 1;
-			gbc.weightx = 0.5;
-			gbc.weighty = 0.0;
-			gbc.anchor = GridBagConstraints.NORTH;
-			gbc.fill = GridBagConstraints.NONE;
-			gbc.insets = new Insets(0, 4, 0, 0);
-			gridBag.setConstraints(buttonPanel, gbc);
-			add(buttonPanel);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ActionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void actionPerformed(ActionEvent event)
-		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.ADD))
-				onAdd();
-
-			else if (command.equals(Command.DUPLICATE))
-				onDuplicate();
-
-			else if (command.equals(Command.EDIT))
-				onEdit();
-
-			else if (command.equals(Command.DELETE))
-				onDelete();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ListSelectionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void valueChanged(ListSelectionEvent event)
-		{
-			updateButtons();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private void updateButtons()
-		{
-			boolean isSelection = (table.getSelectedRowCount() > 0);
-			int numRows = table.getRowCount();
-
-			addButton.setEnabled(numRows < Pattern1Params.MAX_NUM_SOURCES);
-			duplicateButton.setEnabled(isSelection && (numRows < Pattern1Params.MAX_NUM_SOURCES));
-			editButton.setEnabled(isSelection);
-			deleteButton.setEnabled((numRows > Pattern1Params.MIN_NUM_SOURCES) && isSelection);
-		}
-
-		//--------------------------------------------------------------
-
-		private void onAdd()
-		{
-			Pattern1Image.SourceParams source =
-								Pattern1SourceDialog.showDialog(table, -1, Pattern1Params.DEFAULT_SOURCE);
-			if (source != null)
-			{
-				tableModel.addSource(source);
-				updateButtons();
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private void onDuplicate()
-		{
-			tableModel.addSource(tableModel.sources.get(table.getSelectedRow()).clone());
-			updateButtons();
-		}
-
-		//--------------------------------------------------------------
-
-		private void onEdit()
-		{
-			int row = table.getSelectedRow();
-			Pattern1Image.SourceParams source = tableModel.sources.get(row);
-			source = Pattern1SourceDialog.showDialog(table, row, source);
-			if (source != null)
-				tableModel.setSource(row, source);
-		}
-
-		//--------------------------------------------------------------
-
-		private void onDelete()
-		{
-			tableModel.deleteSource(table.getSelectedRow());
-			updateButtons();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	SourceTableModel	tableModel;
-		private	SourceTable			table;
-		private	JButton				addButton;
-		private	JButton				duplicateButton;
-		private	JButton				editButton;
-		private	JButton				deleteButton;
-
-	}
-
-	//==================================================================
+	private	boolean									accepted;
+	private	DimensionsSpinnerPanel					sizePanel;
+	private	FComboBox<Pattern1Image.Symmetry>		symmetryComboBox;
+	private	FComboBox<Pattern1Image.SaturationMode>	saturationModeComboBox;
+	private	WavelengthRangePanel					wavelengthRangePanel;
+	private	MotionRateRangePanel					motionRateRangePanel;
+	private	JCheckBox								motionRateEnvelopeCheckBox;
+	private	JButton									motionRateEnvelopeButton;
+	private	MotionRateEnvelope						motionRateEnvelope;
+	private	PhaseIncrementRangePanel				phaseIncrementRangePanel;
+	private	RotationPeriodRangePanel				rotationPeriodRangePanel;
+	private	FComboBox<Pattern1Image.RotationSense>	rotationSenseComboBox;
+	private	SeedPanel								seedPanel;
+	private	SourcePanel								sourcePanel;
+	private	JButton									okButton;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
 	private Pattern1ParamsDialog(Window         owner,
-								 String         titleStr,
+								 String         title,
 								 Pattern1Params params)
 	{
-
 		// Call superclass constructor
-		super(owner, TITLE_STR + ((titleStr == null) ? NEW_PATTERN_STR : titleStr),
-			  Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, TITLE_PREFIX + ((title == null) ? NEW_PATTERN_STR : title),
+			  ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -2058,7 +680,7 @@ class Pattern1ParamsDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -2068,7 +690,6 @@ class Pattern1ParamsDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -2078,10 +699,10 @@ class Pattern1ParamsDialog
 ////////////////////////////////////////////////////////////////////////
 
 	public static Pattern1Params showDialog(Component      parent,
-											String         titleStr,
+											String         title,
 											Pattern1Params params)
 	{
-		return new Pattern1ParamsDialog(GuiUtils.getWindow(parent), titleStr, params).getParams();
+		return new Pattern1ParamsDialog(GuiUtils.getWindow(parent), title, params).getParams();
 	}
 
 	//------------------------------------------------------------------
@@ -2140,21 +761,25 @@ class Pattern1ParamsDialog
 
 	private Pattern1Params getParams()
 	{
-		return (accepted
-					? new Pattern1Params(sizePanel.getValue1(),
-										 sizePanel.getValue2(),
-										 getSymmetry(),
-										 getSaturationMode(),
-										 wavelengthRangePanel.getRange(),
-										 sourcePanel.tableModel.sources,
-										 motionRateRangePanel.getRange(),
-										 motionRateEnvelopeCheckBox.isSelected() ? motionRateEnvelope
-																				 : null,
-										 phaseIncrementRangePanel.getRange(),
-										 rotationPeriodRangePanel.getRange(),
-										 getRotationSense(),
-										 seedPanel.getSeed())
-					: null);
+		Pattern1Params params = null;
+		if (accepted)
+		{
+			params = new Pattern1Params(
+				sizePanel.getValue1(),
+				sizePanel.getValue2(),
+				getSymmetry(),
+				getSaturationMode(),
+				wavelengthRangePanel.getRange(),
+				sourcePanel.tableModel.sources,
+				motionRateRangePanel.getRange(),
+				motionRateEnvelopeCheckBox.isSelected() ? motionRateEnvelope : null,
+				phaseIncrementRangePanel.getRange(),
+				rotationPeriodRangePanel.getRange(),
+				getRotationSense(),
+				seedPanel.getSeed()
+			);
+		}
+		return params;
 	}
 
 	//------------------------------------------------------------------
@@ -2239,30 +864,1406 @@ class Pattern1ParamsDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
+
+	// TABLE COLUMN
+
+
+	private enum Column
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		INDEX
+		(
+			"#",
+			SwingConstants.TRAILING
+		),
+
+		SHAPE
+		(
+			"Shape",
+			SwingConstants.LEADING
+		),
+
+		PARAMETER
+		(
+			"Par",
+			SwingConstants.TRAILING
+		),
+
+		WAVEFORM
+		(
+			"Waveform",
+			SwingConstants.LEADING
+		),
+
+		WAVE_COEFFICIENT
+		(
+			"Coeff",
+			SwingConstants.TRAILING
+		),
+
+		ATTENUATION_COEFFICIENT
+		(
+			"Atten",
+			SwingConstants.TRAILING
+		),
+
+		CONSTRAINT
+		(
+			"Constraint",
+			SwingConstants.LEADING
+		),
+
+		COLOUR
+		(
+			"Colour",
+			SwingConstants.LEADING
+		);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
+		private	int		alignment;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Column(String text,
+					   int    alignment)
+		{
+			this.text = text;
+			this.alignment = alignment;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String toString()
+		{
+			return text;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	boolean									accepted;
-	private	DimensionsSpinnerPanel					sizePanel;
-	private	FComboBox<Pattern1Image.Symmetry>		symmetryComboBox;
-	private	FComboBox<Pattern1Image.SaturationMode>	saturationModeComboBox;
-	private	WavelengthRangePanel					wavelengthRangePanel;
-	private	MotionRateRangePanel					motionRateRangePanel;
-	private	JCheckBox								motionRateEnvelopeCheckBox;
-	private	JButton									motionRateEnvelopeButton;
-	private	MotionRateEnvelope						motionRateEnvelope;
-	private	PhaseIncrementRangePanel				phaseIncrementRangePanel;
-	private	RotationPeriodRangePanel				rotationPeriodRangePanel;
-	private	FComboBox<Pattern1Image.RotationSense>	rotationSenseComboBox;
-	private	SeedPanel								seedPanel;
-	private	SourcePanel								sourcePanel;
-	private	JButton									okButton;
+
+	// WAVELENGTH RANGE PANEL CLASS
+
+
+	private static class WavelengthRangePanel
+		extends DoubleRangeBarPanel.Horizontal
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	double	OFFSET	= Math.log(Pattern1Params.MIN_WAVELENGTH);
+		private static final	double	FACTOR	= Math.log(Pattern1Params.MAX_WAVELENGTH) - OFFSET;
+
+		private static final	int	BAR_EXTENT	= 200;
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SPINNER CLASS
+
+
+		private static class Spinner
+			extends FDoubleSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private static final	double	DELTA_VALUE	= 0.001;
+
+			private static final	int	FIELD_LENGTH	= 5;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Spinner()
+			{
+				super(Pattern1Params.MIN_WAVELENGTH, Pattern1Params.MIN_WAVELENGTH,
+					  Pattern1Params.MAX_WAVELENGTH, DELTA_VALUE, FIELD_LENGTH, AppConstants.FORMAT_1_3);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private WavelengthRangePanel()
+		{
+			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public double normaliseValue(double value)
+		{
+			return ((Math.log(value) - OFFSET) / FACTOR);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public double denormaliseValue(double value)
+		{
+			return Math.exp(OFFSET + value * FACTOR);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// PHASE-INCREMENT RANGE PANEL CLASS
+
+
+	private static class PhaseIncrementRangePanel
+		extends IntegerRangeBarPanel.Horizontal
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	OFFSET	= Pattern1Image.MIN_PHASE_INCREMENT;
+		private static final	int	FACTOR	= Pattern1Image.MAX_PHASE_INCREMENT - OFFSET;
+
+		private static final	int	BAR_EXTENT	= 200;
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SPINNER CLASS
+
+
+		private static class Spinner
+			extends FIntegerSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private static final	int	FIELD_LENGTH	= 4;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Spinner()
+			{
+				super(Pattern1Image.MIN_PHASE_INCREMENT, Pattern1Image.MIN_PHASE_INCREMENT,
+					  Pattern1Image.MAX_PHASE_INCREMENT, FIELD_LENGTH, true);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private PhaseIncrementRangePanel()
+		{
+			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public double normaliseValue(int value)
+		{
+			return (double)(value - OFFSET) / (double)FACTOR;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public int denormaliseValue(double value)
+		{
+			return (int)Math.round(value * (double)FACTOR) + OFFSET;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// MOTION-RATE RANGE PANEL CLASS
+
+
+	private static class MotionRateRangePanel
+		extends DoubleRangeBarPanel.Horizontal
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	double	OFFSET	= Math.log(Pattern1Image.MIN_MOTION_RATE);
+		private static final	double	FACTOR	= Math.log(Pattern1Image.MAX_MOTION_RATE) - OFFSET;
+
+		private static final	int	BAR_EXTENT	= 200;
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SPINNER CLASS
+
+
+		private static class Spinner
+			extends FDoubleSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private static final	double	DELTA_VALUE	= 0.01;
+
+			private static final	int	FIELD_LENGTH	= 4;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Spinner()
+			{
+				super(Pattern1Image.MIN_MOTION_RATE, Pattern1Image.MIN_MOTION_RATE,
+					  Pattern1Image.MAX_MOTION_RATE, DELTA_VALUE, FIELD_LENGTH, AppConstants.FORMAT_1_2);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private MotionRateRangePanel()
+		{
+			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public double normaliseValue(double value)
+		{
+			return (Math.log(value) - OFFSET) / FACTOR;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public double denormaliseValue(double value)
+		{
+			return Math.exp(OFFSET + value * FACTOR);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// ROTATION-PERIOD RANGE PANEL CLASS
+
+
+	private static class RotationPeriodRangePanel
+		extends DoubleRangeBarPanel.Horizontal
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	double	OFFSET	= Math.log(Pattern1Params.MIN_ROTATION_PERIOD);
+		private static final	double	FACTOR	= Math.log(Pattern1Params.MAX_ROTATION_PERIOD) - OFFSET;
+
+		private static final	int	BAR_EXTENT	= 200;
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SPINNER CLASS
+
+
+		private static class Spinner
+			extends FDoubleSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private static final	double	DELTA_VALUE	= 1.0;
+
+			private static final	int	FIELD_LENGTH	= 6;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Spinner()
+			{
+				super(Pattern1Params.MIN_ROTATION_PERIOD, Pattern1Params.MIN_ROTATION_PERIOD,
+					  Pattern1Params.MAX_ROTATION_PERIOD, DELTA_VALUE, FIELD_LENGTH,
+					  AppConstants.FORMAT_1_3);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private RotationPeriodRangePanel()
+		{
+			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public double normaliseValue(double value)
+		{
+			return ((Math.log(value) - OFFSET) / FACTOR);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public double denormaliseValue(double value)
+		{
+			return Math.exp(OFFSET + value * FACTOR);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// SOURCE TABLE CLASS
+
+
+	private static class SourceTable
+		extends JTable
+		implements ActionListener, FocusListener, MouseListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	CELL_VERTICAL_MARGIN	= 1;
+		private static final	int	CELL_HORIZONTAL_MARGIN	= 5;
+		private static final	int	GRID_LINE_WIDTH			= 1;
+
+		// Commands
+		private interface Command
+		{
+			String	FOCUS_PREVIOUS	= "focusPrevious";
+			String	FOCUS_NEXT		= "focusNext";
+		}
+
+		private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
+		{
+			new KeyAction.KeyCommandPair
+			(
+				KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK),
+				Command.FOCUS_PREVIOUS
+			),
+			new KeyAction.KeyCommandPair
+			(
+				KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0),
+				Command.FOCUS_NEXT
+			)
+		};
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private SourceTable(AbstractTableModel tableModel)
+		{
+			// Call superclass constructor
+			super(tableModel);
+
+			// Set properties
+			setGridColor(Colours.Table.GRID.getColour());
+			setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			setIntercellSpacing(new Dimension());
+			AppFont.MAIN.apply(getTableHeader());
+			AppFont.MAIN.apply(this);
+			int rowHeight = 2 * CELL_VERTICAL_MARGIN + GRID_LINE_WIDTH +
+																getFontMetrics(getFont()).getHeight();
+			setRowHeight(rowHeight);
+
+			// Initialise columns
+			TableColumnModel columnModel = getColumnModel();
+			CellEditor cellEditor = new CellEditor();
+			for (Column id : Column.values())
+			{
+				TableColumn column = columnModel.getColumn(id.ordinal());
+				column.setIdentifier(id);
+				String text = null;
+				TableCellRenderer headerRenderer = new TextRenderer(id.text, id.alignment);
+				TableCellRenderer cellRenderer = null;
+				switch (id)
+				{
+					case INDEX:
+						text = Integer.toString(Pattern1Params.MAX_NUM_SOURCES);
+						cellRenderer = new TextRenderer(text, id.alignment);
+						break;
+
+					case SHAPE:
+						text = getWidestString(Pattern1Image.Source.Shape.values());
+						cellRenderer = new TextRenderer(text, id.alignment);
+						break;
+
+					case PARAMETER:
+					{
+						int maxValue = 0;
+						int value = Pattern1Image.Source.Ellipse.MAX_ECCENTRICITY;
+						maxValue = Math.max(value, maxValue);
+						value = Pattern1Image.Source.Polygon.MAX_NUM_EDGES;
+						maxValue = Math.max(value, maxValue);
+						text = Integer.toString(maxValue);
+						cellRenderer = new TextRenderer(text, id.alignment);
+						break;
+					}
+
+					case WAVEFORM:
+						text = getWidestString(Pattern1Image.Source.Waveform.values());
+						cellRenderer = new TextRenderer(text, id.alignment);
+						break;
+
+					case WAVE_COEFFICIENT:
+						text = Integer.toString(Pattern1Image.Source.MAX_WAVE_COEFFICIENT);
+						cellRenderer = new TextRenderer(text, id.alignment);
+						break;
+
+					case ATTENUATION_COEFFICIENT:
+						text = Integer.toString(Pattern1Image.Source.MAX_ATTENUATION_COEFFICIENT);
+						cellRenderer = new TextRenderer(text, id.alignment);
+						break;
+
+					case CONSTRAINT:
+						text = getWidestString(Pattern1Image.Source.Constraint.values());
+						cellRenderer = new TextRenderer(text, id.alignment);
+						break;
+
+					case COLOUR:
+						cellRenderer = new ColourRenderer();
+						break;
+				}
+				int width = Math.max(((JComponent)headerRenderer).getPreferredSize().width,
+									 ((JComponent)cellRenderer).getPreferredSize().width);
+				column.setMinWidth(width);
+				column.setMaxWidth(width);
+				column.setPreferredWidth(width);
+				column.setHeaderValue(id);
+				column.setHeaderRenderer(headerRenderer);
+				column.setCellRenderer(cellRenderer);
+				column.setCellEditor(cellEditor);
+			}
+
+			// Set viewport size
+			setPreferredScrollableViewportSize(new Dimension(columnModel.getTotalColumnWidth(),
+															 getRowCount() * rowHeight));
+
+			// Remove keys from input map
+			InputMap inputMap = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+			while (inputMap != null)
+			{
+				inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK));
+				inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0));
+				inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.SHIFT_DOWN_MASK));
+				inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0));
+				inputMap = inputMap.getParent();
+			}
+
+			// Add listeners
+			addFocusListener(this);
+			getTableHeader().addMouseListener(this);
+
+			// Add commands to action map
+			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, this, KEY_COMMANDS);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ActionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		public void actionPerformed(ActionEvent event)
+		{
+			String command = event.getActionCommand();
+
+			if (command.equals(Command.FOCUS_PREVIOUS))
+				onFocusPrevious();
+
+			else if (command.equals(Command.FOCUS_NEXT))
+				onFocusNext();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : FocusListener interface
+	////////////////////////////////////////////////////////////////////
+
+		public void focusGained(FocusEvent event)
+		{
+			getTableHeader().repaint();
+			getParent().repaint();
+		}
+
+		//--------------------------------------------------------------
+
+		public void focusLost(FocusEvent event)
+		{
+			getTableHeader().repaint();
+			getParent().repaint();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : MouseListener interface
+	////////////////////////////////////////////////////////////////////
+
+		public void mouseClicked(MouseEvent event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		public void mouseEntered(MouseEvent event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		public void mouseExited(MouseEvent event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		public void mousePressed(MouseEvent event)
+		{
+			if (SwingUtilities.isLeftMouseButton(event))
+				requestFocusInWindow();
+		}
+
+		//--------------------------------------------------------------
+
+		public void mouseReleased(MouseEvent event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private String getWidestString(Object[] values)
+		{
+			String widestStr = null;
+			FontMetrics fontMetrics = getFontMetrics(getFont());
+			int maxWidth = 0;
+			for (Object value : values)
+			{
+				String str = value.toString();
+				int width = fontMetrics.stringWidth(str);
+				if (maxWidth < width)
+				{
+					maxWidth = width;
+					widestStr = str;
+				}
+			}
+			return widestStr;
+		}
+
+		//--------------------------------------------------------------
+
+		private void onFocusPrevious()
+		{
+			if (isFocusOwner())
+				transferFocusBackward();
+		}
+
+		//--------------------------------------------------------------
+
+		private void onFocusNext()
+		{
+			if (isFocusOwner())
+				transferFocus();
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// SOURCE TABLE MODEL CLASS
+
+
+	private static class SourceTableModel
+		extends AbstractTableModel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	List<Pattern1Image.SourceParams>	sources;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private SourceTableModel(List<Pattern1Image.SourceParams> sources)
+		{
+			this.sources = new ArrayList<>(sources);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public int getRowCount()
+		{
+			return sources.size();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public int getColumnCount()
+		{
+			return Column.values().length;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public Object getValueAt(int row,
+								 int column)
+		{
+			Pattern1Image.SourceParams source = sources.get(row);
+			if ((column >= 0) && (column < Column.values().length))
+			{
+				switch (Column.values()[column])
+				{
+					case INDEX:
+						return Integer.toString(row + 1);
+
+					case SHAPE:
+						return source.getShape();
+
+					case PARAMETER:
+					{
+						Pattern1Image.SourceParams.Key key = null;
+						switch (source.getShape())
+						{
+							case CIRCLE:
+								// do nothing
+								break;
+
+							case ELLIPSE:
+								key = Pattern1Image.SourceParams.Key.ECCENTRICITY;
+								break;
+
+							case POLYGON:
+								key = Pattern1Image.SourceParams.Key.NUM_EDGES;
+								break;
+						}
+						return ((key == null) ? "" : source.getShapeParamValue(key));
+					}
+
+					case WAVEFORM:
+						return source.getWaveform();
+
+					case WAVE_COEFFICIENT:
+						return source.getWaveCoefficient();
+
+					case ATTENUATION_COEFFICIENT:
+						return source.getAttenuationCoefficient();
+
+					case CONSTRAINT:
+						return source.getConstraint();
+
+					case COLOUR:
+						return source.getColour();
+				}
+			}
+			return null;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public boolean isCellEditable(int row,
+									  int column)
+		{
+			return (row >= 0);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private void addSource(Pattern1Image.SourceParams source)
+		{
+			int numSources = sources.size();
+			if (numSources < Pattern1Params.MAX_NUM_SOURCES)
+			{
+				sources.add(source);
+				fireTableRowsInserted(numSources, numSources);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private void deleteSource(int index)
+		{
+			int numSources = sources.size();
+			if ((numSources > Pattern1Params.MIN_NUM_SOURCES) && (index < numSources))
+			{
+				sources.remove(index);
+				fireTableRowsDeleted(index, index);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private void setSource(int                        index,
+							   Pattern1Image.SourceParams source)
+		{
+			sources.set(index, source);
+			fireTableRowsUpdated(index, index);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// TEXT RENDERER CLASS
+
+
+	private static class TextRenderer
+		extends JComponent
+		implements TableCellRenderer
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
+		private	int		alignment;
+		private	boolean	isHeader;
+		private	Color	borderColour;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private TextRenderer(String text,
+							 int    alignment)
+		{
+			this.text = text;
+			this.alignment = alignment;
+			AppFont.MAIN.apply(this);
+			setForeground(Colours.Table.FOREGROUND.getColour());
+			setOpaque(true);
+			setFocusable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : TableCellRenderer interface
+	////////////////////////////////////////////////////////////////////
+
+		public Component getTableCellRendererComponent(JTable  table,
+													   Object  value,
+													   boolean isSelected,
+													   boolean hasFocus,
+													   int     row,
+													   int     column)
+		{
+			isHeader = (row < 0);
+			text = (value == null) ? null : value.toString();
+			setBackground(isHeader ? table.isFocusOwner()
+											? Colours.Table.FOCUSED_HEADER_BACKGROUND1.getColour()
+											: Colours.Table.HEADER_BACKGROUND1.getColour()
+								   : isSelected
+											? table.isFocusOwner()
+												? Colours.Table.FOCUSED_SELECTION_BACKGROUND.getColour()
+												: Colours.Table.SELECTION_BACKGROUND.getColour()
+											: Colours.Table.BACKGROUND.getColour());
+			borderColour = table.isFocusOwner() ? Colours.Table.FOCUSED_HEADER_BORDER1.getColour()
+												: Colours.Table.HEADER_BORDER1.getColour();
+			return this;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			FontMetrics fontMetrics = getFontMetrics(getFont());
+			int width = 2 * SourceTable.CELL_HORIZONTAL_MARGIN + SourceTable.GRID_LINE_WIDTH +
+																			fontMetrics.stringWidth(text);
+			int height = 2 * SourceTable.CELL_VERTICAL_MARGIN + SourceTable.GRID_LINE_WIDTH +
+													fontMetrics.getAscent() + fontMetrics.getDescent();
+			return new Dimension(width, height);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Create copy of graphics context
+			gr = gr.create();
+
+			// Fill background
+			int width = getWidth();
+			int height = getHeight();
+			gr.setColor(getBackground());
+			gr.fillRect(0, 0, width, height);
+
+			// Set rendering hints for text antialiasing and fractional metrics
+			TextRendering.setHints((Graphics2D)gr);
+
+			// Draw text
+			gr.setColor(getForeground());
+			FontMetrics fontMetrics = gr.getFontMetrics();
+			int x = (alignment == SwingConstants.LEADING)
+						? SourceTable.CELL_HORIZONTAL_MARGIN
+						: width - (fontMetrics.stringWidth(text) + SourceTable.CELL_HORIZONTAL_MARGIN);
+			gr.drawString(text, x, FontUtils.getBaselineOffset(height, fontMetrics));
+
+			// Draw cell border
+			--width;
+			--height;
+			gr.setColor(isHeader ? borderColour : Colours.Table.GRID.getColour());
+			gr.drawLine(width, 0, width, height);
+			gr.drawLine(0, height, width, height);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// COLOUR RENDERER CLASS
+
+
+	private static class ColourRenderer
+		extends JComponent
+		implements TableCellRenderer
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		SAMPLE_WIDTH	= 32;
+		private static final	int		SAMPLE_HEIGHT	= 12;
+
+		private static final	Color	BORDER_COLOUR	= Colours.LINE_BORDER;
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	Color	colour;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ColourRenderer()
+		{
+			setOpaque(true);
+			setFocusable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : TableCellRenderer interface
+	////////////////////////////////////////////////////////////////////
+
+		public Component getTableCellRendererComponent(JTable  table,
+													   Object  value,
+													   boolean isSelected,
+													   boolean hasFocus,
+													   int     row,
+													   int     column)
+		{
+			colour = (Color)value;
+			setBackground(isSelected ? table.isFocusOwner()
+												? Colours.Table.FOCUSED_SELECTION_BACKGROUND.getColour()
+												: Colours.Table.SELECTION_BACKGROUND.getColour()
+									 : Colours.Table.BACKGROUND.getColour());
+			return this;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			int width = 2 * SourceTable.CELL_HORIZONTAL_MARGIN + SourceTable.GRID_LINE_WIDTH + SAMPLE_WIDTH;
+			int height = 2 * SourceTable.CELL_VERTICAL_MARGIN + SourceTable.GRID_LINE_WIDTH + SAMPLE_HEIGHT;
+			return new Dimension(width, height);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Fill background
+			int width = getWidth();
+			int height = getHeight();
+			gr.setColor(getBackground());
+			gr.fillRect(0, 0, width, height);
+
+			// Draw colour sample
+			int x = SourceTable.CELL_HORIZONTAL_MARGIN;
+			int y = (height - SAMPLE_HEIGHT) / 2;
+			gr.setColor(colour);
+			gr.fillRect(x + 1, y + 1, SAMPLE_WIDTH - 2, SAMPLE_HEIGHT - 2);
+
+			// Draw border of sample
+			gr.setColor(BORDER_COLOUR);
+			gr.drawRect(x, y, SAMPLE_WIDTH - 1, SAMPLE_HEIGHT - 1);
+
+			// Draw cell border
+			--width;
+			--height;
+			gr.setColor(Colours.Table.GRID.getColour());
+			gr.drawLine(width, 0, width, height);
+			gr.drawLine(0, height, width, height);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CELL EDITOR CLASS
+
+
+	private static class CellEditor
+		extends AbstractCellEditor
+		implements TableCellEditor
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CellEditor()
+		{
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : TableCellEditor interface
+	////////////////////////////////////////////////////////////////////
+
+		public Object getCellEditorValue()
+		{
+			return null;
+		}
+
+		//--------------------------------------------------------------
+
+		public Component getTableCellEditorComponent(JTable  table,
+													 Object  value,
+													 boolean selected,
+													 int     row,
+													 int     column)
+		{
+			SourceTableModel tableModel = (SourceTableModel)table.getModel();
+			Pattern1Image.SourceParams source = tableModel.sources.get(row);
+			source = Pattern1SourceDialog.showDialog(table, row, source);
+			if (source != null)
+				tableModel.setSource(row, source);
+			return null;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public boolean isCellEditable(EventObject event)
+		{
+			// Test for a mouse event
+			if (event instanceof MouseEvent mouseEvent)
+				return SwingUtilities.isLeftMouseButton(mouseEvent) && (mouseEvent.getClickCount() > 1);
+
+			// Test for a key event
+			if (event instanceof KeyEvent keyEvent)
+				return (keyEvent.getKeyCode() == KeyEvent.VK_SPACE) && (keyEvent.getModifiersEx() == 0);
+
+			return false;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// SOURCE PANEL CLASS
+
+
+	private static class SourcePanel
+		extends JPanel
+		implements ActionListener, ListSelectionListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	String	ADD_STR			= "Add";
+		private static final	String	DUPLICATE_STR	= "Duplicate";
+		private static final	String	EDIT_STR		= "Edit";
+		private static final	String	DELETE_STR		= "Delete";
+
+		private interface Command
+		{
+			String	ADD			= "add";
+			String	DUPLICATE	= "duplicate";
+			String	EDIT		= "edit";
+			String	DELETE		= "delete";
+		}
+
+		private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
+		{
+			new KeyAction.KeyCommandPair
+			(
+				KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK),
+				Command.DELETE
+			)
+		};
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	SourceTableModel	tableModel;
+		private	SourceTable			table;
+		private	JButton				addButton;
+		private	JButton				duplicateButton;
+		private	JButton				editButton;
+		private	JButton				deleteButton;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private SourcePanel(List<Pattern1Image.SourceParams> sources)
+		{
+			// Set layout manager
+			GridBagLayout gridBag = new GridBagLayout();
+			GridBagConstraints gbc = new GridBagConstraints();
+
+			setLayout(gridBag);
+
+			int gridX = 0;
+
+
+			//----  Source table scroll pane
+
+			tableModel = new SourceTableModel(sources);
+
+			table = new SourceTable(tableModel);
+			table.getSelectionModel().addListSelectionListener(this);
+			KeyAction.create(table, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, this, KEY_COMMANDS);
+
+			JScrollPane tableScrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+														  JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			Dimension viewSize = new Dimension(table.getPreferredScrollableViewportSize().width,
+											   NUM_VIEWABLE_SOURCE_TABLE_ROWS * table.getRowHeight());
+			tableScrollPane.getViewport().setPreferredSize(viewSize);
+			tableScrollPane.getViewport().setFocusable(false);
+			tableScrollPane.getVerticalScrollBar().setFocusable(false);
+			tableScrollPane.getHorizontalScrollBar().setFocusable(false);
+
+			gbc.gridx = gridX++;
+			gbc.gridy = 0;
+			gbc.gridwidth = 1;
+			gbc.gridheight = 1;
+			gbc.weightx = 0.5;
+			gbc.weighty = 0.0;
+			gbc.anchor = GridBagConstraints.NORTH;
+			gbc.fill = GridBagConstraints.NONE;
+			gbc.insets = new Insets(0, 0, 0, 4);
+			gridBag.setConstraints(tableScrollPane, gbc);
+			add(tableScrollPane);
+
+
+			//----  Button panel
+
+			JPanel buttonPanel = new JPanel(new GridLayout(0, 1, 0, 8));
+
+			// Button: add
+			addButton = new FButton(ADD_STR + AppConstants.ELLIPSIS_STR);
+			addButton.setMnemonic(KeyEvent.VK_A);
+			addButton.setActionCommand(Command.ADD);
+			addButton.addActionListener(this);
+			buttonPanel.add(addButton);
+
+			// Button: duplicate
+			duplicateButton = new FButton(DUPLICATE_STR);
+			duplicateButton.setMnemonic(KeyEvent.VK_D);
+			duplicateButton.setActionCommand(Command.DUPLICATE);
+			duplicateButton.addActionListener(this);
+			buttonPanel.add(duplicateButton);
+
+			// Button: edit
+			editButton = new FButton(EDIT_STR + AppConstants.ELLIPSIS_STR);
+			editButton.setMnemonic(KeyEvent.VK_E);
+			editButton.setActionCommand(Command.EDIT);
+			editButton.addActionListener(this);
+			buttonPanel.add(editButton);
+
+			// Button: delete
+			deleteButton = new FButton(DELETE_STR);
+			deleteButton.setMnemonic(KeyEvent.VK_L);
+			deleteButton.setActionCommand(Command.DELETE);
+			deleteButton.addActionListener(this);
+			buttonPanel.add(deleteButton);
+
+			gbc.gridx = gridX++;
+			gbc.gridy = 0;
+			gbc.gridwidth = 1;
+			gbc.gridheight = 1;
+			gbc.weightx = 0.5;
+			gbc.weighty = 0.0;
+			gbc.anchor = GridBagConstraints.NORTH;
+			gbc.fill = GridBagConstraints.NONE;
+			gbc.insets = new Insets(0, 4, 0, 0);
+			gridBag.setConstraints(buttonPanel, gbc);
+			add(buttonPanel);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ActionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		public void actionPerformed(ActionEvent event)
+		{
+			String command = event.getActionCommand();
+
+			if (command.equals(Command.ADD))
+				onAdd();
+
+			else if (command.equals(Command.DUPLICATE))
+				onDuplicate();
+
+			else if (command.equals(Command.EDIT))
+				onEdit();
+
+			else if (command.equals(Command.DELETE))
+				onDelete();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ListSelectionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		public void valueChanged(ListSelectionEvent event)
+		{
+			updateButtons();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private void updateButtons()
+		{
+			boolean isSelection = (table.getSelectedRowCount() > 0);
+			int numRows = table.getRowCount();
+
+			addButton.setEnabled(numRows < Pattern1Params.MAX_NUM_SOURCES);
+			duplicateButton.setEnabled(isSelection && (numRows < Pattern1Params.MAX_NUM_SOURCES));
+			editButton.setEnabled(isSelection);
+			deleteButton.setEnabled((numRows > Pattern1Params.MIN_NUM_SOURCES) && isSelection);
+		}
+
+		//--------------------------------------------------------------
+
+		private void onAdd()
+		{
+			Pattern1Image.SourceParams source =
+								Pattern1SourceDialog.showDialog(table, -1, Pattern1Params.DEFAULT_SOURCE);
+			if (source != null)
+			{
+				tableModel.addSource(source);
+				updateButtons();
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private void onDuplicate()
+		{
+			tableModel.addSource(tableModel.sources.get(table.getSelectedRow()).clone());
+			updateButtons();
+		}
+
+		//--------------------------------------------------------------
+
+		private void onEdit()
+		{
+			int row = table.getSelectedRow();
+			Pattern1Image.SourceParams source = tableModel.sources.get(row);
+			source = Pattern1SourceDialog.showDialog(table, row, source);
+			if (source != null)
+				tableModel.setSource(row, source);
+		}
+
+		//--------------------------------------------------------------
+
+		private void onDelete()
+		{
+			tableModel.deleteSource(table.getSelectedRow());
+			updateButtons();
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

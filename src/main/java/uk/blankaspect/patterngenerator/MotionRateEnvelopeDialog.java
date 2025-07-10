@@ -19,7 +19,6 @@ package uk.blankaspect.patterngenerator;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -198,7 +197,7 @@ class MotionRateEnvelopeDialog
 			// Call superclass constructor
 			super(NUM_COLUMNS);
 
-			// Set attributes
+			// Set properties
 			AppFont.TEXT_FIELD.apply(this);
 			GuiUtils.setTextComponentMargins(this, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
 			setEditable(false);
@@ -557,7 +556,7 @@ class MotionRateEnvelopeDialog
 									 MotionRateEnvelope envelope)
 	{
 		// Call superclass constructor
-		super(owner, TITLE_STR, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, TITLE_STR, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -802,7 +801,7 @@ class MotionRateEnvelopeDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -851,7 +850,9 @@ class MotionRateEnvelopeDialog
 
 	public MotionRateEnvelope getEnvelope()
 	{
-		return accepted ? new MotionRateEnvelope(envelope.getNodes(), xCoeffField.getValue(), yCoeffField.getValue()) : null;
+		return accepted
+				? new MotionRateEnvelope(envelope.getNodes(), xCoeffField.getValue(), yCoeffField.getValue())
+				: null;
 	}
 
 	//------------------------------------------------------------------
@@ -912,7 +913,7 @@ class MotionRateEnvelopeDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, PatternGeneratorApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

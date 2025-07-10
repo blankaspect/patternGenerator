@@ -2,7 +2,7 @@
 
 Pattern2Image.java
 
-Pattern 2 image class.
+Class: Pattern 2 image.
 
 \*====================================================================*/
 
@@ -52,8 +52,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import uk.blankaspect.common.exception.AppException;
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
-import uk.blankaspect.common.exception.ValueOutOfBoundsException;
+
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
+import uk.blankaspect.common.exception2.ValueOutOfBoundsException;
 
 import uk.blankaspect.common.misc.IStringKeyed;
 import uk.blankaspect.common.misc.NoYes;
@@ -77,7 +78,7 @@ import uk.blankaspect.ui.swing.colour.ColourUtils;
 //----------------------------------------------------------------------
 
 
-// PATTERN 2 IMAGE CLASS
+// CLASS: PATTERN 2 IMAGE
 
 
 class Pattern2Image
@@ -740,7 +741,7 @@ class Pattern2Image
 	////////////////////////////////////////////////////////////////////
 
 		UNSUPPORTED_VERSION
-		("The version of %1 is not supported by this version of " + App.SHORT_NAME + "."),
+		("The version of %1 is not supported by this version of " + PatternGeneratorApp.SHORT_NAME + "."),
 
 		NO_ATTRIBUTE
 		("The required attribute is missing."),
@@ -794,7 +795,7 @@ class Pattern2Image
 ////////////////////////////////////////////////////////////////////////
 
 
-	// PATH CLASS
+	// CLASS: PATH
 
 
 	private static class Path
@@ -813,8 +814,8 @@ class Pattern2Image
 
 		private static final	Comparator<Path>	LENGTH_COMPARATOR =
 				Comparator.<Path>comparingInt(Path::getLength)
-								.thenComparing(Comparator.<Path>comparingInt(path ->
-										Math.max(path.start.lengthenFrameIndex, path.end.lengthenFrameIndex)).reversed());
+						.thenComparing(Comparator.<Path>comparingInt(path ->
+								Math.max(path.start.lengthenFrameIndex, path.end.lengthenFrameIndex)).reversed());
 
 		private enum Change
 		{
@@ -2342,9 +2343,9 @@ class Pattern2Image
 		writer.writeElementStart(Svg.ElementName.DESC, null, indent, false, false);
 
 		writer.write(GENERATED_BY_STR);
-		writer.write(App.SHORT_NAME);
+		writer.write(PatternGeneratorApp.SHORT_NAME);
 		writer.write(' ');
-		writer.write(App.INSTANCE.getVersionString());
+		writer.write(PatternGeneratorApp.INSTANCE.getVersionString());
 
 		writer.writeElementEnd(Svg.ElementName.DESC, 0);
 
@@ -2408,8 +2409,10 @@ class Pattern2Image
 		attributes.clear();
 		attributes.add(Svg.AttrName.FILL, ColourUtils.colourToHexString(backgroundColour));
 		if (ColourUtils.isTransparent(backgroundColour))
+		{
 			attributes.add(Svg.AttrName.FILL_OPACITY, ColourUtils.getOpacity(backgroundColour),
 						   ColourUtils.OPACITY_FORMAT);
+		}
 		attributes.add(Svg.AttrName.WIDTH, width);
 		attributes.add(Svg.AttrName.HEIGHT, height);
 		writer.writeEmptyElement(Svg.ElementName.RECT, attributes, indent, true);
@@ -2960,11 +2963,13 @@ class Pattern2Image
 							break;
 
 						case LENGTHEN:
-							colour = ColourUtils.interpolateHsb(backgroundColour, path.colour, path.start.changeFraction);
+							colour = ColourUtils.interpolateHsb(backgroundColour, path.colour,
+																path.start.changeFraction);
 							break;
 
 						case SHORTEN:
-							colour = ColourUtils.interpolateHsb(path.colour, backgroundColour, path.start.changeFraction);
+							colour = ColourUtils.interpolateHsb(path.colour, backgroundColour,
+																path.start.changeFraction);
 							break;
 					}
 

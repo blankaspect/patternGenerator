@@ -20,7 +20,7 @@ package uk.blankaspect.common.geometry;
 
 import java.util.Comparator;
 
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 import uk.blankaspect.common.function.IFunction1;
 
@@ -94,7 +94,7 @@ public class Point2D
 	@Override
 	public int hashCode()
 	{
-		return Double.hashCode(x) * 31 + Double.hashCode(y);
+		return 31 * Double.hashCode(x) + Double.hashCode(y);
 	}
 
 	//------------------------------------------------------------------

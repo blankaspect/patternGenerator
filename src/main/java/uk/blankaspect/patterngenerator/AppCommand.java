@@ -237,7 +237,7 @@ enum AppCommand
 
 	public void actionPerformed(ActionEvent event)
 	{
-		App.INSTANCE.executeCommand(this);
+		PatternGeneratorApp.INSTANCE.executeCommand(this);
 	}
 
 	//------------------------------------------------------------------

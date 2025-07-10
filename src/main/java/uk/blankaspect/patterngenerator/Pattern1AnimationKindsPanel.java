@@ -120,7 +120,7 @@ class Pattern1AnimationKindsPanel
 			if ((height - ICON_HEIGHT) % 2 != 0)
 				++height;
 
-			// Set attributes
+			// Set properties
 			setText(text);
 		}
 

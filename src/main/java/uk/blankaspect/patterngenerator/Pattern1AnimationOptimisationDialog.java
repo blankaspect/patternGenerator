@@ -20,7 +20,6 @@ package uk.blankaspect.patterngenerator;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
@@ -285,7 +284,7 @@ class Pattern1AnimationOptimisationDialog
 			// Call superclass constructor
 			super(tableModel);
 
-			// Set attributes
+			// Set properties
 			setGridColor(Colours.Table.GRID.getColour());
 			setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 			setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -896,9 +895,8 @@ class Pattern1AnimationOptimisationDialog
 												Pattern1Document                 document,
 												Set<Pattern1Image.AnimationKind> enabledAnimationKinds)
 	{
-
 		// Call superclass constructor
-		super(owner, TITLE_STR, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, TITLE_STR, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -1121,14 +1119,13 @@ class Pattern1AnimationOptimisationDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -1224,7 +1221,7 @@ class Pattern1AnimationOptimisationDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, PatternGeneratorApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

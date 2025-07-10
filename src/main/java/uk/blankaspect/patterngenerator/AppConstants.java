@@ -58,16 +58,18 @@ interface AppConstants
 	String	ALREADY_EXISTS_STR	= "\nThe file already exists.\nDo you want to replace it?";
 	String	XML_VERSION_STR		= "1.0";
 
+	// Filename extensions
+	String	PNG_FILENAME_EXTENSION	= ".png";
+	String	SVG_FILENAME_EXTENSION	= ".svg";
+	String	XML_FILENAME_EXTENSION	= ".xml";
+
 	// Filename suffixes
-	String	PG_DEF_FILE_SUFFIX	= ".pgdef.xml";
-	String	PG_PAR_FILE_SUFFIX	= ".pgpar.xml";
-	String	PNG_FILE_SUFFIX		= ".png";
-	String	SVG_FILE_SUFFIX		= ".svg";
-	String	XML_FILE_SUFFIX		= ".xml";
+	String	PG_DEF_FILENAME_SUFFIX	= ".pgdef.xml";
+	String	PG_PAR_FILENAME_SUFFIX	= ".pgpar.xml";
 
 	// File-filter descriptions
-	String	PG_DEF_FILES_STR	= "Pattern definition files";
-	String	PG_PAR_FILES_STR	= "Pattern parameter files";
+	String	PG_DEF_FILES_STR	= "Pattern-definition files";
+	String	PG_PAR_FILES_STR	= "Pattern-parameter files";
 	String	PNG_FILES_STR		= "PNG files";
 	String	SVG_FILES_STR		= "SVG files";
 	String	XML_FILES_STR		= "XML files";

@@ -40,14 +40,14 @@ enum DocumentKind
 	DEFINITION
 	(
 		"definition",
-		AppConstants.PG_DEF_FILE_SUFFIX,
+		AppConstants.PG_DEF_FILENAME_SUFFIX,
 		AppConstants.PG_DEF_FILES_STR
 	),
 
 	PARAMETERS
 	(
 		"parameters",
-		AppConstants.PG_PAR_FILE_SUFFIX,
+		AppConstants.PG_PAR_FILENAME_SUFFIX,
 		AppConstants.PG_PAR_FILES_STR
 	);
 

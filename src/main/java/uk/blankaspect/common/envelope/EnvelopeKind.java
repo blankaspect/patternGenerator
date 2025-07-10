@@ -12,7 +12,6 @@ Enumeration: abstract envelope node.
 
 package uk.blankaspect.common.envelope;
 
-
 //----------------------------------------------------------------------
 
 
@@ -87,7 +86,7 @@ public enum EnvelopeKind
 
 	public static EnvelopeKind get(int index)
 	{
-		return (((index >= 0) && (index < values().length)) ? values()[index] : null);
+		return ((index >= 0) && (index < values().length)) ? values()[index] : null;
 	}
 
 	//------------------------------------------------------------------
@@ -95,9 +94,9 @@ public enum EnvelopeKind
 	public static EnvelopeKind forKey(String key)
 	{
 		return Stream.of(values())
-						.filter(value -> value.key.equals(key))
-						.findFirst()
-						.orElse(null);
+				.filter(value -> value.key.equals(key))
+				.findFirst()
+				.orElse(null);
 	}
 
 	//------------------------------------------------------------------

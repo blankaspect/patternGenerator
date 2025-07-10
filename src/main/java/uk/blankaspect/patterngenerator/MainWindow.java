@@ -380,10 +380,11 @@ class MainWindow
 
 	private void updateTitle()
 	{
-		PatternDocument document = App.INSTANCE.getDocument();
+		PatternDocument document = PatternGeneratorApp.INSTANCE.getDocument();
 		boolean fullPathname = AppConfig.INSTANCE.isShowFullPathnames();
-		setTitle((document == null) ? App.LONG_NAME + " " + App.INSTANCE.getVersionString()
-									: App.SHORT_NAME + " - " + document.getTitleString(fullPathname));
+		setTitle((document == null)
+						? PatternGeneratorApp.LONG_NAME + " " + PatternGeneratorApp.INSTANCE.getVersionString()
+						: PatternGeneratorApp.SHORT_NAME + " - " + document.getTitleString(fullPathname));
 	}
 
 	//------------------------------------------------------------------
@@ -420,7 +421,7 @@ class MainWindow
 			@Override
 			protected void update()
 			{
-				getMenu().getMenuComponent(0).setEnabled(!App.INSTANCE.isDocumentsFull());
+				getMenu().getMenuComponent(0).setEnabled(!PatternGeneratorApp.INSTANCE.isDocumentsFull());
 				updateAppCommands();
 			}
 		},
@@ -434,7 +435,7 @@ class MainWindow
 			@Override
 			protected void update()
 			{
-				PatternDocument document = App.INSTANCE.getDocument();
+				PatternDocument document = PatternGeneratorApp.INSTANCE.getDocument();
 				getMenu().setEnabled((document != null) && !document.isPlaying());
 				updateDocumentCommands();
 			}
@@ -449,7 +450,7 @@ class MainWindow
 			@Override
 			protected void update()
 			{
-				PatternDocument document = App.INSTANCE.getDocument();
+				PatternDocument document = PatternGeneratorApp.INSTANCE.getDocument();
 				getMenu().setEnabled((document != null) && !document.isPlaying());
 				updateDocumentCommands();
 			}
@@ -464,7 +465,7 @@ class MainWindow
 			@Override
 			protected void update()
 			{
-				getMenu().setEnabled(App.INSTANCE.hasDocuments());
+				getMenu().setEnabled(PatternGeneratorApp.INSTANCE.hasDocuments());
 				updateDocumentCommands();
 			}
 		},
@@ -478,7 +479,7 @@ class MainWindow
 			@Override
 			protected void update()
 			{
-				getMenu().setEnabled(App.INSTANCE.hasDocuments());
+				getMenu().setEnabled(PatternGeneratorApp.INSTANCE.hasDocuments());
 				updateDocumentCommands();
 			}
 		},
@@ -520,14 +521,14 @@ class MainWindow
 
 		private static void updateAppCommands()
 		{
-			App.INSTANCE.updateCommands();
+			PatternGeneratorApp.INSTANCE.updateCommands();
 		}
 
 		//--------------------------------------------------------------
 
 		private static void updateDocumentCommands()
 		{
-			PatternDocument document = App.INSTANCE.getDocument();
+			PatternDocument document = PatternGeneratorApp.INSTANCE.getDocument();
 			if (document == null)
 				PatternDocument.Command.setAllEnabled(false);
 			else
@@ -640,7 +641,7 @@ class MainWindow
 		@Override
 		public void actionPerformed(ActionEvent event)
 		{
-			App.INSTANCE.closeDocument(Integer.parseInt(event.getActionCommand()));
+			PatternGeneratorApp.INSTANCE.closeDocument(Integer.parseInt(event.getActionCommand()));
 		}
 
 		//--------------------------------------------------------------
@@ -729,7 +730,7 @@ class MainWindow
 				}
 				catch (AppException e)
 				{
-					App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+					PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
 				}
 			}
 			return false;

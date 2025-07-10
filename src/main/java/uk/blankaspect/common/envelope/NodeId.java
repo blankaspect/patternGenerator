@@ -12,13 +12,7 @@ Class: node identifier.
 
 package uk.blankaspect.common.envelope;
 
-//----------------------------------------------------------------------
-
-
-// IMPORTS
-
-
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 //----------------------------------------------------------------------
 

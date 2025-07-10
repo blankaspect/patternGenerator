@@ -19,7 +19,6 @@ package uk.blankaspect.patterngenerator;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -68,7 +67,8 @@ class DescriptionDialog
 
 	private static final	int	DESCRIPTION_FIELD_NUM_COLUMNS	= 40;
 
-	private static final	String	TITLE_STR		= "Edit description";
+	private static final	String	DEFAULT_TITLE	= "Edit description";
+
 	private static final	String	DESCRIPTION_STR	= "Description";
 
 	// Commands
@@ -79,17 +79,29 @@ class DescriptionDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	Point	location;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	boolean		accepted;
+	private	FTextField	descriptionField;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
 	private DescriptionDialog(Window owner,
-							  String titleStr,
+							  String title,
 							  String description)
 	{
-
 		// Call superclass constructor
-		super(owner, (titleStr == null) ? TITLE_STR : TITLE_STR + " : " + titleStr,
-			  Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, (title == null) ? DEFAULT_TITLE : DEFAULT_TITLE + " : " + title,
+			  ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -214,7 +226,7 @@ class DescriptionDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -224,7 +236,6 @@ class DescriptionDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -234,10 +245,10 @@ class DescriptionDialog
 ////////////////////////////////////////////////////////////////////////
 
 	public static String showDialog(Component parent,
-									String    titleStr,
+									String    title,
 									String    text)
 	{
-		return new DescriptionDialog(GuiUtils.getWindow(parent), titleStr, text).getDescription();
+		return new DescriptionDialog(GuiUtils.getWindow(parent), title, text).getDescription();
 	}
 
 	//------------------------------------------------------------------
@@ -265,7 +276,7 @@ class DescriptionDialog
 
 	private String getDescription()
 	{
-		return (accepted ? descriptionField.getText() : null);
+		return accepted ? descriptionField.getText() : null;
 	}
 
 	//------------------------------------------------------------------
@@ -286,19 +297,6 @@ class DescriptionDialog
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	Point	location;
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	boolean		accepted;
-	private	FTextField	descriptionField;
 
 }
 

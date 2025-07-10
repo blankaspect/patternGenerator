@@ -33,13 +33,31 @@ public class Icons
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final	ImageIcon	CROSS_10_10			= new ImageIcon(ImageData.CROSS_10_10);
-	public static final	ImageIcon	DOUBLE_ANGLE_LEFT	= new ImageIcon(ImageData.DOUBLE_ANGLE_LEFT);
-	public static final	ImageIcon	PLAY				= new ImageIcon(ImageData.PLAY);
-	public static final	ImageIcon	PAUSE				= new ImageIcon(ImageData.PAUSE);
-	public static final	ImageIcon	STOP				= new ImageIcon(ImageData.STOP);
+	public static final	ImageIcon	CROSS_10_10			= new ImageIcon(ImgData.CROSS_10_10);
+	public static final	ImageIcon	DOUBLE_ANGLE_LEFT	= new ImageIcon(ImgData.DOUBLE_ANGLE_LEFT);
+	public static final	ImageIcon	PLAY				= new ImageIcon(ImgData.PLAY);
+	public static final	ImageIcon	PAUSE				= new ImageIcon(ImgData.PAUSE);
+	public static final	ImageIcon	STOP				= new ImageIcon(ImgData.STOP);
 
-	private interface ImageData
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	private Icons()
+	{
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Image data
+////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * PNG image data.
+	 */
+
+	private interface ImgData
 	{
 		byte[]	CROSS_10_10	=
 		{
@@ -160,15 +178,7 @@ public class Icons
 		};
 	}
 
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	private Icons()
-	{
-	}
-
-	//------------------------------------------------------------------
+	//==================================================================
 
 }
 

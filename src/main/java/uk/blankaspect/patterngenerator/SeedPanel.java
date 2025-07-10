@@ -51,7 +51,7 @@ class SeedPanel
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	FIELD_LENGTH	= App.MAX_NUM_SEED_DIGITS;
+	private static final	int	FIELD_LENGTH	= PatternGeneratorApp.MAX_NUM_SEED_DIGITS;
 
 	private static final	Insets	BUTTON_MARGINS	= new Insets(1, 4, 1, 4);
 
@@ -199,7 +199,7 @@ class SeedPanel
 
 	private void onRandomise()
 	{
-		field.setValue(App.INSTANCE.getNextRandomSeed());
+		field.setValue(PatternGeneratorApp.INSTANCE.getNextRandomSeed());
 	}
 
 	//------------------------------------------------------------------

@@ -146,7 +146,7 @@ class HueSaturationPanel
 				}
 			}
 
-			// Set component attributes
+			// Set properties
 			setOpaque(true);
 			setFocusable(false);
 

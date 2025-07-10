@@ -20,7 +20,6 @@ package uk.blankaspect.patterngenerator;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -109,20 +108,20 @@ class Pattern2ParamsDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	WIDTH_FIELD_LENGTH					= 4;
-	private static final	int	HEIGHT_FIELD_LENGTH					= 4;
-	private static final	int	END_MARGIN_FIELD_LENGTH				= 2;
-	private static final	int	SIDE_MARGIN_FIELD_LENGTH			= 1;
-	private static final	int	GRID_INTERVAL_FIELD_LENGTH			= 6;
-	private static final	int	PATH_THICKNESS_FIELD_LENGTH			= 5;
-	private static final	int	EXPECTED_PATH_LENGTH_FIELD_LENGTH	= 2;
-	private static final	int	TERMINAL_DIAMETER_FIELD_LENGTH		= 5;
-	private static final	int	NUM_PATH_COLOURS_FIELD_LENGTH		= 2;
-	private static final	int	ACTIVE_FRACTION_FIELD_LENGTH		= 3;
-	private static final	int	DIRECTION_PROBABILITY_FIELD_LENGTH	= 3;
+	private static final	int		WIDTH_FIELD_LENGTH					= 4;
+	private static final	int		HEIGHT_FIELD_LENGTH					= 4;
+	private static final	int		END_MARGIN_FIELD_LENGTH				= 2;
+	private static final	int		SIDE_MARGIN_FIELD_LENGTH			= 1;
+	private static final	int		GRID_INTERVAL_FIELD_LENGTH			= 6;
+	private static final	int		PATH_THICKNESS_FIELD_LENGTH			= 5;
+	private static final	int		EXPECTED_PATH_LENGTH_FIELD_LENGTH	= 2;
+	private static final	int		TERMINAL_DIAMETER_FIELD_LENGTH		= 5;
+	private static final	int		NUM_PATH_COLOURS_FIELD_LENGTH		= 2;
+	private static final	int		ACTIVE_FRACTION_FIELD_LENGTH		= 3;
+	private static final	int		DIRECTION_PROBABILITY_FIELD_LENGTH	= 3;
 
-	private static final	int	SLIDER_KNOB_WIDTH	= 24;
-	private static final	int	SLIDER_HEIGHT		= 18;
+	private static final	int		SLIDER_KNOB_WIDTH	= 24;
+	private static final	int		SLIDER_HEIGHT		= 18;
 
 	private static final	double	DELTA_GRID_INTERVAL		= 0.01;
 	private static final	double	DELTA_PATH_THICKNESS	= 0.01;
@@ -132,7 +131,7 @@ class Pattern2ParamsDialog
 
 	private static final	Color	DIRECTION_TEXT_COLOUR	= new Color(192, 64, 0);
 
-	private static final	String	TITLE_STR	= PatternKind.PATTERN2.getName() + " parameters : ";
+	private static final	String	TITLE_PREFIX	= PatternKind.PATTERN2.getName() + " parameters : ";
 
 	private static final	String	NEW_PATTERN_STR					= "New pattern";
 	private static final	String	SIZE_STR						= "Size";
@@ -187,379 +186,52 @@ class Pattern2ParamsDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		NO_DIRECTION_PROBABILITIES
-		("No direction probabilities have been set.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private static	Point	location;
+	private static	boolean	symmetrical;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// PROBABILITY BOX CLASS
-
-
-	private static class ProbabilityBox
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	HORIZONTAL_MARGIN	= 5;
-		private static final	int	VERTICAL_MARGIN		= 2;
-
-		private static final	String	PROTOTYPE_TEXT	= "0.000";
-
-		private static final	Color	BACKGROUND_COLOUR	= new Color(248, 240, 216);
-		private static final	Color	TEXT_COLOUR			= Color.BLACK;
-		private static final	Color	BORDER_COLOUR		= new Color(216, 208, 184);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ProbabilityBox()
-		{
-			AppFont.TEXT_FIELD.apply(this);
-			FontMetrics fontMetrics = getFontMetrics(getFont());
-			width = 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(PROTOTYPE_TEXT);
-			height = 2 * VERTICAL_MARGIN + fontMetrics.getHeight() - 1;
-			setOpaque(true);
-			setFocusable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(width, height);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Fill background
-			Rectangle rect = gr.getClipBounds();
-			gr.setColor(BACKGROUND_COLOUR);
-			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
-
-			// Draw text
-			if (text != null)
-			{
-				// Set rendering hints for text antialiasing and fractional metrics
-				TextRendering.setHints((Graphics2D)gr);
-
-				// Draw text
-				gr.setColor(TEXT_COLOUR);
-				gr.drawString(text, HORIZONTAL_MARGIN,
-							  VERTICAL_MARGIN - 1 + gr.getFontMetrics().getAscent());
-			}
-
-			// Draw border
-			gr.setColor(BORDER_COLOUR);
-			int x1 = 0;
-			int x2 = getWidth() - 1;
-			int y1 = 0;
-			int y2 = getHeight() - 1;
-			gr.drawLine(x1, y1, x1, y2);
-			gr.drawLine(x2, y1, x2, y2);
-			gr.drawLine(x1, y2, x2, y2);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private void setText(String text)
-		{
-			if ((text == null) ? (this.text != null) : !text.equals(this.text))
-			{
-				this.text = text;
-				repaint();
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int		width;
-		private	int		height;
-		private	String	text;
-
-	}
-
-	//==================================================================
-
-
-	// SPINNER-SLIDER PANEL CLASS
-
-
-	private static class SpinnerSliderPanel
-		extends DoubleSpinnerSliderPanel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private SpinnerSliderPanel(double       value,
-								   double       minValue,
-								   double       maxValue,
-								   double       deltaValue,
-								   int          fieldLength,
-								   NumberFormat format,
-								   int          sliderWidth,
-								   double       defaultValue)
-		{
-			super(value, minValue, maxValue, deltaValue, fieldLength, format, false, sliderWidth, SLIDER_HEIGHT,
-				  SLIDER_KNOB_WIDTH, defaultValue, SPINNER_SLIDER_PANEL_KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// TRANSITION-INTERVAL RANGE PANEL CLASS
-
-
-	private static class TransitionIntervalRangePanel
-		extends IntegerRangeBarPanel.Horizontal
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	OFFSET	= Pattern2Image.MIN_TRANSITION_INTERVAL;
-		private static final	int	FACTOR	= Pattern2Image.MAX_TRANSITION_INTERVAL - OFFSET;
-
-		private static final	int	BAR_EXTENT	= 200;
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SPINNER CLASS
-
-
-		private static class Spinner
-			extends FIntegerSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	int	FIELD_LENGTH	= 3;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Spinner()
-			{
-				super(Pattern2Image.MIN_TRANSITION_INTERVAL, Pattern2Image.MIN_TRANSITION_INTERVAL,
-					  Pattern2Image.MAX_TRANSITION_INTERVAL, FIELD_LENGTH, true);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private TransitionIntervalRangePanel()
-		{
-			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public double normaliseValue(int value)
-		{
-			return (double)(value - OFFSET) / (double)FACTOR;
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public int denormaliseValue(double value)
-		{
-			return (int)Math.round(value * (double)FACTOR) + OFFSET;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// COLOUR BUTTON CLASS
-
-
-	private class ColourButton
-		extends JButton
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	ICON_WIDTH	= 40;
-		private static final	int	ICON_HEIGHT	= 16;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ColourButton(Color   colour,
-							 boolean blend)
-		{
-			// Call superclass constructor
-			super(new ColourSampleIcon(ICON_WIDTH, ICON_HEIGHT));
-
-			// Initialise instance variables
-			this.colour = new Observable.Equality<>();
-			this.blend = blend;
-
-			// Set attributes
-			setMargin(COLOUR_BUTTON_MARGINS);
-			setColour(colour);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private Color getColour()
-		{
-			return blend ? colour.get() : ColourUtils.opaque(colour.get());
-		}
-
-		//--------------------------------------------------------------
-
-		private void setColour(Color colour)
-		{
-			this.colour.set(colour);
-			updateForeground();
-		}
-
-		//--------------------------------------------------------------
-
-		private void updateForeground()
-		{
-			Color colour = getColour();
-			setForeground(blend ? ColourUtils.blend(colour, transparencyColourButton.getColour())
-								: ColourUtils.opaque(colour));
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	Observable<Color>	colour;
-		private	boolean				blend;
-
-	}
-
-	//==================================================================
+	private	boolean											accepted;
+	private	DimensionsSpinnerPanel							sizePanel;
+	private	FComboBox<Pattern2Image.Orientation>			orientationComboBox;
+	private	FIntegerSpinner									endMarginSpinner;
+	private	FIntegerSpinner									sideMarginSpinner;
+	private	SpinnerSliderPanel								gridIntervalSpinnerSlider;
+	private	SpinnerSliderPanel								pathThicknessSpinnerSlider;
+	private	FIntegerSpinner									expectedPathLengthSpinner;
+	private	FCheckBox										showEmptyPathsCheckBox;
+	private	FComboBox<Pattern2Image.TerminalEmphasis>		terminalEmphasisComboBox;
+	private	SpinnerSliderPanel								terminalDiameterSpinnerSlider;
+	private	SeedPanel										seedPanel;
+	private	ColourButton									transparencyColourButton;
+	private	ColourButton									backgroundColourButton;
+	private	FIntegerSpinner									numPathColoursSpinner;
+	private	ColourSetPanel									pathColourPanel;
+	private	FIntegerSpinner									activeFractionSpinner;
+	private	TransitionIntervalRangePanel					transitionIntervalRangePanel;
+	private	FComboBox<Pattern2Image.Direction.Mode>			directionModeComboBox;
+	private	DirectionProbabilityPanel						probabilityPanel;
+	private	Map<Pattern2Image.Direction, FIntegerSpinner>	directionProbabilitySpinners;
+	private	Map<Pattern2Image.Direction, ProbabilityBox>	normalisedProbabilityBoxes;
+	private	FCheckBox										symmetricalCheckBox;
+	private	FButton											okButton;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
 	private Pattern2ParamsDialog(Window         owner,
-								 String         titleStr,
+								 String         title,
 								 Pattern2Params params)
 	{
 		// Call superclass constructor
-		super(owner, TITLE_STR + ((titleStr == null) ? NEW_PATTERN_STR : titleStr),
-			  Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, TITLE_PREFIX + ((title == null) ? NEW_PATTERN_STR : title),
+			  ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -1478,7 +1150,7 @@ class Pattern2ParamsDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -1497,10 +1169,10 @@ class Pattern2ParamsDialog
 ////////////////////////////////////////////////////////////////////////
 
 	public static Pattern2Params showDialog(Component      parent,
-											String         titleStr,
+											String         title,
 											Pattern2Params params)
 	{
-		return new Pattern2ParamsDialog(GuiUtils.getWindow(parent), titleStr, params).getParams();
+		return new Pattern2ParamsDialog(GuiUtils.getWindow(parent), title, params).getParams();
 	}
 
 	//------------------------------------------------------------------
@@ -1615,25 +1287,27 @@ class Pattern2ParamsDialog
 			for (int i = 0; i < numColours; i++)
 				pathColours.add(pathColourPanel.getColour(i));
 
-			params = new Pattern2Params(sizePanel.getValue1(),
-										sizePanel.getValue2(),
-										orientationComboBox.getSelectedValue(),
-										endMarginSpinner.getIntValue(),
-										sideMarginSpinner.getIntValue(),
-										gridIntervalSpinnerSlider.getValue(),
-										pathThicknessSpinnerSlider.getValue(),
-										terminalDiameterSpinnerSlider.getValue(),
-										expectedPathLengthSpinner.getIntValue(),
-										getDirectionProbabilities(),
-										getDirectionMode(),
-										terminalEmphasisComboBox.getSelectedValue(),
-										showEmptyPathsCheckBox.isSelected(),
-										transparencyColourButton.getColour(),
-										backgroundColourButton.getColour(),
-										pathColours,
-										activeFractionSpinner.getIntValue(),
-										transitionIntervalRangePanel.getRange(),
-										seedPanel.getSeed());
+			params = new Pattern2Params(
+				sizePanel.getValue1(),
+				sizePanel.getValue2(),
+				orientationComboBox.getSelectedValue(),
+				endMarginSpinner.getIntValue(),
+				sideMarginSpinner.getIntValue(),
+				gridIntervalSpinnerSlider.getValue(),
+				pathThicknessSpinnerSlider.getValue(),
+				terminalDiameterSpinnerSlider.getValue(),
+				expectedPathLengthSpinner.getIntValue(),
+				getDirectionProbabilities(),
+				getDirectionMode(),
+				terminalEmphasisComboBox.getSelectedValue(),
+				showEmptyPathsCheckBox.isSelected(),
+				transparencyColourButton.getColour(),
+				backgroundColourButton.getColour(),
+				pathColours,
+				activeFractionSpinner.getIntValue(),
+				transitionIntervalRangePanel.getRange(),
+				seedPanel.getSeed()
+			);
 		}
 		return params;
 	}
@@ -1704,8 +1378,8 @@ class Pattern2ParamsDialog
 			FIntegerSpinner spinner = directionProbabilitySpinners.get(direction);
 			double prob = spinner.isEnabled() ? (double)spinner.getIntValue() : 0.0;
 			prob *= probFactor;
-			normalisedProbabilityBoxes.get(direction).setText((prob == 0.0) ? null
-																			: AppConstants.FORMAT_1_3.format(prob));
+			normalisedProbabilityBoxes.get(direction)
+					.setText((prob == 0.0) ? null : AppConstants.FORMAT_1_3.format(prob));
 		}
 	}
 
@@ -1782,7 +1456,7 @@ class Pattern2ParamsDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, PatternGeneratorApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -1798,40 +1472,367 @@ class Pattern2ParamsDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
-	private static	boolean	symmetrical;
+
+	// ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		NO_DIRECTION_PROBABILITIES
+		("No direction probabilities have been set.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	boolean											accepted;
-	private	DimensionsSpinnerPanel							sizePanel;
-	private	FComboBox<Pattern2Image.Orientation>			orientationComboBox;
-	private	FIntegerSpinner									endMarginSpinner;
-	private	FIntegerSpinner									sideMarginSpinner;
-	private	SpinnerSliderPanel								gridIntervalSpinnerSlider;
-	private	SpinnerSliderPanel								pathThicknessSpinnerSlider;
-	private	FIntegerSpinner									expectedPathLengthSpinner;
-	private	FCheckBox										showEmptyPathsCheckBox;
-	private	FComboBox<Pattern2Image.TerminalEmphasis>		terminalEmphasisComboBox;
-	private	SpinnerSliderPanel								terminalDiameterSpinnerSlider;
-	private	SeedPanel										seedPanel;
-	private	ColourButton									transparencyColourButton;
-	private	ColourButton									backgroundColourButton;
-	private	FIntegerSpinner									numPathColoursSpinner;
-	private	ColourSetPanel									pathColourPanel;
-	private	FIntegerSpinner									activeFractionSpinner;
-	private	TransitionIntervalRangePanel					transitionIntervalRangePanel;
-	private	FComboBox<Pattern2Image.Direction.Mode>			directionModeComboBox;
-	private	DirectionProbabilityPanel						probabilityPanel;
-	private	Map<Pattern2Image.Direction, FIntegerSpinner>	directionProbabilitySpinners;
-	private	Map<Pattern2Image.Direction, ProbabilityBox>	normalisedProbabilityBoxes;
-	private	FCheckBox										symmetricalCheckBox;
-	private	FButton											okButton;
+
+	// PROBABILITY BOX CLASS
+
+
+	private static class ProbabilityBox
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	HORIZONTAL_MARGIN	= 5;
+		private static final	int	VERTICAL_MARGIN		= 2;
+
+		private static final	String	PROTOTYPE_TEXT	= "0.000";
+
+		private static final	Color	BACKGROUND_COLOUR	= new Color(248, 240, 216);
+		private static final	Color	TEXT_COLOUR			= Color.BLACK;
+		private static final	Color	BORDER_COLOUR		= new Color(216, 208, 184);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int		width;
+		private	int		height;
+		private	String	text;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ProbabilityBox()
+		{
+			AppFont.TEXT_FIELD.apply(this);
+			FontMetrics fontMetrics = getFontMetrics(getFont());
+			width = 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(PROTOTYPE_TEXT);
+			height = 2 * VERTICAL_MARGIN + fontMetrics.getHeight() - 1;
+			setOpaque(true);
+			setFocusable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(width, height);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Create copy of graphics context
+			gr = gr.create();
+
+			// Fill background
+			Rectangle rect = gr.getClipBounds();
+			gr.setColor(BACKGROUND_COLOUR);
+			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+			// Draw text
+			if (text != null)
+			{
+				// Set rendering hints for text antialiasing and fractional metrics
+				TextRendering.setHints((Graphics2D)gr);
+
+				// Draw text
+				gr.setColor(TEXT_COLOUR);
+				gr.drawString(text, HORIZONTAL_MARGIN,
+							  VERTICAL_MARGIN - 1 + gr.getFontMetrics().getAscent());
+			}
+
+			// Draw border
+			gr.setColor(BORDER_COLOUR);
+			int x1 = 0;
+			int x2 = getWidth() - 1;
+			int y1 = 0;
+			int y2 = getHeight() - 1;
+			gr.drawLine(x1, y1, x1, y2);
+			gr.drawLine(x2, y1, x2, y2);
+			gr.drawLine(x1, y2, x2, y2);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private void setText(String text)
+		{
+			if ((text == null) ? (this.text != null) : !text.equals(this.text))
+			{
+				this.text = text;
+				repaint();
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// SPINNER-SLIDER PANEL CLASS
+
+
+	private static class SpinnerSliderPanel
+		extends DoubleSpinnerSliderPanel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private SpinnerSliderPanel(double       value,
+								   double       minValue,
+								   double       maxValue,
+								   double       deltaValue,
+								   int          fieldLength,
+								   NumberFormat format,
+								   int          sliderWidth,
+								   double       defaultValue)
+		{
+			super(value, minValue, maxValue, deltaValue, fieldLength, format, false, sliderWidth, SLIDER_HEIGHT,
+				  SLIDER_KNOB_WIDTH, defaultValue, SPINNER_SLIDER_PANEL_KEY);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// TRANSITION-INTERVAL RANGE PANEL CLASS
+
+
+	private static class TransitionIntervalRangePanel
+		extends IntegerRangeBarPanel.Horizontal
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	OFFSET	= Pattern2Image.MIN_TRANSITION_INTERVAL;
+		private static final	int	FACTOR	= Pattern2Image.MAX_TRANSITION_INTERVAL - OFFSET;
+
+		private static final	int	BAR_EXTENT	= 200;
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SPINNER CLASS
+
+
+		private static class Spinner
+			extends FIntegerSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private static final	int	FIELD_LENGTH	= 3;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Spinner()
+			{
+				super(Pattern2Image.MIN_TRANSITION_INTERVAL, Pattern2Image.MIN_TRANSITION_INTERVAL,
+					  Pattern2Image.MAX_TRANSITION_INTERVAL, FIELD_LENGTH, true);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private TransitionIntervalRangePanel()
+		{
+			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public double normaliseValue(int value)
+		{
+			return (double)(value - OFFSET) / (double)FACTOR;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public int denormaliseValue(double value)
+		{
+			return (int)Math.round(value * (double)FACTOR) + OFFSET;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// COLOUR BUTTON CLASS
+
+
+	private class ColourButton
+		extends JButton
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	ICON_WIDTH	= 40;
+		private static final	int	ICON_HEIGHT	= 16;
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	Observable<Color>	colour;
+		private	boolean				blend;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ColourButton(Color   colour,
+							 boolean blend)
+		{
+			// Call superclass constructor
+			super(new ColourSampleIcon(ICON_WIDTH, ICON_HEIGHT));
+
+			// Initialise instance variables
+			this.colour = new Observable.Equality<>();
+			this.blend = blend;
+
+			// Set properties
+			setMargin(COLOUR_BUTTON_MARGINS);
+			setColour(colour);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private Color getColour()
+		{
+			return blend ? colour.get() : ColourUtils.opaque(colour.get());
+		}
+
+		//--------------------------------------------------------------
+
+		private void setColour(Color colour)
+		{
+			this.colour.set(colour);
+			updateForeground();
+		}
+
+		//--------------------------------------------------------------
+
+		private void updateForeground()
+		{
+			Color colour = getColour();
+			setForeground(blend ? ColourUtils.blend(colour, transparencyColourButton.getColour())
+								: ColourUtils.opaque(colour));
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

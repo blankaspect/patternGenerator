@@ -381,7 +381,7 @@ class HueSaturationRangePanel
 												BufferedImage.TYPE_INT_RGB);
 			updateColourAreaImage(params.brightness);
 
-			// Set component attributes
+			// Set properties
 			setOpaque(true);
 			setFocusable(false);
 

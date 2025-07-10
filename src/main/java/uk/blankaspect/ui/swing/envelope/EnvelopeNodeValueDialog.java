@@ -19,7 +19,6 @@ package uk.blankaspect.ui.swing.envelope;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -97,109 +96,6 @@ public class EnvelopeNodeValueDialog
 		};
 
 ////////////////////////////////////////////////////////////////////////
-//  Member interfaces
-////////////////////////////////////////////////////////////////////////
-
-
-	// NODE VALUE INTERFACE
-
-
-	public interface INodeValueEditor
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Methods
-	////////////////////////////////////////////////////////////////////
-
-		double getNodeValue();
-
-		//--------------------------------------------------------------
-
-		void setNodeValue(double value);
-
-		//--------------------------------------------------------------
-
-		void setMinimumValue(double minValue);
-
-		//--------------------------------------------------------------
-
-		void setMaximumValue(double maxValue);
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// COORDINATE SPINNER CLASS
-
-
-	public static class CoordinateSpinner
-		extends DoubleSpinner
-		implements INodeValueEditor
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public CoordinateSpinner(double       stepSize,
-								 int          maxLength,
-								 NumberFormat format)
-
-		{
-			super(0.0, 0.0, 1.0, stepSize, maxLength, format);
-			FontUtils.setAppFont(Constants.FontKey.TEXT_FIELD, this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : INodeValueEditor interface
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public double getNodeValue()
-		{
-			return getDoubleValue();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public void setNodeValue(double value)
-		{
-			setDoubleValue(value);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public void setMinimumValue(double minValue)
-		{
-			setMinimum(minValue);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public void setMaximumValue(double maxValue)
-		{
-			setMaximum(maxValue);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
@@ -213,12 +109,13 @@ public class EnvelopeNodeValueDialog
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private EnvelopeNodeValueDialog(Window             owner,
-									EnvelopeView<?, ?> envelopeView,
-									NodeId             nodeId)
+	private EnvelopeNodeValueDialog(
+		Window				owner,
+		EnvelopeView<?, ?>	envelopeView,
+		NodeId				nodeId)
 	{
 		// Call superclass constructor
-		super(owner, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, ModalityType.APPLICATION_MODAL);
 
 		// Initialise instance variables
 		xRange = envelopeView.getNodeXMinMax(nodeId);
@@ -253,11 +150,11 @@ public class EnvelopeNodeValueDialog
 		AbstractNode node = envelopeView.getNode(nodeId);
 
 		xSpinner = envelopeView.createXSpinner();
-		if (xSpinner instanceof INodeValueEditor)
+		if (xSpinner instanceof INodeValueEditor xEditor)
 		{
-			((INodeValueEditor)xSpinner).setMinimumValue(xRange.lowerBound);
-			((INodeValueEditor)xSpinner).setMaximumValue(xRange.upperBound);
-			((INodeValueEditor)xSpinner).setNodeValue(node.x);
+			xEditor.setMinimumValue(xRange.lowerBound);
+			xEditor.setMaximumValue(xRange.upperBound);
+			xEditor.setNodeValue(node.x);
 		}
 		xSpinner.setEnabled(!node.fixedX);
 
@@ -305,11 +202,11 @@ public class EnvelopeNodeValueDialog
 		}
 
 		ySpinner = envelopeView.createYSpinner();
-		if (ySpinner instanceof INodeValueEditor)
+		if (ySpinner instanceof INodeValueEditor yEditor)
 		{
-			((INodeValueEditor)ySpinner).setMinimumValue(yRange.lowerBound);
-			((INodeValueEditor)ySpinner).setMaximumValue(yRange.upperBound);
-			((INodeValueEditor)ySpinner).setNodeValue(y);
+			yEditor.setMinimumValue(yRange.lowerBound);
+			yEditor.setMaximumValue(yRange.upperBound);
+			yEditor.setNodeValue(y);
 		}
 		ySpinner.setEnabled(enabled);
 
@@ -385,7 +282,7 @@ public class EnvelopeNodeValueDialog
 		// Set content pane
 		setContentPane(mainPanel);
 
-		// Omit frame from dialog box
+		// Omit frame from dialog
 		setUndecorated(true);
 
 		// Dispose of window when it is closed
@@ -397,7 +294,7 @@ public class EnvelopeNodeValueDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		Point point = envelopeView.nodeToPoint(nodeId);
 		Point location = new Point(point.x + 1, point.y + 1);
 		SwingUtilities.convertPointToScreen(location, envelopeView);
@@ -422,9 +319,10 @@ public class EnvelopeNodeValueDialog
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static Point2D showDialog(Component          parent,
-									 EnvelopeView<?, ?> envelopeView,
-									 NodeId             nodeId)
+	public static Point2D showDialog(
+		Component			parent,
+		EnvelopeView<?, ?>	envelopeView,
+		NodeId				nodeId)
 	{
 		return new EnvelopeNodeValueDialog(GuiUtils.getWindow(parent), envelopeView, nodeId).getNodeLocation();
 	}
@@ -436,7 +334,8 @@ public class EnvelopeNodeValueDialog
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void actionPerformed(ActionEvent event)
+	public void actionPerformed(
+		ActionEvent	event)
 	{
 		String command = event.getActionCommand();
 
@@ -455,13 +354,10 @@ public class EnvelopeNodeValueDialog
 
 	private Point2D getNodeLocation()
 	{
-		Point2D p = null;
-		if (accepted)
-		{
-			if ((xSpinner instanceof INodeValueEditor) && (ySpinner instanceof INodeValueEditor))
-				p = new Point2D(((INodeValueEditor)xSpinner).getNodeValue(), ((INodeValueEditor)ySpinner).getNodeValue());
-		}
-		return p;
+		return (accepted && (xSpinner instanceof INodeValueEditor xEditor)
+				&& (ySpinner instanceof INodeValueEditor yEditor))
+						? new Point2D( xEditor.getNodeValue(), yEditor.getNodeValue())
+						: null;
 	}
 
 	//------------------------------------------------------------------
@@ -480,6 +376,116 @@ public class EnvelopeNodeValueDialog
 	}
 
 	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Member interfaces
+////////////////////////////////////////////////////////////////////////
+
+
+	// INTERFACE: NODE-VALUE EDITOR
+
+
+	public interface INodeValueEditor
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Methods
+	////////////////////////////////////////////////////////////////////
+
+		double getNodeValue();
+
+		//--------------------------------------------------------------
+
+		void setNodeValue(
+			double	value);
+
+		//--------------------------------------------------------------
+
+		void setMinimumValue(
+			double	value);
+
+		//--------------------------------------------------------------
+
+		void setMaximumValue(
+			double	value);
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: COORDINATE SPINNER
+
+
+	public static class CoordinateSpinner
+		extends DoubleSpinner
+		implements INodeValueEditor
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		public CoordinateSpinner(
+			double			stepSize,
+			int				maxLength,
+			NumberFormat	format)
+
+		{
+			super(0.0, 0.0, 1.0, stepSize, maxLength, format);
+			FontUtils.setAppFont(Constants.FontKey.TEXT_FIELD, this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : INodeValueEditor interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public double getNodeValue()
+		{
+			return getDoubleValue();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void setNodeValue(
+			double	value)
+		{
+			setDoubleValue(value);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void setMinimumValue(
+			double	value)
+		{
+			setMinimum(value);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void setMaximumValue(
+			double	value)
+		{
+			setMaximum(value);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

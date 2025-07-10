@@ -2,7 +2,7 @@
 
 RangeIcon.java
 
-Range icon class.
+Class: range icon.
 
 \*====================================================================*/
 
@@ -23,7 +23,7 @@ import javax.swing.ImageIcon;
 //----------------------------------------------------------------------
 
 
-// RANGE ICON CLASS
+// CLASS: RANGE ICON
 
 
 public class RangeIcon
@@ -33,13 +33,31 @@ public class RangeIcon
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final	ImageIcon	RANGE_VERTICAL		= new ImageIcon(ImageData.RANGE_VERTICAL);
-	public static final	ImageIcon	RANGE_HORIZONTAL	= new ImageIcon(ImageData.RANGE_HORIZONTAL);
-	public static final	ImageIcon	SET_LOWER_TO_UPPER	= new ImageIcon(ImageData.SET_LOWER_TO_UPPER);
-	public static final	ImageIcon	SET_UPPER_TO_LOWER	= new ImageIcon(ImageData.SET_UPPER_TO_LOWER);
-	public static final	ImageIcon	CROSS				= new ImageIcon(ImageData.CROSS);
+	public static final	ImageIcon	RANGE_VERTICAL		= new ImageIcon(ImgData.RANGE_VERTICAL);
+	public static final	ImageIcon	RANGE_HORIZONTAL	= new ImageIcon(ImgData.RANGE_HORIZONTAL);
+	public static final	ImageIcon	SET_LOWER_TO_UPPER	= new ImageIcon(ImgData.SET_LOWER_TO_UPPER);
+	public static final	ImageIcon	SET_UPPER_TO_LOWER	= new ImageIcon(ImgData.SET_UPPER_TO_LOWER);
+	public static final	ImageIcon	CROSS				= new ImageIcon(ImgData.CROSS);
 
-	private interface ImageData
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	private RangeIcon()
+	{
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Image data
+////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * PNG image data.
+	 */
+
+	private interface ImgData
 	{
 		byte[]	RANGE_VERTICAL	=
 		{
@@ -137,15 +155,7 @@ public class RangeIcon
 		};
 	}
 
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	private RangeIcon()
-	{
-	}
-
-	//------------------------------------------------------------------
+	//==================================================================
 
 }
 

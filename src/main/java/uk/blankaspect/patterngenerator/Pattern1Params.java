@@ -77,8 +77,8 @@ class Pattern1Params
 
 	public static final	Pattern1Image.SaturationMode	DEFAULT_SATURATION_MODE	= Pattern1Image.SaturationMode.VARIABLE;
 
-	public static final	long	MIN_SEED	= App.MIN_SEED;
-	public static final	long	MAX_SEED	= App.MAX_SEED;
+	public static final	long	MIN_SEED	= PatternGeneratorApp.MIN_SEED;
+	public static final	long	MAX_SEED	= PatternGeneratorApp.MAX_SEED;
 
 	public static final	double	MIN_ROTATION_PERIOD	= 5.0;
 	public static final	double	MAX_ROTATION_PERIOD	= 9000.0;
@@ -489,7 +489,7 @@ class Pattern1Params
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showWarningMessage(App.SHORT_NAME, e);
+				PatternGeneratorApp.INSTANCE.showWarningMessage(PatternGeneratorApp.SHORT_NAME, e);
 			}
 		}
 

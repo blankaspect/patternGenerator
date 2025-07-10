@@ -2,7 +2,7 @@
 
 PatternDocument.java
 
-Pattern document class.
+Class: pattern document.
 
 \*====================================================================*/
 
@@ -80,7 +80,7 @@ import uk.blankaspect.ui.swing.image.PngOutputFile;
 //----------------------------------------------------------------------
 
 
-// PATTERN DOCUMENT CLASS
+// CLASS: PATTERN DOCUMENT
 
 
 abstract class PatternDocument
@@ -131,1173 +131,49 @@ abstract class PatternDocument
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// COMMANDS
-
-
-	enum Command
-		implements Action
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		// Commands
-
-		UNDO
-		(
-			"undo",
-			"Undo",
-			KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK)
-		),
-
-		REDO
-		(
-			"redo",
-			"Redo",
-			KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK)
-		),
-
-		CLEAR_EDIT_LIST
-		(
-			"clearEditList",
-			"Clear edit history" + AppConstants.ELLIPSIS_STR
-		),
-
-		EDIT_PATTERN_PARAMETERS
-		(
-			"editPatternParameters",
-			"Edit pattern parameters" + AppConstants.ELLIPSIS_STR,
-			KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK)
-		),
-
-		EDIT_DESCRIPTION
-		(
-			"editDescription",
-			"Edit description" + AppConstants.ELLIPSIS_STR,
-			KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK)
-		),
-
-		REGENERATE_PATTERN_WITH_NEW_SEED
-		(
-			"regeneratePatternWithNewSeed",
-			"Regenerate pattern with new seed",
-			KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0)
-		),
-
-		SHOW_IMAGE_RENDERING_TIME
-		(
-			"showImageRenderingTime",
-			"Show image rendering time",
-			KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK)
-		),
-
-		START_SLIDE_SHOW
-		(
-			"startSlideShow",
-			"Start slide show" + AppConstants.ELLIPSIS_STR,
-			KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0)
-		),
-
-		START_ANIMATION
-		(
-			"startAnimation",
-			"Start animation" + AppConstants.ELLIPSIS_STR,
-			KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0)
-		),
-
-		OPTIMISE_ANIMATION
-		(
-			"optimiseAnimation",
-			"Optimise animation" + AppConstants.ELLIPSIS_STR,
-			KeyStroke.getKeyStroke(KeyEvent.VK_F7, KeyEvent.CTRL_DOWN_MASK)
-		),
-
-		RESIZE_WINDOW_TO_IMAGE
-		(
-			"resizeWindowToImage",
-			"Resize window to image",
-			KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0)
-		);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Command(String key)
-		{
-			command = new uk.blankaspect.ui.swing.action.Command(this);
-			putValue(Action.ACTION_COMMAND_KEY, key);
-		}
-
-		//--------------------------------------------------------------
-
-		private Command(String key,
-						String name)
-		{
-			this(key);
-			putValue(Action.NAME, name);
-		}
-
-		//--------------------------------------------------------------
-
-		private Command(String    key,
-						String    name,
-						KeyStroke acceleratorKey)
-		{
-			this(key, name);
-			putValue(Action.ACCELERATOR_KEY, acceleratorKey);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		public static void setAllEnabled(boolean enabled)
-		{
-			for (Command command : values())
-				command.setEnabled(enabled);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Action interface
-	////////////////////////////////////////////////////////////////////
-
-		public void addPropertyChangeListener(PropertyChangeListener listener)
-		{
-			command.addPropertyChangeListener(listener);
-		}
-
-		//--------------------------------------------------------------
-
-		public Object getValue(String key)
-		{
-			return command.getValue(key);
-		}
-
-		//--------------------------------------------------------------
-
-		public boolean isEnabled()
-		{
-			return command.isEnabled();
-		}
-
-		//--------------------------------------------------------------
-
-		public void putValue(String key,
-							 Object value)
-		{
-			command.putValue(key, value);
-		}
-
-		//--------------------------------------------------------------
-
-		public void removePropertyChangeListener(PropertyChangeListener listener)
-		{
-			command.removePropertyChangeListener(listener);
-		}
-
-		//--------------------------------------------------------------
-
-		public void setEnabled(boolean enabled)
-		{
-			command.setEnabled(enabled);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ActionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void actionPerformed(ActionEvent event)
-		{
-			PatternDocument document = App.INSTANCE.getDocument();
-			if (document != null)
-				document.executeCommand(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public void execute()
-		{
-			actionPerformed(null);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	uk.blankaspect.ui.swing.action.Command	command;
-
-	}
-
-	//==================================================================
-
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		FAILED_TO_OPEN_FILE
-		("Failed to open the file."),
-
-		FAILED_TO_CLOSE_FILE
-		("Failed to close the file."),
-
-		ERROR_WRITING_FILE
-		("An error occurred when writing the file."),
-
-		FILE_ACCESS_NOT_PERMITTED
-		("Access to the file was not permitted."),
-
-		FAILED_TO_CREATE_DIRECTORY
-		("Failed to create the directory."),
-
-		FAILED_TO_CREATE_TEMPORARY_FILE
-		("Failed to create a temporary file."),
-
-		FAILED_TO_DELETE_FILE
-		("Failed to delete the existing file."),
-
-		FAILED_TO_RENAME_FILE
-		("Failed to rename the temporary file to the specified filename."),
-
-		UNEXPECTED_DOCUMENT_FORMAT
-		("The document does not have the expected format."),
-
-		NO_VERSION_NUMBER
-		("The document does not have a version number."),
-
-		INVALID_VERSION_NUMBER
-		("The version number of the document is invalid."),
-
-		UNSUPPORTED_DOCUMENT_VERSION
-		("The version of the document (%1) is not supported by this version of " + App.SHORT_NAME + "."),
-
-		NO_ATTRIBUTE
-		("The required attribute is missing."),
-
-		INVALID_ATTRIBUTE
-		("The attribute is invalid."),
-
-		NO_PATTERN_ELEMENT
-		("The document has no pattern element."),
-
-		MULTIPLE_PATTERN_ELEMENTS
-		("The document has more than one pattern element."),
-
-		NO_PARAMETERS
-		("The document has no parameters."),
-
-		NOT_ENOUGH_MEMORY_TO_PERFORM_COMMAND
-		("There was not enough memory to perform the command.\n" +
-			"Clearing the list of undo/redo actions may make more memory available.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private static	int					newFileIndex;
+	private static	RenderingTimeDialog	renderingTimeDialog;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// FILE INFORMATION CLASS
-
-
-	public static class FileInfo
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public FileInfo(File         file,
-						DocumentKind documentKind)
-		{
-			this.file = file;
-			this.documentKind = documentKind;
-		}
-
-		//--------------------------------------------------------------
-
-		public FileInfo(File         file,
-						DocumentKind documentKind,
-						boolean      hasParameters)
-		{
-			this(file, documentKind);
-			this.hasParameters = hasParameters;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		File			file;
-		DocumentKind	documentKind;
-		boolean			hasParameters;
-
-	}
-
-	//==================================================================
-
-
-	// ANIMATION PARAMETERS CLASS
-
-
-	public static class AnimationParams
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public AnimationParams(int animationKind)
-		{
-			this.animationKind = animationKind;
-		}
-
-		//--------------------------------------------------------------
-
-		public AnimationParams(int    animationKind,
-							   double frameRate,
-							   int    startFrameIndex)
-		{
-			this.animationKind = animationKind;
-			this.frameRate = frameRate;
-			this.startFrameIndex = startFrameIndex;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		int		animationKind;
-		double	frameRate;
-		int		startFrameIndex;
-
-	}
-
-	//==================================================================
-
-
-	// EDIT CLASS
-
-
-	private static abstract class Edit
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// DESCRIPTION EDIT CLASS
-
-
-		private static class Description
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Description(String oldDescription,
-								String newDescription)
-			{
-				this.oldDescription = oldDescription;
-				this.newDescription = newDescription;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(PatternDocument document)
-			{
-				document.setDescription(oldDescription);
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(PatternDocument document)
-			{
-				document.setDescription(newDescription);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	String	oldDescription;
-			private	String	newDescription;
-
-		}
-
-		//==============================================================
-
-
-		// SEED EDIT CLASS
-
-
-		private static class Seed
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Seed(long oldSeed,
-						 long newSeed)
-			{
-				this.oldSeed = oldSeed;
-				this.newSeed = newSeed;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(PatternDocument document)
-			{
-				try
-				{
-					document.setSeed(oldSeed);
-				}
-				catch (AppException e)
-				{
-					App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
-				}
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(PatternDocument document)
-			{
-				try
-				{
-					document.setSeed(newSeed);
-				}
-				catch (AppException e)
-				{
-					App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
-				}
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	long	oldSeed;
-			private	long	newSeed;
-
-		}
-
-		//==============================================================
-
-
-		// PARAMETERS EDIT CLASS
-
-
-		private static class Parameters
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Parameters(PatternParams oldParams,
-							   PatternParams newParams)
-			{
-				this.oldParams = oldParams;
-				this.newParams = newParams;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(PatternDocument document)
-			{
-				try
-				{
-					document.setParameters(oldParams);
-				}
-				catch (AppException e)
-				{
-					App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
-				}
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(PatternDocument document)
-			{
-				try
-				{
-					document.setParameters(newParams);
-				}
-				catch (AppException e)
-				{
-					App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
-				}
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	PatternParams	oldParams;
-			private	PatternParams	newParams;
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Edit()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Abstract methods
-	////////////////////////////////////////////////////////////////////
-
-		protected abstract void undo(PatternDocument document);
-
-		//--------------------------------------------------------------
-
-		protected abstract void redo(PatternDocument document);
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// EDIT LIST CLASS
-
-
-	private static class EditList
-		extends LinkedList<Edit>
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private EditList()
-		{
-			maxLength = AppConfig.INSTANCE.getMaxEditListLength();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void clear()
-		{
-			super.clear();
-			unchangedIndex = currentIndex = 0;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private Edit removeUndo()
-		{
-			return (canUndo() ? get(--currentIndex) : null);
-		}
-
-		//--------------------------------------------------------------
-
-		private Edit removeRedo()
-		{
-			return (canRedo() ? get(currentIndex++) : null);
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean canUndo()
-		{
-			return (currentIndex > 0);
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean canRedo()
-		{
-			return (currentIndex < size());
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean isChanged()
-		{
-			return (currentIndex != unchangedIndex);
-		}
-
-		//--------------------------------------------------------------
-
-		private void addEdit(Edit edit)
-		{
-			// Remove redos
-			while (size() > currentIndex)
-				removeLast();
-
-			// Preserve changed status if unchanged state cannot be recovered
-			if (unchangedIndex > currentIndex)
-				unchangedIndex = -1;
-
-			// Remove oldest edits while list is full
-			while (size() >= maxLength)
-			{
-				removeFirst();
-				if (--unchangedIndex < 0)
-					unchangedIndex = -1;
-				if (--currentIndex < 0)
-					currentIndex = 0;
-			}
-
-			// Add new edit
-			add(edit);
-			++currentIndex;
-		}
-
-		//--------------------------------------------------------------
-
-		private void reset()
-		{
-			while (size() > currentIndex)
-				removeLast();
-
-			unchangedIndex = currentIndex;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int	maxLength;
-		private	int	currentIndex;
-		private	int	unchangedIndex;
-
-	}
-
-	//==================================================================
-
-
-	// RENDERING TIME CLASS
-
-
-	private static class RenderingTime
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private RenderingTime()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public void add(long numPixels,
-						long nanoseconds)
-		{
-			this.numPixels += numPixels;
-			this.nanoseconds += nanoseconds;
-		}
-
-		//--------------------------------------------------------------
-
-		public void reset()
-		{
-			numPixels = 0;
-			nanoseconds = 0;
-		}
-
-		//--------------------------------------------------------------
-
-		public double getMeanNanosecondsPerPixel()
-		{
-			return ((numPixels == 0) ? 0.0 : (double)nanoseconds / (double)numPixels);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	long	numPixels;
-		private	long	nanoseconds;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// SLIDE SHOW EXECUTION CLASS
-
-
-	private class DoSlideShow
-		implements Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// INPUT TASK CLASS
-
-
-		private class InputTask
-			implements Runnable
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private InputTask(long          index,
-							  PatternParams params)
-			{
-				this.index = index;
-				this.params = params;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : Runnable interface
-		////////////////////////////////////////////////////////////////
-
-			public void run()
-			{
-				PatternParams params = this.params.clone();
-				params.setSeed(App.INSTANCE.getNextRandomSeed());
-				try
-				{
-					PatternImage patternImage = createPatternImage(params);
-					patternImage.renderImage();
-					addResult(new Result(index, params, patternImage));
-				}
-				catch (InterruptedException e)
-				{
-					// ignore
-				}
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	long			index;
-			private	PatternParams	params;
-
-		}
-
-		//==============================================================
-
-
-		// RESULT CLASS
-
-
-		private class Result
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Result(long          index,
-						   PatternParams params,
-						   PatternImage  patternImage)
-			{
-				this.index = index;
-				this.params = params;
-				this.patternImage = patternImage;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	long			index;
-			private	PatternParams	params;
-			private	PatternImage	patternImage;
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private DoSlideShow(int numThreads,
-							int interval)
-		{
-			this.numThreads = numThreads;
-			this.interval = interval;
-			results = new ArrayList<>();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void run()
-		{
-			long inTaskIndex = 0;
-			long outTaskIndex = 0;
-			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-			long endTime = 0;
-			while (true)
-			{
-				// Test whether task has been cancelled
-				if (Task.isCancelled())
-					break;
-
-				// Submit tasks
-				while (inTaskIndex - outTaskIndex < numThreads)
-				{
-					try
-					{
-						executor.execute(new InputTask(inTaskIndex, getParameters()));
-						++inTaskIndex;
-					}
-					catch (RejectedExecutionException e)
-					{
-						// ignore
-					}
-				}
-
-				// Update end time while paused
-				if (paused)
-					endTime = System.currentTimeMillis();
-
-				// Get next pattern image from output list; update document and view
-				else if (System.currentTimeMillis() >= endTime)
-				{
-					if (!results.isEmpty())
-					{
-						Result result = findResult(outTaskIndex);
-						if (result != null)
-						{
-							// Increment output task index
-							++outTaskIndex;
-
-							// Add change of seed to list of edits
-							long oldSeed = getParameters().getSeed();
-							editList.addEdit(new Edit.Seed(oldSeed, result.params.getSeed()));
-
-							// Set parameters and pattern image
-							setParametersAndPatternImage(result.params, result.patternImage);
-
-							// Increment frame index
-							++absoluteFrameIndex;
-
-							// Update view
-							SwingUtilities.invokeLater(new Runnable()
-							{
-								public void run()
-								{
-									updatePlayView();
-								}
-							});
-
-							// Increment end time
-							if (endTime == 0)
-								endTime = System.currentTimeMillis();
-							endTime += interval;
-						}
-					}
-				}
-
-				// Allow other threads to run
-				Thread.yield();
-			}
-
-			// Shut down executor
-			executor.shutdown();
-
-			// Wait for tasks to terminate
-			try
-			{
-				executor.awaitTermination(30, TimeUnit.SECONDS);
-			}
-			catch (InterruptedException e)
-			{
-				// ignore
-			}
-			finally
-			{
-				if (!executor.isTerminated())
-					executor.shutdownNow();
-			}
-
-			// Enable commands
-			playing = false;
-		}
-
-		//--------------------------------------------------------------
-
-		private synchronized void addResult(Result result)
-		{
-			results.add(result);
-		}
-
-		//--------------------------------------------------------------
-
-		private synchronized Result findResult(long index)
-		{
-			for (int i = 0; i < results.size(); i++)
-			{
-				Result result = results.get(i);
-				if (result.index == index)
-				{
-					results.remove(i);
-					return result;
-				}
-			}
-			return null;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int				numThreads;
-		private	int				interval;
-		private	List<Result>	results;
-
-	}
-
-	//==================================================================
-
-
-	// ANIMATION EXECUTION CLASS
-
-
-	private class DoAnimation
-		implements Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private DoAnimation(double rate,
-							int    startFrameIndex)
-		{
-			interval = Math.round(1_000_000_000.0 / rate);
-			this.startFrameIndex = startFrameIndex;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void run()
-		{
-			int frameIndex = 0;
-			long endTime = 0;
-			while (true)
-			{
-				// Test whether task has been cancelled
-				if (Task.isCancelled())
-					break;
-
-				// Get current time
-				long currentTime = System.nanoTime();
-
-				// If paused, update end time ...
-				if (paused)
-					endTime = currentTime;
-
-				// ... otherwise, generate next image; update view
-				else if (currentTime >= endTime)
-				{
-					// Update animation
-					try
-					{
-						absoluteFrameIndex = startFrameIndex + frameIndex;
-						updateAnimation(absoluteFrameIndex);
-					}
-					catch (InterruptedException e)
-					{
-						break;
-					}
-
-					// Update view
-					SwingUtilities.invokeLater(new Runnable()
-					{
-						public void run()
-						{
-							updatePlayView();
-						}
-					});
-
-					// Increment end time
-					if (endTime == 0)
-						endTime = currentTime;
-
-					while (currentTime >= endTime)
-					{
-						endTime += interval;
-						++frameIndex;
-					}
-				}
-
-				// Allow other threads to run
-				Thread.yield();
-			}
-
-			// Enable commands
-			playing = false;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	long	interval;
-		private	int		startFrameIndex;
-
-	}
-
-	//==================================================================
+	private	File				file;
+	private	DocumentKind		documentKind;
+	private	File				exportImageFile;
+	private	File				exportSvgFile;
+	private	long				timestamp;
+	private	int					unnamedIndex;
+	private	boolean				executingCommand;
+	private	boolean				playing;
+	private	boolean				paused;
+	private	ImageSequenceParams	imageSequenceParams;
+	private	SequenceDialog		sequenceDialog;
+	private	EditList			editList;
+	private	RenderingTime		renderingTime;
+
+	private volatile	int		absoluteFrameIndex;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	protected PatternDocument(File         file,
-							  DocumentKind documentKind)
+	protected PatternDocument(
+		File			file,
+		DocumentKind	documentKind)
 	{
 		this(file, documentKind, false);
 	}
 
 	//------------------------------------------------------------------
 
-	protected PatternDocument(File         file,
-							  DocumentKind documentKind,
-							  boolean      temporary)
+	protected PatternDocument(
+		File			file,
+		DocumentKind	documentKind,
+		boolean			temporary)
 	{
 		this.file = file;
 		this.documentKind = documentKind;
@@ -1314,7 +190,8 @@ abstract class PatternDocument
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static PatternDocument read(FileInfo fileInfo)
+	public static PatternDocument read(
+		FileInfo	fileInfo)
 		throws AppException
 	{
 		// Determine document kind
@@ -1375,12 +252,13 @@ abstract class PatternDocument
 
 	protected static MainWindow getWindow()
 	{
-		return App.INSTANCE.getMainWindow();
+		return PatternGeneratorApp.INSTANCE.getMainWindow();
 	}
 
 	//------------------------------------------------------------------
 
-	private static boolean isDefinitionDocument(File file)
+	private static boolean isDefinitionDocument(
+		File	file)
 		throws AppException
 	{
 		Document document = XmlFile.read(file);
@@ -1389,7 +267,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private static PatternDocument readDefinition(File file)
+	private static PatternDocument readDefinition(
+		File	file)
 		throws AppException
 	{
 		// Read XML file
@@ -1459,7 +338,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private static PatternDocument readParameters(File file)
+	private static PatternDocument readParameters(
+		File	file)
 		throws AppException
 	{
 		PatternParams params = PatternParams.read(file);
@@ -1495,13 +375,15 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public abstract void setParameters(PatternParams params)
+	public abstract void setParameters(
+		PatternParams	params)
 		throws AppException;
 
 	//------------------------------------------------------------------
 
-	public abstract void setParametersAndPatternImage(PatternParams params,
-													  PatternImage  patternImage);
+	public abstract void setParametersAndPatternImage(
+		PatternParams	params,
+		PatternImage	patternImage);
 
 	//------------------------------------------------------------------
 
@@ -1518,7 +400,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public abstract PatternImage createPatternImage(PatternParams params)
+	public abstract PatternImage createPatternImage(
+		PatternParams	params)
 		throws InterruptedException;
 
 	//------------------------------------------------------------------
@@ -1538,12 +421,14 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public abstract PatternDocument createDefinitionDocument(boolean temporary)
+	public abstract PatternDocument createDefinitionDocument(
+		boolean	temporary)
 		throws AppException;
 
 	//------------------------------------------------------------------
 
-	public abstract void write(XmlWriter writer)
+	public abstract void write(
+		XmlWriter	writer)
 		throws IOException;
 
 	//------------------------------------------------------------------
@@ -1552,8 +437,9 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public abstract void writeSvgElements(XmlWriter writer,
-										  int       indent)
+	public abstract void writeSvgElements(
+		XmlWriter	writer,
+		int			indent)
 		throws IOException;
 
 	//------------------------------------------------------------------
@@ -1566,7 +452,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	protected abstract void setDescription(String description);
+	protected abstract void setDescription(
+		String	description);
 
 	//------------------------------------------------------------------
 
@@ -1574,7 +461,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	protected abstract AnimationParams selectAnimation(boolean imageSequence);
+	protected abstract AnimationParams selectAnimation(
+		boolean	imageSequence);
 
 	//------------------------------------------------------------------
 
@@ -1586,12 +474,14 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	protected abstract boolean initAnimation(int animationId,
-											 int startFrameIndex);
+	protected abstract boolean initAnimation(
+		int	animationId,
+		int	startFrameIndex);
 
 	//------------------------------------------------------------------
 
-	protected abstract void updateAnimation(int frameIndex)
+	protected abstract void updateAnimation(
+		int	frameIndex)
 		throws InterruptedException;
 
 	//------------------------------------------------------------------
@@ -1651,7 +541,7 @@ abstract class PatternDocument
 
 	public boolean isChanged()
 	{
-		return ((file == null) || editList.isChanged());
+		return (file == null) || editList.isChanged();
 	}
 
 	//------------------------------------------------------------------
@@ -1677,10 +567,10 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public String getName(boolean fullPathname)
+	public String getName(
+		boolean	fullPathname)
 	{
-		return ((file == null) ? UNNAMED_STR + unnamedIndex
-							   : fullPathname ? Utils.getPathname(file) : file.getName());
+		return (file == null) ? UNNAMED_STR + unnamedIndex : fullPathname ? Utils.getPathname(file) : file.getName();
 	}
 
 	//------------------------------------------------------------------
@@ -1692,9 +582,9 @@ abstract class PatternDocument
 		{
 			filename = file.getName();
 			int length = filename.length();
-			filename = StringUtils.removeSuffix(filename, AppConstants.PG_DEF_FILE_SUFFIX);
+			filename = StringUtils.removeSuffix(filename, AppConstants.PG_DEF_FILENAME_SUFFIX);
 			if (filename.length() == length)
-				filename = StringUtils.removeSuffix(filename, AppConstants.PG_PAR_FILE_SUFFIX);
+				filename = StringUtils.removeSuffix(filename, AppConstants.PG_PAR_FILENAME_SUFFIX);
 			if (filename.length() == length)
 				filename = StringUtils.getPrefixLast(filename, '.');
 		}
@@ -1703,7 +593,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public String getTitleString(boolean fullPathname)
+	public String getTitleString(
+		boolean	fullPathname)
 	{
 		String str = getName(fullPathname);
 		if (isChanged())
@@ -1715,21 +606,21 @@ abstract class PatternDocument
 
 	public String getParameterTitleString()
 	{
-		return ((file == null)
-					? null
-					: StringUtils.removeSuffix(file.getName(), AppConstants.PG_PAR_FILE_SUFFIX));
+		return (file == null) ? null : StringUtils.removeSuffix(file.getName(), AppConstants.PG_PAR_FILENAME_SUFFIX);
 	}
 
 	//------------------------------------------------------------------
 
-	public void setTimestamp(long timestamp)
+	public void setTimestamp(
+		long	timestamp)
 	{
 		this.timestamp = timestamp;
 	}
 
 	//------------------------------------------------------------------
 
-	public void setPaused(boolean paused)
+	public void setPaused(
+		boolean	paused)
 	{
 		this.paused = paused;
 	}
@@ -1740,7 +631,16 @@ abstract class PatternDocument
 	{
 		Task.setCancelled(true);
 		while (playing)
-			Thread.yield();
+		{
+			try
+			{
+				Thread.sleep(50);
+			}
+			catch (InterruptedException e)
+			{
+				// ignore
+			}
+		}
 		Task.setCancelled(false);
 	}
 
@@ -1761,8 +661,9 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public void addRenderingTime(long numPixels,
-								 long nanoseconds)
+	public void addRenderingTime(
+		long	numPixels,
+		long	nanoseconds)
 	{
 		renderingTime.add(numPixels, nanoseconds);
 		updateRenderingTime();
@@ -1770,7 +671,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public void write(FileInfo fileInfo)
+	public void write(
+		FileInfo	fileInfo)
 		throws AppException
 	{
 		// Set instance variables
@@ -1795,7 +697,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public void writeImage(File file)
+	public void writeImage(
+		File	file)
 		throws AppException
 	{
 		// Set instance variable
@@ -1821,7 +724,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public void writeImageSequence(ImageSequenceParams params)
+	public void writeImageSequence(
+		ImageSequenceParams	params)
 		throws AppException
 	{
 		// Set instance variable
@@ -1841,7 +745,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public void writeSvg(File file)
+	public void writeSvg(
+		File	file)
 		throws AppException
 	{
 		// Set instance variable
@@ -2010,7 +915,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	public void executeCommand(Command command)
+	public void executeCommand(
+		Command	command)
 	{
 		// Set command execution flag
 		executingCommand = true;
@@ -2075,7 +981,7 @@ abstract class PatternDocument
 		}
 		catch (AppException e)
 		{
-			App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+			PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
 		}
 
 		// Add edit to undo list
@@ -2083,7 +989,7 @@ abstract class PatternDocument
 			editList.addEdit(edit);
 
 		// Update tab text and title and menus in main window
-		App.INSTANCE.updateTabText(this);
+		PatternGeneratorApp.INSTANCE.updateTabText(this);
 		getWindow().updateTitleAndMenus();
 
 		// Clear command execution flag
@@ -2092,7 +998,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	protected void appendCommonAttributes(AttributeList attributes)
+	protected void appendCommonAttributes(
+		AttributeList	attributes)
 	{
 		attributes.add(AttrName.XMLNS, NAMESPACE_PREFIX + getPatternKind().getKey());
 		attributes.add(AttrName.VERSION, VERSION);
@@ -2102,7 +1009,7 @@ abstract class PatternDocument
 
 	private PatternView getView()
 	{
-		return App.INSTANCE.getView(this);
+		return PatternGeneratorApp.INSTANCE.getView(this);
 	}
 
 	//------------------------------------------------------------------
@@ -2302,7 +1209,8 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private void doAnimation(AnimationParams animationParams)
+	private void doAnimation(
+		AnimationParams	animationParams)
 	{
 		// Get index of first frame
 		int startFrameIndex = animationParams.startFrameIndex;
@@ -2322,7 +1230,57 @@ abstract class PatternDocument
 
 			// Start animation task
 			playing = true;
-			new Thread(new DoAnimation(animationParams.frameRate, startFrameIndex)).start();
+			new Thread(() ->
+			{
+				long interval = Math.round(1_000_000_000.0 / animationParams.frameRate);
+				int frameIndex = 0;
+				long endTime = 0;
+				while (true)
+				{
+					// Test whether task has been cancelled
+					if (Task.isCancelled())
+						break;
+
+					// Get current time
+					long currentTime = System.nanoTime();
+
+					// If paused, update end time ...
+					if (paused)
+						endTime = currentTime;
+
+					// ... otherwise, generate next image; update view
+					else if (currentTime >= endTime)
+					{
+						// Update animation
+						try
+						{
+							absoluteFrameIndex = startFrameIndex + frameIndex;
+							updateAnimation(absoluteFrameIndex);
+						}
+						catch (InterruptedException e)
+						{
+							break;
+						}
+
+						// Update view
+						SwingUtilities.invokeLater(this::updatePlayView);
+
+						// Increment end time
+						if (endTime == 0)
+							endTime = currentTime;
+
+						while (currentTime >= endTime)
+						{
+							endTime += interval;
+							++frameIndex;
+						}
+					}
+				}
+
+				// Enable commands
+				playing = false;
+			})
+			.start();
 
 			// Show dialog
 			sequenceDialog.setVisible(true);
@@ -2334,15 +1292,16 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private void writeImageSequence(int    animationKind,
-									File   directory,
-									String filenameStem,
-									int    frameWidth,
-									int    frameHeight,
-									int    startFrameIndex,
-									int    numFrames,
-									int    fadeIn,
-									int    fadeOut)
+	private void writeImageSequence(
+		int		animationKind,
+		File	directory,
+		String	filenameStem,
+		int		frameWidth,
+		int		frameHeight,
+		int		startFrameIndex,
+		int		numFrames,
+		int		fadeIn,
+		int		fadeOut)
 		throws AppException
 	{
 		// Initialise animation
@@ -2376,7 +1335,7 @@ abstract class PatternDocument
 		{
 			// Create pathname
 			String filename = filenameStem + NumberUtils.uIntToDecString(frameIndex, numDigits, '0') +
-																			 AppConstants.PNG_FILE_SUFFIX;
+																			 AppConstants.PNG_FILENAME_EXTENSION;
 			File file = new File(directory, filename);
 
 			// Update info in progress view
@@ -2468,8 +1427,8 @@ abstract class PatternDocument
 	private Edit onClearEditList()
 	{
 		String[] optionStrs = Utils.getOptionStrings(AppConstants.CLEAR_STR);
-		if (JOptionPane.showOptionDialog(App.INSTANCE.getMainWindow(), CLEAR_EDIT_LIST_STR,
-										 App.SHORT_NAME, JOptionPane.OK_CANCEL_OPTION,
+		if (JOptionPane.showOptionDialog(PatternGeneratorApp.INSTANCE.getMainWindow(), CLEAR_EDIT_LIST_STR,
+										 PatternGeneratorApp.SHORT_NAME, JOptionPane.OK_CANCEL_OPTION,
 										 JOptionPane.QUESTION_MESSAGE, null, optionStrs,
 										 optionStrs[1]) == JOptionPane.OK_OPTION)
 		{
@@ -2500,8 +1459,7 @@ abstract class PatternDocument
 	{
 		Edit edit = null;
 		String oldDescription = getDescription();
-		String description = DescriptionDialog.showDialog(getWindow(), getPatternKind().getName(),
-														  oldDescription);
+		String description = DescriptionDialog.showDialog(getWindow(), getPatternKind().getName(), oldDescription);
 		if (description != null)
 		{
 			setDescription(description);
@@ -2516,7 +1474,7 @@ abstract class PatternDocument
 		throws AppException
 	{
 		long oldSeed = getParameters().getSeed();
-		setSeed(App.INSTANCE.getNextRandomSeed());
+		setSeed(PatternGeneratorApp.INSTANCE.getNextRandomSeed());
 		updateView();
 		return new Edit.Seed(oldSeed, getParameters().getSeed());
 	}
@@ -2542,7 +1500,7 @@ abstract class PatternDocument
 			int numThreads = AppConfig.INSTANCE.getNumSlideShowThreads(getPatternKind());
 			if (numThreads == 0)
 				numThreads = Runtime.getRuntime().availableProcessors();
-			new Thread(new DoSlideShow(numThreads, SlideShowParamsDialog.getInterval())).start();
+			new Thread(new SlideShow(numThreads, SlideShowParamsDialog.getInterval())).start();
 
 			// Show dialog
 			sequenceDialog.setVisible(true);
@@ -2606,31 +1564,1000 @@ abstract class PatternDocument
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	int					newFileIndex;
-	private static	RenderingTimeDialog	renderingTimeDialog;
+
+	// ENUMERATION: COMMANDS
+
+
+	enum Command
+		implements Action
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		// Commands
+
+		UNDO
+		(
+			"undo",
+			"Undo",
+			KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK)
+		),
+
+		REDO
+		(
+			"redo",
+			"Redo",
+			KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK)
+		),
+
+		CLEAR_EDIT_LIST
+		(
+			"clearEditList",
+			"Clear edit history" + AppConstants.ELLIPSIS_STR
+		),
+
+		EDIT_PATTERN_PARAMETERS
+		(
+			"editPatternParameters",
+			"Edit pattern parameters" + AppConstants.ELLIPSIS_STR,
+			KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK)
+		),
+
+		EDIT_DESCRIPTION
+		(
+			"editDescription",
+			"Edit description" + AppConstants.ELLIPSIS_STR,
+			KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK)
+		),
+
+		REGENERATE_PATTERN_WITH_NEW_SEED
+		(
+			"regeneratePatternWithNewSeed",
+			"Regenerate pattern with new seed",
+			KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0)
+		),
+
+		SHOW_IMAGE_RENDERING_TIME
+		(
+			"showImageRenderingTime",
+			"Show image rendering time",
+			KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK)
+		),
+
+		START_SLIDE_SHOW
+		(
+			"startSlideShow",
+			"Start slide show" + AppConstants.ELLIPSIS_STR,
+			KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0)
+		),
+
+		START_ANIMATION
+		(
+			"startAnimation",
+			"Start animation" + AppConstants.ELLIPSIS_STR,
+			KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0)
+		),
+
+		OPTIMISE_ANIMATION
+		(
+			"optimiseAnimation",
+			"Optimise animation" + AppConstants.ELLIPSIS_STR,
+			KeyStroke.getKeyStroke(KeyEvent.VK_F7, KeyEvent.CTRL_DOWN_MASK)
+		),
+
+		RESIZE_WINDOW_TO_IMAGE
+		(
+			"resizeWindowToImage",
+			"Resize window to image",
+			KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0)
+		);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	uk.blankaspect.ui.swing.action.Command	command;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Command(
+			String	key)
+		{
+			command = new uk.blankaspect.ui.swing.action.Command(this);
+			putValue(Action.ACTION_COMMAND_KEY, key);
+		}
+
+		//--------------------------------------------------------------
+
+		private Command(
+			String	key,
+			String	name)
+		{
+			this(key);
+			putValue(Action.NAME, name);
+		}
+
+		//--------------------------------------------------------------
+
+		private Command(
+			String		key,
+			String		name,
+			KeyStroke	acceleratorKey)
+		{
+			this(key, name);
+			putValue(Action.ACCELERATOR_KEY, acceleratorKey);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		public static void setAllEnabled(
+			boolean	enabled)
+		{
+			for (Command command : values())
+				command.setEnabled(enabled);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : Action interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void addPropertyChangeListener(
+			PropertyChangeListener	listener)
+		{
+			command.addPropertyChangeListener(listener);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public Object getValue(
+			String	key)
+		{
+			return command.getValue(key);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public boolean isEnabled()
+		{
+			return command.isEnabled();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void putValue(
+			String	key,
+			Object	value)
+		{
+			command.putValue(key, value);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void removePropertyChangeListener(
+			PropertyChangeListener	listener)
+		{
+			command.removePropertyChangeListener(listener);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void setEnabled(
+			boolean	enabled)
+		{
+			command.setEnabled(enabled);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ActionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void actionPerformed(
+			ActionEvent	event)
+		{
+			PatternDocument document = PatternGeneratorApp.INSTANCE.getDocument();
+			if (document != null)
+				document.executeCommand(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public void execute()
+		{
+			actionPerformed(null);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// ENUMERATION: ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		FAILED_TO_OPEN_FILE
+		("Failed to open the file."),
+
+		FAILED_TO_CLOSE_FILE
+		("Failed to close the file."),
+
+		ERROR_WRITING_FILE
+		("An error occurred when writing the file."),
+
+		FILE_ACCESS_NOT_PERMITTED
+		("Access to the file was not permitted."),
+
+		FAILED_TO_CREATE_DIRECTORY
+		("Failed to create the directory."),
+
+		FAILED_TO_CREATE_TEMPORARY_FILE
+		("Failed to create a temporary file."),
+
+		FAILED_TO_DELETE_FILE
+		("Failed to delete the existing file."),
+
+		FAILED_TO_RENAME_FILE
+		("Failed to rename the temporary file to the specified filename."),
+
+		UNEXPECTED_DOCUMENT_FORMAT
+		("The document does not have the expected format."),
+
+		NO_VERSION_NUMBER
+		("The document does not have a version number."),
+
+		INVALID_VERSION_NUMBER
+		("The version number of the document is invalid."),
+
+		UNSUPPORTED_DOCUMENT_VERSION
+		("The version of the document (%1) is not supported by this version of "
+			+ PatternGeneratorApp.SHORT_NAME + "."),
+
+		NO_ATTRIBUTE
+		("The required attribute is missing."),
+
+		INVALID_ATTRIBUTE
+		("The attribute is invalid."),
+
+		NO_PATTERN_ELEMENT
+		("The document has no pattern element."),
+
+		MULTIPLE_PATTERN_ELEMENTS
+		("The document has more than one pattern element."),
+
+		NO_PARAMETERS
+		("The document has no parameters."),
+
+		NOT_ENOUGH_MEMORY_TO_PERFORM_COMMAND
+		("There was not enough memory to perform the command.\n" +
+			"Clearing the list of undo/redo actions may make more memory available.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(
+			String	message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member records
 ////////////////////////////////////////////////////////////////////////
 
-	private	File				file;
-	private	DocumentKind		documentKind;
-	private	File				exportImageFile;
-	private	File				exportSvgFile;
-	private	long				timestamp;
-	private	int					unnamedIndex;
-	private	boolean				executingCommand;
-	private	boolean				playing;
-	private	boolean				paused;
-	private	ImageSequenceParams	imageSequenceParams;
-	private	SequenceDialog		sequenceDialog;
-	private	EditList			editList;
-	private	RenderingTime		renderingTime;
 
-	private volatile	int		absoluteFrameIndex;
+	// RECORD: FILE INFORMATION
+
+
+	public record FileInfo(
+		File			file,
+		DocumentKind	documentKind,
+		boolean			hasParameters)
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		public static FileInfo of(
+			File			file,
+			DocumentKind	documentKind)
+		{
+			return new FileInfo(file, documentKind, false);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// RECORD: ANIMATION PARAMETERS
+
+
+	public record AnimationParams(
+		int		animationKind,
+		double	frameRate,
+		int		startFrameIndex)
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		public static AnimationParams of(
+			int	animationKind)
+		{
+			return new AnimationParams(animationKind, 0, 0);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: EDIT
+
+
+	private static abstract class Edit
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Edit()
+		{
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Abstract methods
+	////////////////////////////////////////////////////////////////////
+
+		protected abstract void undo(
+			PatternDocument	document);
+
+		//--------------------------------------------------------------
+
+		protected abstract void redo(
+			PatternDocument	document);
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// CLASS: DESCRIPTION EDIT
+
+
+		private static class Description
+			extends Edit
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Instance variables
+		////////////////////////////////////////////////////////////////
+
+			private	String	oldDescription;
+			private	String	newDescription;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Description(
+				String	oldDescription,
+				String	newDescription)
+			{
+				this.oldDescription = oldDescription;
+				this.newDescription = newDescription;
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			@Override
+			protected void undo(
+				PatternDocument	document)
+			{
+				document.setDescription(oldDescription);
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void redo(
+				PatternDocument	document)
+			{
+				document.setDescription(newDescription);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+
+		// CLASS: SEED EDIT
+
+
+		private static class Seed
+			extends Edit
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Instance variables
+		////////////////////////////////////////////////////////////////
+
+			private	long	oldSeed;
+			private	long	newSeed;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Seed(
+				long	oldSeed,
+				long	newSeed)
+			{
+				this.oldSeed = oldSeed;
+				this.newSeed = newSeed;
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			@Override
+			protected void undo(
+				PatternDocument	document)
+			{
+				try
+				{
+					document.setSeed(oldSeed);
+				}
+				catch (AppException e)
+				{
+					PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
+				}
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void redo(
+				PatternDocument	document)
+			{
+				try
+				{
+					document.setSeed(newSeed);
+				}
+				catch (AppException e)
+				{
+					PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
+				}
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+
+		// CLASS: PARAMETERS EDIT
+
+
+		private static class Parameters
+			extends Edit
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Instance variables
+		////////////////////////////////////////////////////////////////
+
+			private	PatternParams	oldParams;
+			private	PatternParams	newParams;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Parameters(
+				PatternParams	oldParams,
+				PatternParams	newParams)
+			{
+				this.oldParams = oldParams;
+				this.newParams = newParams;
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			@Override
+			protected void undo(
+				PatternDocument	document)
+			{
+				try
+				{
+					document.setParameters(oldParams);
+				}
+				catch (AppException e)
+				{
+					PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
+				}
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void redo(
+				PatternDocument	document)
+			{
+				try
+				{
+					document.setParameters(newParams);
+				}
+				catch (AppException e)
+				{
+					PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
+				}
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: EDIT LIST
+
+
+	private static class EditList
+		extends LinkedList<Edit>
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int	maxLength;
+		private	int	currentIndex;
+		private	int	unchangedIndex;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private EditList()
+		{
+			maxLength = AppConfig.INSTANCE.getMaxEditListLength();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void clear()
+		{
+			super.clear();
+			unchangedIndex = currentIndex = 0;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private Edit removeUndo()
+		{
+			return (canUndo() ? get(--currentIndex) : null);
+		}
+
+		//--------------------------------------------------------------
+
+		private Edit removeRedo()
+		{
+			return (canRedo() ? get(currentIndex++) : null);
+		}
+
+		//--------------------------------------------------------------
+
+		private boolean canUndo()
+		{
+			return (currentIndex > 0);
+		}
+
+		//--------------------------------------------------------------
+
+		private boolean canRedo()
+		{
+			return (currentIndex < size());
+		}
+
+		//--------------------------------------------------------------
+
+		private boolean isChanged()
+		{
+			return (currentIndex != unchangedIndex);
+		}
+
+		//--------------------------------------------------------------
+
+		private void addEdit(
+			Edit	edit)
+		{
+			// Remove redos
+			while (size() > currentIndex)
+				removeLast();
+
+			// Preserve changed status if unchanged state cannot be recovered
+			if (unchangedIndex > currentIndex)
+				unchangedIndex = -1;
+
+			// Remove oldest edits while list is full
+			while (size() >= maxLength)
+			{
+				removeFirst();
+				if (--unchangedIndex < 0)
+					unchangedIndex = -1;
+				if (--currentIndex < 0)
+					currentIndex = 0;
+			}
+
+			// Add new edit
+			add(edit);
+			++currentIndex;
+		}
+
+		//--------------------------------------------------------------
+
+		private void reset()
+		{
+			while (size() > currentIndex)
+				removeLast();
+
+			unchangedIndex = currentIndex;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: RENDERING TIME
+
+
+	private static class RenderingTime
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	long	numPixels;
+		private	long	nanoseconds;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private RenderingTime()
+		{
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public void add(
+			long	numPixels,
+			long	nanoseconds)
+		{
+			this.numPixels += numPixels;
+			this.nanoseconds += nanoseconds;
+		}
+
+		//--------------------------------------------------------------
+
+		public void reset()
+		{
+			numPixels = 0;
+			nanoseconds = 0;
+		}
+
+		//--------------------------------------------------------------
+
+		public double getMeanNanosecondsPerPixel()
+		{
+			return (numPixels == 0) ? 0.0 : (double)nanoseconds / (double)numPixels;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: SLIDE SHOW
+
+
+	private class SlideShow
+		implements Runnable
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int				numThreads;
+		private	int				interval;
+		private	List<Result>	results;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private SlideShow(
+			int	numThreads,
+			int	interval)
+		{
+			this.numThreads = numThreads;
+			this.interval = interval;
+			results = new ArrayList<>();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : Runnable interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void run()
+		{
+			long inTaskIndex = 0;
+			long outTaskIndex = 0;
+			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+			long endTime = 0;
+			while (true)
+			{
+				// Test whether task has been cancelled
+				if (Task.isCancelled())
+					break;
+
+				// Submit tasks
+				while (inTaskIndex - outTaskIndex < numThreads)
+				{
+					try
+					{
+						long index = inTaskIndex;
+						executor.execute(() ->
+						{
+							PatternParams params = getParameters().clone();
+							params.setSeed(PatternGeneratorApp.INSTANCE.getNextRandomSeed());
+							try
+							{
+								PatternImage patternImage = createPatternImage(params);
+								patternImage.renderImage();
+								addResult(new Result(index, params, patternImage));
+							}
+							catch (InterruptedException e)
+							{
+								// ignore
+							}
+						});
+						++inTaskIndex;
+					}
+					catch (RejectedExecutionException e)
+					{
+						// ignore
+					}
+				}
+
+				// Update end time while paused
+				if (paused)
+					endTime = System.currentTimeMillis();
+
+				// Get next pattern image from output list; update document and view
+				else if (System.currentTimeMillis() >= endTime)
+				{
+					if (!results.isEmpty())
+					{
+						Result result = findResult(outTaskIndex);
+						if (result != null)
+						{
+							// Increment output task index
+							++outTaskIndex;
+
+							// Add change of seed to list of edits
+							long oldSeed = getParameters().getSeed();
+							editList.addEdit(new Edit.Seed(oldSeed, result.params.getSeed()));
+
+							// Set parameters and pattern image
+							setParametersAndPatternImage(result.params, result.patternImage);
+
+							// Increment frame index
+							++absoluteFrameIndex;
+
+							// Update view
+							SwingUtilities.invokeLater(PatternDocument.this::updatePlayView);
+
+							// Increment end time
+							if (endTime == 0)
+								endTime = System.currentTimeMillis();
+							endTime += interval;
+						}
+					}
+				}
+			}
+
+			// Shut down executor
+			executor.shutdown();
+
+			// Wait for tasks to terminate
+			try
+			{
+				executor.awaitTermination(30, TimeUnit.SECONDS);
+			}
+			catch (InterruptedException e)
+			{
+				// ignore
+			}
+			finally
+			{
+				if (!executor.isTerminated())
+					executor.shutdownNow();
+			}
+
+			// Enable commands
+			playing = false;
+		}
+
+		//--------------------------------------------------------------
+
+		private synchronized void addResult(
+			Result	result)
+		{
+			results.add(result);
+		}
+
+		//--------------------------------------------------------------
+
+		private synchronized Result findResult(
+			long	index)
+		{
+			for (int i = 0; i < results.size(); i++)
+			{
+				Result result = results.get(i);
+				if (result.index == index)
+				{
+					results.remove(i);
+					return result;
+				}
+			}
+			return null;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member records
+	////////////////////////////////////////////////////////////////////
+
+
+		// RECORD: RESULT
+
+
+		private record Result(
+			long          index,
+			PatternParams params,
+			PatternImage  patternImage)
+		{ }
+
+		//==============================================================
+
+	}
+
+	//==================================================================
+
 }
 
 //----------------------------------------------------------------------

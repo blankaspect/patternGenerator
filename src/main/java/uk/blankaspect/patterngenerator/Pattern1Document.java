@@ -352,14 +352,12 @@ class Pattern1Document
 	{
 		AnimationParams animationParams =
 				imageSequence
-					? Pattern1AnimationKindsDialog.showDialog(getWindow(),
-															  patternImage.getSupportedAnimationKinds(),
+					? Pattern1AnimationKindsDialog.showDialog(getWindow(), patternImage.getSupportedAnimationKinds(),
 															  animationKinds)
-					: Pattern1AnimationParamsDialog.showDialog(getWindow(),
-															   patternImage.getSupportedAnimationKinds(),
+					: Pattern1AnimationParamsDialog.showDialog(getWindow(), patternImage.getSupportedAnimationKinds(),
 															   animationKinds);
 		if (animationParams != null)
-			animationKinds = Pattern1Image.AnimationKind.bitFieldToSet(animationParams.animationKind);
+			animationKinds = Pattern1Image.AnimationKind.bitFieldToSet(animationParams.animationKind());
 		return animationParams;
 	}
 
@@ -376,8 +374,7 @@ class Pattern1Document
 	@Override
 	protected void optimiseAnimation()
 	{
-		Pattern1AnimationOptimisationDialog.showDialog(getWindow(), this,
-													   patternImage.getSupportedAnimationKinds());
+		Pattern1AnimationOptimisationDialog.showDialog(getWindow(), this, patternImage.getSupportedAnimationKinds());
 	}
 
 	//------------------------------------------------------------------

@@ -219,7 +219,7 @@ class ColourSetPanel
 			// Call superclass constructor
 			super(Icons.DOUBLE_ANGLE_LEFT);
 
-			// Set attributes
+			// Set properties
 			setBorder(null);
 		}
 
@@ -305,11 +305,11 @@ class ColourSetPanel
 	////////////////////////////////////////////////////////////////////
 
 		private HueSaturationRangeDialog(Window                         owner,
-										 String                         titleStr,
+										 String                         title,
 										 HueSaturationRangePanel.Params params)
 		{
 			// Call superclass constructor
-			super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+			super(owner, title, Dialog.ModalityType.APPLICATION_MODAL);
 
 
 			//----  Hue and saturation range panel
@@ -397,7 +397,7 @@ class ColourSetPanel
 			// Resize dialog to its preferred size
 			pack();
 
-			// Set location of dialog box
+			// Set location of dialog
 			if (location == null)
 				location = GuiUtils.getComponentLocation(this, owner);
 			setLocation(location);
@@ -503,7 +503,7 @@ class ColourSetPanel
 			this.colour = colour;
 			buttonState = ButtonState.NOT_PRESSED;
 
-			// Set attributes
+			// Set properties
 			setOpaque(true);
 			setFocusable(true);
 
@@ -850,7 +850,7 @@ class ColourSetPanel
 					rowColourButtonPanel.add(button);
 				}
 				else
-					rowColourButtonPanel.add(GuiUtils.createFiller());
+					rowColourButtonPanel.add(GuiUtils.spacer());
 			}
 
 			gbc.gridx = 0;
@@ -1274,7 +1274,8 @@ class ColourSetPanel
 //  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Prng01							prng			= new Prng01(App.INSTANCE.getNextRandomSeed());
+	private static	Prng01							prng			=
+			new Prng01(PatternGeneratorApp.INSTANCE.getNextRandomSeed());
 	private static	HueSaturationRangePanel.Params	graduateParams	= new HueSaturationRangePanel.Params();
 	private static	HueSaturationRangePanel.Params	randomiseParams	= new HueSaturationRangePanel.Params();
 

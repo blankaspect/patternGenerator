@@ -6,67 +6,74 @@ Styles for PatternGenerator manual
 
 @import url("blankaspect-manual.css");
 
-div#p1Symmetry
-{
+div#p1Symmetry {
   display: table;
   line-height: 125%;
 }
-div#p1Symmetry > div
-{
+div#p1Symmetry > div {
   display: table-row;
 }
-div#p1Symmetry > div > div
-{
+div#p1Symmetry > div > div {
   display: table-cell;
   vertical-align: middle;
   padding: 0.3em 0.6em;
 }
-div#p1Symmetry > div > div > div.comment
-{
+div#p1Symmetry > div > div > div.comment {
   font-size: 85%;
   padding-top: 0.2em;
 }
 
-p.quotation
-{
+p.quotation {
   font-size: 90%;
   margin-top: 0.6em;
   margin-left: 2.0em;
   margin-right: 2.0em;
 }
 
-table.basic td.definitionTerm
-{
-  color: #004040;
+table.basic td.definitionTerm {
   font-weight: bold;
 }
 
-table.basic td.command
-{
-  color: #8C4818;
+table.basic td.command {
   font-weight: bold;
   white-space: nowrap;
 }
 
-table.imageArray td
-{
+table.imageArray td {
   padding: 0.1em 0.8em;
 }
-table.imageArray td.caption
-{
+table.imageArray td.caption {
   font-size: 85%;
   font-style: italic;
 }
 
-ul.paddedItems li
-{
+ul.paddedItems li {
   padding-top: 0.2em;
   padding-bottom: 0.2em;
 }
 
-ul#p1Attributes li div img
-{
+ul#p1Attributes li div img {
   padding-top: 0.3em;
+}
+
+@media (prefers-color-scheme: light) {
+  table.basic td.definitionTerm {
+    color: #004040;
+  }
+
+  table.basic td.command {
+    color: #8C4818;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  table.basic td.definitionTerm {
+    color: #80CCC8;
+  }
+
+  table.basic td.command {
+    color: #D09040;
+  }
 }
 
 /*--------------------------------------------------------------------*/

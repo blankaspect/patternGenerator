@@ -178,7 +178,7 @@ public class DoubleRangeBarPanel
 		add(spinnerPanel);
 
 		// Filler
-		filler = GuiUtils.createFiller(MIN_FILLER_WIDTH, 1);
+		filler = GuiUtils.spacer(MIN_FILLER_WIDTH, 1);
 
 		gbc.gridx = gridX++;
 		gbc.gridy = 0;

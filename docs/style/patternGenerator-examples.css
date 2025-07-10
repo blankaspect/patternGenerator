@@ -6,24 +6,20 @@ Styles for PatternGenerator project, examples pages
 
 @import url("blankaspect-project.css");
 
-div.imageArray
-{
+div.imageArray {
   display: table;
   width: 100%;
   margin: auto;
 }
-div.imageArray > div
-{
+div.imageArray > div {
   display: table-row;
 }
-div.imageArray > div > div
-{
+div.imageArray > div > div {
   display: table-cell;
   padding: 1.0em 2.0em;
 }
 
-div#lastModified
-{
+div#lastModified {
   border-top: 2px solid #B4B8C8;
   margin-top: 0.8em;
 }

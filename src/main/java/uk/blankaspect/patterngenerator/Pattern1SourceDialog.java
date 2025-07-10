@@ -21,7 +21,6 @@ package uk.blankaspect.patterngenerator;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -213,7 +212,7 @@ class Pattern1SourceDialog
 			this.waveCoeff = waveCoeff;
 			source = Pattern1Image.createWaveTableSource(waveform, waveCoeff, WIDTH);
 
-			// Set attributes
+			// Set properties
 			setOpaque(true);
 			setFocusable(false);
 		}
@@ -299,10 +298,9 @@ class Pattern1SourceDialog
 								 int                        index,
 								 Pattern1Image.SourceParams params)
 	{
-
 		// Call superclass constructor
 		super(owner, (index < 0) ? ADD_STR + SOURCE_STR : EDIT_STR + SOURCE_STR + (index + 1),
-			  Dialog.ModalityType.APPLICATION_MODAL);
+			  ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -718,7 +716,7 @@ class Pattern1SourceDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -728,7 +726,6 @@ class Pattern1SourceDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------

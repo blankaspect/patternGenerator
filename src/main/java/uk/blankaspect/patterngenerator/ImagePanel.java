@@ -44,7 +44,7 @@ class ImagePanel
 		// Initialise instance variables
 		this.image = image;
 
-		// Set component attributes
+		// Set properties
 		setOpaque(true);
 		setFocusable(false);
 	}

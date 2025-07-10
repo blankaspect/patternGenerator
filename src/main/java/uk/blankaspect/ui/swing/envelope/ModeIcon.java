@@ -2,7 +2,7 @@
 
 Mode icon.java
 
-Mode icon class.
+Class: mode icon.
 
 \*====================================================================*/
 
@@ -23,7 +23,7 @@ import javax.swing.ImageIcon;
 //----------------------------------------------------------------------
 
 
-// MODE ICON CLASS
+// CLASS: MODE ICON
 
 
 class ModeIcon
@@ -33,15 +33,33 @@ class ModeIcon
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final	ImageIcon	SELECT	= new ImageIcon(ImageData.SELECT);    // 18x18
-	public static final	ImageIcon	DRAW1	= new ImageIcon(ImageData.DRAW1);     // 18x18
-	public static final	ImageIcon	DRAW2	= new ImageIcon(ImageData.DRAW2);     // 32x32
-	public static final	ImageIcon	ERASE1	= new ImageIcon(ImageData.ERASE1);    // 18x18
-	public static final	ImageIcon	ERASE2	= new ImageIcon(ImageData.ERASE2);    // 32x32
-	public static final	ImageIcon	EDIT1	= new ImageIcon(ImageData.EDIT1);     // 18x18
-	public static final	ImageIcon	EDIT2	= new ImageIcon(ImageData.EDIT2);     // 32x32
+	public static final	ImageIcon	SELECT	= new ImageIcon(ImgData.SELECT);    // 18x18
+	public static final	ImageIcon	DRAW1	= new ImageIcon(ImgData.DRAW1);     // 18x18
+	public static final	ImageIcon	DRAW2	= new ImageIcon(ImgData.DRAW2);     // 32x32
+	public static final	ImageIcon	ERASE1	= new ImageIcon(ImgData.ERASE1);    // 18x18
+	public static final	ImageIcon	ERASE2	= new ImageIcon(ImgData.ERASE2);    // 32x32
+	public static final	ImageIcon	EDIT1	= new ImageIcon(ImgData.EDIT1);     // 18x18
+	public static final	ImageIcon	EDIT2	= new ImageIcon(ImgData.EDIT2);     // 32x32
 
-	private interface ImageData
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	private ModeIcon()
+	{
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Image data
+////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * PNG image data.
+	 */
+
+	private interface ImgData
 	{
 		byte[]	SELECT	=
 		{
@@ -204,15 +222,7 @@ class ModeIcon
 		};
 	}
 
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	private ModeIcon()
-	{
-	}
-
-	//------------------------------------------------------------------
+	//==================================================================
 
 }
 

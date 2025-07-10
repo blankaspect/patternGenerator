@@ -109,7 +109,7 @@ class PatternView
 			// Call superclass constructor
 			super(new FlowLayout(FlowLayout.LEADING));
 
-			// Set component attributes
+			// Set properties
 			if (size != null)
 				setPreferredSize(size);
 
@@ -153,7 +153,7 @@ class PatternView
 		getVerticalScrollBar().setFocusable(false);
 		getHorizontalScrollBar().setFocusable(false);
 
-		// Set component attributes
+		// Set properties
 		setBorder(null);
 
 		// Add commands to action map
@@ -260,7 +260,7 @@ class PatternView
 									  Math.max(MIN_HEIGHT, preferredSize.height));
 		if (!preferredSize.equals(viewport.getExtentSize()))
 		{
-			App app = App.INSTANCE;
+			PatternGeneratorApp app = PatternGeneratorApp.INSTANCE;
 			for (int i = 0; i < app.getNumDocuments(); i++)
 				app.getView(i).setViewportSize(preferredSize);
 			app.getMainWindow().resize();

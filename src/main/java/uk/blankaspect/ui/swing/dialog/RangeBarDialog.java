@@ -19,7 +19,6 @@ package uk.blankaspect.ui.swing.dialog;
 
 
 import java.awt.Color;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -97,7 +96,7 @@ public abstract class RangeBarDialog
 			// Call superclass constructor
 			super(owner, rangeBar);
 
-			// Set attributes
+			// Set properties
 			rangeBar.setBorderColour(BORDER_COLOUR);
 		}
 
@@ -164,7 +163,7 @@ public abstract class RangeBarDialog
 			// Call superclass constructor
 			super(owner, rangeBar);
 
-			// Set attributes
+			// Set properties
 			rangeBar.setBorderColour(BORDER_COLOUR);
 		}
 
@@ -291,9 +290,8 @@ public abstract class RangeBarDialog
 	private RangeBarDialog(Window   owner,
 						   RangeBar rangeBar)
 	{
-
 		// Call superclass constructor
-		super(owner, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, ModalityType.APPLICATION_MODAL);
 
 
 		//----  Main panel
@@ -317,7 +315,7 @@ public abstract class RangeBarDialog
 		// Set content pane
 		setContentPane(mainPanel);
 
-		// Omit frame from dialog box
+		// Omit frame from dialog
 		setUndecorated(true);
 
 		// Dispose of window when it is closed

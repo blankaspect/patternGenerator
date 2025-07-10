@@ -165,7 +165,7 @@ public abstract class RangeBar
 		// Initialise instance variables
 		borderColour = INNER_BORDER_COLOUR;
 
-		// Set component attributes
+		// Set properties
 		setOpaque(true);
 		setFocusable(true);
 

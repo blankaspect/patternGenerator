@@ -26,7 +26,7 @@ import uk.blankaspect.common.envelope.EnvelopeEvaluator;
 import uk.blankaspect.common.envelope.EnvelopeKind;
 import uk.blankaspect.common.envelope.SimpleNode;
 
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 import uk.blankaspect.ui.swing.envelope.SimpleViewNode;
 
@@ -65,7 +65,7 @@ class MotionRateEnvelope
 	public MotionRateEnvelope(String str)
 	{
 		// Split string into nodes and coefficient pair
-		String[] strs = str.trim().split("\\s*\\)\\s*,\\s*", -1);
+		String[] strs = str.strip().split("\\s*\\)\\s*,\\s*", -1);
 		if (strs.length < 3)
 			throw new IllegalArgumentException();
 
@@ -75,7 +75,7 @@ class MotionRateEnvelope
 		{
 			if (!strs[i].startsWith("("))
 				throw new IllegalArgumentException();
-			String[] coordStrs = strs[i].substring(1).trim().split("\\s*,\\s*", -1);
+			String[] coordStrs = strs[i].substring(1).strip().split("\\s*,\\s*", -1);
 			if (coordStrs.length != 2)
 				throw new IllegalArgumentException();
 			nodes.add(new SimpleViewNode(Double.parseDouble(coordStrs[0]), Double.parseDouble(coordStrs[1]),

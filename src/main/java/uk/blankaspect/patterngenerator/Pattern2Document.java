@@ -332,9 +332,11 @@ class Pattern2Document
 	@Override
 	protected AnimationParams selectAnimation(boolean imageSequence)
 	{
-		return (hasParameters() ? imageSequence ? new AnimationParams(0)
-												: Pattern2AnimationParamsDialog.showDialog(getWindow())
-								: null);
+		return hasParameters()
+						? imageSequence
+								? AnimationParams.of(0)
+								: Pattern2AnimationParamsDialog.showDialog(getWindow())
+						: null;
 	}
 
 	//------------------------------------------------------------------

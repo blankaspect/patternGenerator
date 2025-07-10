@@ -6,41 +6,61 @@ Styles for PatternGenerator project page
 
 @import url("blankaspect-project.css");
 
-dl.patterns
-{
-  background-color: #F2F2EC;
-  border: 1px solid #DCDCD0;
+dl.patterns {
+  border: 1px solid;
   margin-left: 1.0em;
   margin-right: 1.0em;
   padding: 0.2em 0.5em;
 }
-dl.patterns dt
-{
-  color: #304868;
+dl.patterns dt {
   font-style: italic;
   font-weight: bold;
   padding: 0.3em 0.2em 0 0.2em;
 }
-dl.patterns dd
-{
+dl.patterns dd {
   margin: 0 1.5em;
   padding: 0 0.2em 0.3em 0.2em;
 }
 
-h4
-{
+h4 {
   padding-bottom: 0.3em;
-  border-bottom: 1px solid #B4B8C8;
+  border-bottom: 1px solid;
 }
 
-ul.list li
-{
+ul.list li {
   margin-left: -0.5em;
 }
 
-ul.spaceAbove
-{
+ul.spaceAbove {
   padding-top: 0.5em;
+}
+
+@media (prefers-color-scheme: light) {
+  dl.patterns {
+    background-color: #F2F2EC;
+    border-color: #DCDCD0;
+  }
+  dl.patterns dt {
+    color: #304868;
+  }
+
+  h1, h2, h3, h4, h5 {
+    border-bottom-color: #B4B8C8;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  dl.patterns {
+    background-color: #202830;
+    border-color: #404850;
+  }
+  dl.patterns dt {
+    color: #E8A040;
+  }
+
+  h1, h2, h3, h4, h5 {
+    border-bottom-color: #606888;
+  }
 }
 
 /*--------------------------------------------------------------------*/

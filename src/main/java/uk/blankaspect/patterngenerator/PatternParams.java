@@ -28,7 +28,8 @@ import java.util.regex.Pattern;
 
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
+
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 import uk.blankaspect.common.property.Property;
 
@@ -248,7 +249,8 @@ abstract class PatternParams
 		("The version number of the document is invalid."),
 
 		UNSUPPORTED_DOCUMENT_VERSION
-		("The version of the document (%1) is not supported by this version of " + App.SHORT_NAME + ".");
+		("The version of the document (%1) is not supported by this version of "
+			+ PatternGeneratorApp.SHORT_NAME + ".");
 
 	////////////////////////////////////////////////////////////////////
 	//  Instance variables

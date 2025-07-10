@@ -412,7 +412,7 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 			// Initialise instance variables
 			this.upper = upper;
 
-			// Set attributes
+			// Set properties
 			setFont(font);
 			setBackground(scaleBackgroundColour);
 			setForeground(scaleForegroundColour);
@@ -490,7 +490,7 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 								: X_SCALE_TOP_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent()
 																								+ X_SCALE_BOTTOM_MARGIN;
 
-			// Set attributes
+			// Set properties
 			setFont(font);
 			setBackground(scaleBackgroundColour);
 			setForeground(scaleForegroundColour);
@@ -586,7 +586,7 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 				this.width = Y_SCALE_LEFT_MARGIN + Y_SCALE_RIGHT_MARGIN + maxWidth;
 			}
 
-			// Set attributes
+			// Set properties
 			setFont(font);
 			setBackground(scaleBackgroundColour);
 			setForeground(scaleForegroundColour);
@@ -771,7 +771,7 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 		editable = true;
 		envelopes = new ArrayList<>();
 
-		// Set attributes
+		// Set properties
 		setBackground(DEFAULT_BACKGROUND_COLOUR);
 		setOpaque(true);
 		setFocusable(true);

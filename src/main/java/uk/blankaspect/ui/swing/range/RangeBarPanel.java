@@ -239,7 +239,7 @@ public abstract class RangeBarPanel
 			textWidth = fontMetrics.stringWidth(text);
 			textHeight = fontMetrics.getAscent() + fontMetrics.getDescent();
 
-			// Set component attributes
+			// Set properties
 			if (!rightAligned)
 				setBackground(BACKGROUND_COLOUR);
 			setOpaque(false);

@@ -107,7 +107,7 @@ class DirectionProbabilityPanel
 		this.directionMode = directionMode;
 		this.symmetrical = symmetrical;
 
-		// Set component attributes
+		// Set properties
 		setOpaque(true);
 		setFocusable(false);
 

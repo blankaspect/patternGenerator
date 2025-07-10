@@ -102,7 +102,7 @@ public abstract class HorizontalSlider
 		dragDeltaX = -1;
 		changeListeners = new ArrayList<>();
 
-		// Set component attributes
+		// Set properties
 		setOpaque(true);
 		setFocusable(true);
 

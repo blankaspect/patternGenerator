@@ -123,7 +123,7 @@ class RenderingTimeDialog
 			preferredWidth = 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(prototypeStr);
 			preferredHeight = 2 * VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent();
 
-			// Set attributes
+			// Set properties
 			setEnabled(false);
 			setOpaque(true);
 			setFocusable(false);
@@ -210,7 +210,6 @@ class RenderingTimeDialog
 
 	private RenderingTimeDialog(Window owner)
 	{
-
 		// Call superclass constructor
 		super(owner, TITLE_STR);
 
@@ -370,14 +369,13 @@ class RenderingTimeDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -433,7 +431,7 @@ class RenderingTimeDialog
 	private void updateComponents()
 	{
 		double time = 0.0;
-		PatternDocument document = App.INSTANCE.getDocument();
+		PatternDocument document = PatternGeneratorApp.INSTANCE.getDocument();
 		if (document != null)
 			time = document.getRenderingTime();
 		renderingTimeField.setText((time == 0.0) ? null : AppConstants.FORMAT_1_1F.format(time));
@@ -443,7 +441,7 @@ class RenderingTimeDialog
 
 	private void onReset()
 	{
-		PatternDocument document = App.INSTANCE.getDocument();
+		PatternDocument document = PatternGeneratorApp.INSTANCE.getDocument();
 		if (document != null)
 			document.resetRenderingTime();
 	}
