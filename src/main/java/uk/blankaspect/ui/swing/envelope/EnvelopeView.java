@@ -179,509 +179,43 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
-			Command.SCROLL_LEFT_UNIT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
-			Command.SCROLL_RIGHT_UNIT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK),
-			Command.SCROLL_LEFT_BLOCK
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK),
-			Command.SCROLL_RIGHT_BLOCK
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
-			Command.SCROLL_LEFT_MAX
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
-			Command.SCROLL_RIGHT_MAX
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0),
-			Command.CENTRE_SELECTED_NODE
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.SHIFT_DOWN_MASK),
-			Command.SELECT_NODE_UP
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.SHIFT_DOWN_MASK),
-			Command.SELECT_NODE_DOWN
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.SHIFT_DOWN_MASK),
-			Command.SELECT_NODE_LEFT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.SHIFT_DOWN_MASK),
-			Command.SELECT_NODE_RIGHT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK),
-			Command.MOVE_NODE_UP
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK),
-			Command.MOVE_NODE_DOWN
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK),
-			Command.MOVE_NODE_LEFT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK),
-			Command.MOVE_NODE_RIGHT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK),
-			Command.EDIT_NODE
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK),
-			Command.DELETE_NODE
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
-			Command.SHOW_CONTEXT_MENU
-		)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
+						  Command.SCROLL_LEFT_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
+						  Command.SCROLL_RIGHT_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK),
+						  Command.SCROLL_LEFT_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK),
+						  Command.SCROLL_RIGHT_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
+						  Command.SCROLL_LEFT_MAX),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
+						  Command.SCROLL_RIGHT_MAX),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0),
+						  Command.CENTRE_SELECTED_NODE),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.SHIFT_DOWN_MASK),
+						  Command.SELECT_NODE_UP),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.SHIFT_DOWN_MASK),
+						  Command.SELECT_NODE_DOWN),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.SHIFT_DOWN_MASK),
+						  Command.SELECT_NODE_LEFT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.SHIFT_DOWN_MASK),
+						  Command.SELECT_NODE_RIGHT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK),
+						  Command.MOVE_NODE_UP),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK),
+						  Command.MOVE_NODE_DOWN),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK),
+						  Command.MOVE_NODE_LEFT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK),
+						  Command.MOVE_NODE_RIGHT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK),
+						  Command.EDIT_NODE),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK),
+						  Command.DELETE_NODE),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
+						  Command.SHOW_CONTEXT_MENU)
 	};
-
-////////////////////////////////////////////////////////////////////////
-//  Enumerated types
-////////////////////////////////////////////////////////////////////////
-
-
-	// ENUMERATION: MODE
-
-
-	public enum Mode
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		SELECT
-		(
-			"Select",
-			ModeIcon.SELECT,
-			null,
-			0
-		),
-
-		DRAW
-		(
-			"Draw",
-			ModeIcon.DRAW1,
-			ModeIcon.DRAW2,
-			15
-		),
-
-		ERASE
-		(
-			"Erase",
-			ModeIcon.ERASE1,
-			ModeIcon.ERASE2,
-			0
-		),
-
-		EDIT
-		(
-			"Edit value",
-			ModeIcon.EDIT1,
-			ModeIcon.EDIT2,
-			0
-		);
-
-		//--------------------------------------------------------------
-
-		private static final	String	CURSOR_STR	= " cursor";
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Mode(String    text,
-					 Icon      menuIcon,
-					 ImageIcon cursorIcon,
-					 int       cursorY)
-		{
-			this.text = text;
-			this.menuIcon = menuIcon;
-			cursor = (cursorIcon == null)
-								? Cursor.getDefaultCursor()
-								: Toolkit.getDefaultToolkit().createCustomCursor(cursorIcon.getImage(),
-																				 new Point(0, cursorY),
-																				 text + CURSOR_STR);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public String toString()
-		{
-			return text;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public Icon getMenuIcon()
-		{
-			return menuIcon;
-		}
-
-		//--------------------------------------------------------------
-
-		public Cursor getCursor()
-		{
-			return cursor;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-		private	Icon	menuIcon;
-		private	Cursor	cursor;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// CLASS: CORNER
-
-
-	public class Corner
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	boolean	upper;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public Corner(Font    font,
-					  boolean upper)
-		{
-			// Initialise instance variables
-			this.upper = upper;
-
-			// Set properties
-			setFont(font);
-			setBackground(scaleBackgroundColour);
-			setForeground(scaleForegroundColour);
-			setOpaque(true);
-			setFocusable(false);
-			addMouseListener(EnvelopeView.this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Draw background
-			gr.setColor(getBackground());
-			gr.fillRect(0, 0, getWidth(), getHeight());
-
-			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
-
-			// Get y scale text
-			String str = upper ? verticalScaleMarkings[0]
-							   : verticalScaleMarkings[verticalScaleMarkings.length - 1];
-
-			// Get text y coordinate
-			int y = upper ? getHeight() + TOP_MARGIN + verticalDivOffset
-						  : verticalDivOffset + (verticalScaleMarkings.length - 1) * verticalDivHeight -
-																			(plotHeight + BOTTOM_MARGIN);
-			FontMetrics fontMetrics = gr.getFontMetrics();
-			y += FontUtils.getBaselineOffset(0, fontMetrics);
-
-			// Draw text
-			gr.setColor(getForeground());
-			gr.drawString(str, getWidth() - Y_SCALE_RIGHT_MARGIN - fontMetrics.stringWidth(str), y);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// CLASS: X SCALE
-
-
-	public class XScale
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int	height;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private XScale(int  height,
-					   Font font)
-		{
-			// Initialise instance variables
-			FontMetrics fontMetrics = getFontMetrics(font);
-			this.height = (height > 0)
-								? height
-								: X_SCALE_TOP_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent()
-																								+ X_SCALE_BOTTOM_MARGIN;
-
-			// Set properties
-			setFont(font);
-			setBackground(scaleBackgroundColour);
-			setForeground(scaleForegroundColour);
-			setOpaque(true);
-			setFocusable(false);
-			addMouseListener(EnvelopeView.this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(LEFT_MARGIN + Math.max(viewableWidth, plotWidth) + RIGHT_MARGIN,
-								 height);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Draw background
-			Rectangle rect = gr.getClipBounds();
-			gr.setColor(getBackground());
-			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
-
-			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
-
-			// Draw scale markings
-			gr.setColor(getForeground());
-			int fontAscent = gr.getFontMetrics().getAscent();
-			int x = LEFT_MARGIN + horizontalDivOffset;
-			int width = getWidth();
-			int index = 0;
-			while (x < width)
-			{
-				String str = getXScaleString(index);
-				if (str != null)
-				{
-					gr.drawLine(x, height - SCALE_MARK_HEIGHT, x, height - 1);
-					gr.drawString(str, x + X_SCALE_STR_OFFSET, X_SCALE_TOP_MARGIN + fontAscent);
-				}
-				x += horizontalDivWidth;
-				++index;
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// CLASS: Y SCALE
-
-
-	public class YScale
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int	width;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private YScale(int  width,
-					   Font font)
-		{
-			// Initialise instance variables
-			if (width > 0)
-				this.width = width;
-			else
-			{
-				int maxWidth = 0;
-				for (int i = 0; i < verticalScaleMarkings.length; i++)
-					maxWidth = Math.max(maxWidth,
-										getFontMetrics(font).stringWidth(verticalScaleMarkings[i]));
-				this.width = Y_SCALE_LEFT_MARGIN + Y_SCALE_RIGHT_MARGIN + maxWidth;
-			}
-
-			// Set properties
-			setFont(font);
-			setBackground(scaleBackgroundColour);
-			setForeground(scaleForegroundColour);
-			setOpaque(true);
-			setFocusable(false);
-			addMouseListener(EnvelopeView.this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(width, TOP_MARGIN + plotHeight + BOTTOM_MARGIN);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Draw background
-			Rectangle rect = gr.getClipBounds();
-			gr.setColor(getBackground());
-			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
-
-			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
-
-			// Draw scale markings
-			gr.setColor(getForeground());
-			FontMetrics fontMetrics = gr.getFontMetrics();
-			int fontYOffs = FontUtils.getBaselineOffset(0, fontMetrics);
-			int y = TOP_MARGIN + verticalDivOffset;
-			for (int i = 0; i < verticalScaleMarkings.length; i++)
-			{
-				gr.drawLine(width - SCALE_MARK_WIDTH, y, width - 1, y);
-				gr.drawString(verticalScaleMarkings[i],
-							  width - Y_SCALE_RIGHT_MARGIN -
-														fontMetrics.stringWidth(verticalScaleMarkings[i]),
-							  y + fontYOffs);
-				y += verticalDivHeight;
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// CLASS: COMMAND ACTION
-
-
-	private class CommandAction
-		extends AbstractAction
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private CommandAction(String command,
-							  String text,
-							  Icon   icon)
-		{
-			super(text, icon);
-			putValue(Action.ACTION_COMMAND_KEY, command);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ActionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void actionPerformed(ActionEvent event)
-		{
-			EnvelopeView.this.actionPerformed(event);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
 //  Class variables
@@ -1092,71 +626,35 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 	{
 		String command = event.getActionCommand();
 
-		if (command.equals(Command.MODE_SELECT))
-			onModeSelect();
-
-		else if (command.startsWith(Command.MODE_DRAW))
+		if (command.startsWith(Command.MODE_DRAW))
 			onModeDraw(StringUtils.removePrefix(command, Command.MODE_DRAW));
-
-		else if (command.equals(Command.MODE_ERASE))
-			onModeErase();
-
-		else if (command.equals(Command.MODE_EDIT))
-			onModeEdit();
-
-		else if (command.equals(Command.SCROLL_LEFT_UNIT))
-			onScrollLeftUnit();
-
-		else if (command.equals(Command.SCROLL_RIGHT_UNIT))
-			onScrollRightUnit();
-
-		else if (command.equals(Command.SCROLL_LEFT_BLOCK))
-			onScrollLeftBlock();
-
-		else if (command.equals(Command.SCROLL_RIGHT_BLOCK))
-			onScrollRightBlock();
-
-		else if (command.equals(Command.SCROLL_LEFT_MAX))
-			onScrollLeftMax();
-
-		else if (command.equals(Command.SCROLL_RIGHT_MAX))
-			onScrollRightMax();
-
-		else if (command.equals(Command.CENTRE_SELECTED_NODE))
-			onCentreSelectedNode();
-
-		else if (command.equals(Command.SELECT_NODE_UP))
-			onSelectNodeUp();
-
-		else if (command.equals(Command.SELECT_NODE_DOWN))
-			onSelectNodeDown();
-
-		else if (command.equals(Command.SELECT_NODE_LEFT))
-			onSelectNodeLeft();
-
-		else if (command.equals(Command.SELECT_NODE_RIGHT))
-			onSelectNodeRight();
-
-		else if (command.equals(Command.MOVE_NODE_UP))
-			onMoveNodeUp();
-
-		else if (command.equals(Command.MOVE_NODE_DOWN))
-			onMoveNodeDown();
-
-		else if (command.equals(Command.MOVE_NODE_LEFT))
-			onMoveNodeLeft();
-
-		else if (command.equals(Command.MOVE_NODE_RIGHT))
-			onMoveNodeRight();
-
-		else if (command.equals(Command.EDIT_NODE))
-			onEditNode();
-
-		else if (command.equals(Command.DELETE_NODE))
-			onDeleteNode();
-
-		else if (command.equals(Command.SHOW_CONTEXT_MENU))
-			onShowContextMenu();
+		else
+		{
+			switch (command)
+			{
+				case Command.MODE_SELECT          -> onModeSelect();
+				case Command.MODE_ERASE           -> onModeErase();
+				case Command.MODE_EDIT            -> onModeEdit();
+				case Command.SCROLL_LEFT_UNIT     -> onScrollLeftUnit();
+				case Command.SCROLL_RIGHT_UNIT    -> onScrollRightUnit();
+				case Command.SCROLL_LEFT_BLOCK    -> onScrollLeftBlock();
+				case Command.SCROLL_RIGHT_BLOCK   -> onScrollRightBlock();
+				case Command.SCROLL_LEFT_MAX      -> onScrollLeftMax();
+				case Command.SCROLL_RIGHT_MAX     -> onScrollRightMax();
+				case Command.CENTRE_SELECTED_NODE -> onCentreSelectedNode();
+				case Command.SELECT_NODE_UP       -> onSelectNodeUp();
+				case Command.SELECT_NODE_DOWN     -> onSelectNodeDown();
+				case Command.SELECT_NODE_LEFT     -> onSelectNodeLeft();
+				case Command.SELECT_NODE_RIGHT    -> onSelectNodeRight();
+				case Command.MOVE_NODE_UP         -> onMoveNodeUp();
+				case Command.MOVE_NODE_DOWN       -> onMoveNodeDown();
+				case Command.MOVE_NODE_LEFT       -> onMoveNodeLeft();
+				case Command.MOVE_NODE_RIGHT      -> onMoveNodeRight();
+				case Command.EDIT_NODE            -> onEditNode();
+				case Command.DELETE_NODE          -> onDeleteNode();
+				case Command.SHOW_CONTEXT_MENU    -> onShowContextMenu();
+			}
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -1223,7 +721,7 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 						return;
 					}
 					Point2D nodePoint = uiToEnvelope(event.getPoint());
-					if (!envelope.isValidNodeX(nodePoint.getX()))
+					if (!envelope.isValidNodeX(nodePoint.x()))
 					{
 						getToolkit().beep();
 						return;
@@ -1231,12 +729,12 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 
 					S node = null;
 					if (envelope instanceof SimpleViewEnvelope)
-						node = (S)new SimpleViewNode(nodePoint.getX(), nodePoint.getY());
+						node = (S)new SimpleViewNode(nodePoint.x(), nodePoint.y());
 					else if (envelope instanceof CompoundViewEnvelope)
 					{
 						double[] y = new double[envelope.getNumBands()];
-						Arrays.fill(y, nodePoint.getY());
-						node = (S)new CompoundViewNode(nodePoint.getX(), y);
+						Arrays.fill(y, nodePoint.y());
+						node = (S)new CompoundViewNode(nodePoint.x(), y);
 					}
 
 					index = Collections.binarySearch(envelope.getNodes(), node);
@@ -2337,8 +1835,8 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 		{
 			SimpleViewNode oldNode = (SimpleViewNode)node;
 			SimpleViewNode newNode = new SimpleViewNode(oldNode);
-			newNode.x = Math.min(Math.max(xMinMax.lowerBound, nodePoint.getX()), xMinMax.upperBound);
-			newNode.y = Math.min(Math.max(yMinMax.lowerBound, nodePoint.getY()), yMinMax.upperBound);
+			newNode.x = Math.min(Math.max(xMinMax.lowerBound, nodePoint.x()), xMinMax.upperBound);
+			newNode.y = Math.min(Math.max(yMinMax.lowerBound, nodePoint.y()), yMinMax.upperBound);
 			if (!oldNode.equals(newNode))
 			{
 				envelope.setNode(nodeIndex, (S)newNode);
@@ -2370,8 +1868,8 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 		{
 			CompoundViewNode oldNode = (CompoundViewNode)node;
 			CompoundViewNode newNode = new CompoundViewNode(oldNode);
-			newNode.x = Math.min(Math.max(xMinMax.lowerBound, nodePoint.getX()), xMinMax.upperBound);
-			newNode.ys[selectedNodeId.bandIndex] = Math.min(Math.max(yMinMax.lowerBound, nodePoint.getY()),
+			newNode.x = Math.min(Math.max(xMinMax.lowerBound, nodePoint.x()), xMinMax.upperBound);
+			newNode.ys[selectedNodeId.bandIndex] = Math.min(Math.max(yMinMax.lowerBound, nodePoint.y()),
 															yMinMax.upperBound);
 			if (!oldNode.equals(newNode))
 			{
@@ -2831,6 +2329,418 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 	}
 
 	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Enumerated types
+////////////////////////////////////////////////////////////////////////
+
+
+	// ENUMERATION: MODE
+
+
+	public enum Mode
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		SELECT
+		(
+			"Select",
+			ModeIcon.SELECT,
+			null,
+			0
+		),
+
+		DRAW
+		(
+			"Draw",
+			ModeIcon.DRAW1,
+			ModeIcon.DRAW2,
+			15
+		),
+
+		ERASE
+		(
+			"Erase",
+			ModeIcon.ERASE1,
+			ModeIcon.ERASE2,
+			0
+		),
+
+		EDIT
+		(
+			"Edit value",
+			ModeIcon.EDIT1,
+			ModeIcon.EDIT2,
+			0
+		);
+
+		//--------------------------------------------------------------
+
+		private static final	String	CURSOR_STR	= " cursor";
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Mode(String    text,
+					 Icon      menuIcon,
+					 ImageIcon cursorIcon,
+					 int       cursorY)
+		{
+			this.text = text;
+			this.menuIcon = menuIcon;
+			cursor = (cursorIcon == null)
+								? Cursor.getDefaultCursor()
+								: Toolkit.getDefaultToolkit().createCustomCursor(cursorIcon.getImage(),
+																				 new Point(0, cursorY),
+																				 text + CURSOR_STR);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String toString()
+		{
+			return text;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public Icon getMenuIcon()
+		{
+			return menuIcon;
+		}
+
+		//--------------------------------------------------------------
+
+		public Cursor getCursor()
+		{
+			return cursor;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
+		private	Icon	menuIcon;
+		private	Cursor	cursor;
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: CORNER
+
+
+	public class Corner
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	boolean	upper;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		public Corner(Font    font,
+					  boolean upper)
+		{
+			// Initialise instance variables
+			this.upper = upper;
+
+			// Set properties
+			setFont(font);
+			setBackground(scaleBackgroundColour);
+			setForeground(scaleForegroundColour);
+			setOpaque(true);
+			setFocusable(false);
+			addMouseListener(EnvelopeView.this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Create copy of graphics context
+			gr = gr.create();
+
+			// Draw background
+			gr.setColor(getBackground());
+			gr.fillRect(0, 0, getWidth(), getHeight());
+
+			// Set rendering hints for text antialiasing and fractional metrics
+			TextRendering.setHints((Graphics2D)gr);
+
+			// Get y scale text
+			String str = upper ? verticalScaleMarkings[0]
+							   : verticalScaleMarkings[verticalScaleMarkings.length - 1];
+
+			// Get text y coordinate
+			int y = upper ? getHeight() + TOP_MARGIN + verticalDivOffset
+						  : verticalDivOffset + (verticalScaleMarkings.length - 1) * verticalDivHeight -
+																			(plotHeight + BOTTOM_MARGIN);
+			FontMetrics fontMetrics = gr.getFontMetrics();
+			y += FontUtils.getBaselineOffset(0, fontMetrics);
+
+			// Draw text
+			gr.setColor(getForeground());
+			gr.drawString(str, getWidth() - Y_SCALE_RIGHT_MARGIN - fontMetrics.stringWidth(str), y);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: X SCALE
+
+
+	public class XScale
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int	height;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private XScale(int  height,
+					   Font font)
+		{
+			// Initialise instance variables
+			FontMetrics fontMetrics = getFontMetrics(font);
+			this.height = (height > 0)
+								? height
+								: X_SCALE_TOP_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent()
+																								+ X_SCALE_BOTTOM_MARGIN;
+
+			// Set properties
+			setFont(font);
+			setBackground(scaleBackgroundColour);
+			setForeground(scaleForegroundColour);
+			setOpaque(true);
+			setFocusable(false);
+			addMouseListener(EnvelopeView.this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(LEFT_MARGIN + Math.max(viewableWidth, plotWidth) + RIGHT_MARGIN,
+								 height);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Create copy of graphics context
+			gr = gr.create();
+
+			// Draw background
+			Rectangle rect = gr.getClipBounds();
+			gr.setColor(getBackground());
+			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+			// Set rendering hints for text antialiasing and fractional metrics
+			TextRendering.setHints((Graphics2D)gr);
+
+			// Draw scale markings
+			gr.setColor(getForeground());
+			int fontAscent = gr.getFontMetrics().getAscent();
+			int x = LEFT_MARGIN + horizontalDivOffset;
+			int width = getWidth();
+			int index = 0;
+			while (x < width)
+			{
+				String str = getXScaleString(index);
+				if (str != null)
+				{
+					gr.drawLine(x, height - SCALE_MARK_HEIGHT, x, height - 1);
+					gr.drawString(str, x + X_SCALE_STR_OFFSET, X_SCALE_TOP_MARGIN + fontAscent);
+				}
+				x += horizontalDivWidth;
+				++index;
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: Y SCALE
+
+
+	public class YScale
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int	width;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private YScale(int  width,
+					   Font font)
+		{
+			// Initialise instance variables
+			if (width > 0)
+				this.width = width;
+			else
+			{
+				int maxWidth = 0;
+				for (int i = 0; i < verticalScaleMarkings.length; i++)
+					maxWidth = Math.max(maxWidth,
+										getFontMetrics(font).stringWidth(verticalScaleMarkings[i]));
+				this.width = Y_SCALE_LEFT_MARGIN + Y_SCALE_RIGHT_MARGIN + maxWidth;
+			}
+
+			// Set properties
+			setFont(font);
+			setBackground(scaleBackgroundColour);
+			setForeground(scaleForegroundColour);
+			setOpaque(true);
+			setFocusable(false);
+			addMouseListener(EnvelopeView.this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(width, TOP_MARGIN + plotHeight + BOTTOM_MARGIN);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Create copy of graphics context
+			gr = gr.create();
+
+			// Draw background
+			Rectangle rect = gr.getClipBounds();
+			gr.setColor(getBackground());
+			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+			// Set rendering hints for text antialiasing and fractional metrics
+			TextRendering.setHints((Graphics2D)gr);
+
+			// Draw scale markings
+			gr.setColor(getForeground());
+			FontMetrics fontMetrics = gr.getFontMetrics();
+			int fontYOffs = FontUtils.getBaselineOffset(0, fontMetrics);
+			int y = TOP_MARGIN + verticalDivOffset;
+			for (int i = 0; i < verticalScaleMarkings.length; i++)
+			{
+				gr.drawLine(width - SCALE_MARK_WIDTH, y, width - 1, y);
+				gr.drawString(verticalScaleMarkings[i],
+							  width - Y_SCALE_RIGHT_MARGIN -
+														fontMetrics.stringWidth(verticalScaleMarkings[i]),
+							  y + fontYOffs);
+				y += verticalDivHeight;
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: COMMAND ACTION
+
+
+	private class CommandAction
+		extends AbstractAction
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CommandAction(String command,
+							  String text,
+							  Icon   icon)
+		{
+			super(text, icon);
+			putValue(Action.ACTION_COMMAND_KEY, command);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ActionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void actionPerformed(ActionEvent event)
+		{
+			EnvelopeView.this.actionPerformed(event);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

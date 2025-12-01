@@ -72,8 +72,7 @@ class PatternView
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
-									 Command.SHOW_CONTEXT_MENU)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0), Command.SHOW_CONTEXT_MENU)
 	};
 
 ////////////////////////////////////////////////////////////////////////
@@ -169,11 +168,10 @@ class PatternView
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.SHOW_CONTEXT_MENU))
+		if (event.getActionCommand().equals(Command.SHOW_CONTEXT_MENU))
 			onShowContextMenu();
 	}
 
@@ -183,6 +181,7 @@ class PatternView
 //  Instance methods : MouseListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseClicked(MouseEvent event)
 	{
 		// do nothing
@@ -190,6 +189,7 @@ class PatternView
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseEntered(MouseEvent event)
 	{
 		// do nothing
@@ -197,6 +197,7 @@ class PatternView
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseExited(MouseEvent event)
 	{
 		// do nothing
@@ -204,6 +205,7 @@ class PatternView
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mousePressed(MouseEvent event)
 	{
 		showContextMenu(event);
@@ -211,6 +213,7 @@ class PatternView
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseReleased(MouseEvent event)
 	{
 		showContextMenu(event);
@@ -224,7 +227,7 @@ class PatternView
 
 	public BufferedImage getImage()
 	{
-		return ((imagePanel == null) ? null : imagePanel.getImage());
+		return (imagePanel == null) ? null : imagePanel.getImage();
 	}
 
 	//------------------------------------------------------------------
@@ -289,8 +292,7 @@ class PatternView
 				contextMenu.add(new FMenuItem(PatternDocument.Command.EDIT_PATTERN_PARAMETERS));
 				contextMenu.add(new FMenuItem(PatternDocument.Command.EDIT_DESCRIPTION));
 				contextMenu.addSeparator();
-				contextMenu.add(new FMenuItem(PatternDocument.Command.
-																	REGENERATE_PATTERN_WITH_NEW_SEED));
+				contextMenu.add(new FMenuItem(PatternDocument.Command.REGENERATE_PATTERN_WITH_NEW_SEED));
 				contextMenu.addSeparator();
 				contextMenu.add(new FMenuItem(PatternDocument.Command.SHOW_IMAGE_RENDERING_TIME));
 				contextMenu.addSeparator();

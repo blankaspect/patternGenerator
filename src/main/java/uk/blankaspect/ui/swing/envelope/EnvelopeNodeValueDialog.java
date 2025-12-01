@@ -29,6 +29,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.text.NumberFormat;
@@ -63,6 +64,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.spinner.DoubleSpinner;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -92,13 +95,14 @@ public class EnvelopeNodeValueDialog
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Command.CLOSE)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Command.CLOSE)
 		};
 
 ////////////////////////////////////////////////////////////////////////
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
+	private	Point		location;
 	private	boolean		accepted;
 	private	JSpinner	xSpinner;
 	private	JSpinner	ySpinner;
@@ -288,6 +292,20 @@ public class EnvelopeNodeValueDialog
 		// Dispose of window when it is closed
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+		// Handle window events
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+		});
+
 		// Prevent dialog from being resized
 		setResizable(false);
 
@@ -296,9 +314,10 @@ public class EnvelopeNodeValueDialog
 
 		// Set location of dialog
 		Point point = envelopeView.nodeToPoint(nodeId);
-		Point location = new Point(point.x + 1, point.y + 1);
+		location = new Point(point.x + 1, point.y + 1);
 		SwingUtilities.convertPointToScreen(location, envelopeView);
-		setLocation(GuiUtils.getComponentLocation(this, location));
+		location = GuiUtils.getComponentLocation(this, location);
+		setLocation(location);
 
 		// Set default button
 		getRootPane().setDefaultButton(okButton);
@@ -337,13 +356,11 @@ public class EnvelopeNodeValueDialog
 	public void actionPerformed(
 		ActionEvent	event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.ACCEPT -> onAccept();
+			case Command.CLOSE  -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------

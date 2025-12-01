@@ -2,7 +2,7 @@
 
 DocumentKind.java
 
-Document kind enumeration.
+Enumeration: document kind.
 
 \*====================================================================*/
 
@@ -18,6 +18,8 @@ package uk.blankaspect.patterngenerator;
 // IMPORTS
 
 
+import java.util.Arrays;
+
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
 import uk.blankaspect.common.misc.IStringKeyed;
 
@@ -26,7 +28,7 @@ import uk.blankaspect.common.string.StringUtils;
 //----------------------------------------------------------------------
 
 
-// DOCUMENT KIND ENUMERATION
+// ENUMERATION: DOCUMENT KIND
 
 
 enum DocumentKind
@@ -40,27 +42,32 @@ enum DocumentKind
 	DEFINITION
 	(
 		"definition",
-		AppConstants.PG_DEF_FILENAME_SUFFIX,
-		AppConstants.PG_DEF_FILES_STR
+		new FilenameSuffixFilter("Pattern-definition files", AppConstants.PG_DEF_FILENAME_SUFFIX)
 	),
 
 	PARAMETERS
 	(
 		"parameters",
-		AppConstants.PG_PAR_FILENAME_SUFFIX,
-		AppConstants.PG_PAR_FILES_STR
+		new FilenameSuffixFilter("Pattern-parameter files", AppConstants.PG_PAR_FILENAME_SUFFIX)
 	);
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	String					key;
+	private	FilenameSuffixFilter	filter;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private DocumentKind(String key,
-						 String suffix,
-						 String description)
+	private DocumentKind(
+		String					key,
+		FilenameSuffixFilter	filter)
 	{
 		this.key = key;
-		filter = new FilenameSuffixFilter(description, suffix);
+		this.filter = filter;
 	}
 
 	//------------------------------------------------------------------
@@ -69,41 +76,28 @@ enum DocumentKind
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static DocumentKind forKey(String key)
+	public static DocumentKind forKey(
+		String	key)
 	{
-		for (DocumentKind value : values())
-		{
-			if (value.key.equals(key))
-				return value;
-		}
-		return null;
+		return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 	}
 
 	//------------------------------------------------------------------
 
-	public static DocumentKind forDescription(String description)
+	public static DocumentKind forDescription(
+		String	description)
 	{
-		for (DocumentKind value : values())
-		{
-			if (value.filter.getDescription().equals(description))
-				return value;
-		}
-		return null;
+		return Arrays.stream(values())
+				.filter(value -> value.filter.getDescription().equals(description)).findFirst().orElse(null);
 	}
 
 	//------------------------------------------------------------------
 
-	public static DocumentKind forFilename(String filename)
+	public static DocumentKind forFilename(
+		String	filename)
 	{
-		if (filename != null)
-		{
-			for (DocumentKind value : values())
-			{
-				if (filename.endsWith(value.filter.getSuffix(0)))
-					return value;
-			}
-		}
-		return null;
+		return Arrays.stream(values())
+				.filter(value -> filename.endsWith(value.filter.getSuffix(0))).findFirst().orElse(null);
 	}
 
 	//------------------------------------------------------------------
@@ -112,6 +106,7 @@ enum DocumentKind
 //  Instance methods : IStringKeyed interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public String getKey()
 	{
 		return key;
@@ -141,13 +136,6 @@ enum DocumentKind
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	String					key;
-	private	FilenameSuffixFilter	filter;
 
 }
 

@@ -20,6 +20,7 @@ package uk.blankaspect.common.observer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 //----------------------------------------------------------------------
 
@@ -29,6 +30,89 @@ import java.util.List;
 
 public abstract class Observable<T>
 {
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	T					value;
+	private	List<IObserver<T>>	observers;
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	protected Observable()
+	{
+		observers = new ArrayList<>();
+	}
+
+	//------------------------------------------------------------------
+
+	protected Observable(
+		T	initialValue)
+	{
+		this();
+		value = initialValue;
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Abstract methods
+////////////////////////////////////////////////////////////////////////
+
+	protected abstract boolean isChanged(
+		T	oldValue,
+		T	newValue);
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods
+////////////////////////////////////////////////////////////////////////
+
+	public T get()
+	{
+		return value;
+	}
+
+	//------------------------------------------------------------------
+
+	public void set(
+		T	value)
+	{
+		// Get old value
+		T oldValue = this.value;
+
+		// Set new value
+		this.value = value;
+
+		// If value has changed, notify observers
+		if (isChanged(oldValue, value))
+		{
+			for (int i = observers.size() - 1; i >= 0; i--)
+				observers.get(i).changed(this, oldValue, value);
+		}
+	}
+
+	//------------------------------------------------------------------
+
+	public void addObserver(
+		IObserver<T>	observer)
+	{
+		observers.add(observer);
+	}
+
+	//------------------------------------------------------------------
+
+	public boolean removeObserver(
+		IObserver<T>	observer)
+	{
+		return observers.remove(observer);
+	}
+
+	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
 //  Member classes : non-inner classes
@@ -52,7 +136,8 @@ public abstract class Observable<T>
 
 		//--------------------------------------------------------------
 
-		public Identity(T initialValue)
+		public Identity(
+			T	initialValue)
 		{
 			super(initialValue);
 		}
@@ -64,8 +149,9 @@ public abstract class Observable<T>
 	////////////////////////////////////////////////////////////////////
 
 		@Override
-		protected boolean isChanged(T oldValue,
-									T newValue)
+		protected boolean isChanged(
+			T	oldValue,
+			T	newValue)
 		{
 			return (newValue != oldValue);
 		}
@@ -94,7 +180,8 @@ public abstract class Observable<T>
 
 		//--------------------------------------------------------------
 
-		public Equality(T initialValue)
+		public Equality(
+			T	initialValue)
 		{
 			super(initialValue);
 		}
@@ -106,10 +193,11 @@ public abstract class Observable<T>
 	////////////////////////////////////////////////////////////////////
 
 		@Override
-		protected boolean isChanged(T oldValue,
-									T newValue)
+		protected boolean isChanged(
+			T	oldValue,
+			T	newValue)
 		{
-			return (newValue == null) ? (oldValue != null) : !newValue.equals(oldValue);
+			return Objects.equals(newValue, oldValue);
 		}
 
 		//--------------------------------------------------------------
@@ -117,84 +205,6 @@ public abstract class Observable<T>
 	}
 
 	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	protected Observable()
-	{
-		observers = new ArrayList<>();
-	}
-
-	//------------------------------------------------------------------
-
-	protected Observable(T initialValue)
-	{
-		this();
-		value = initialValue;
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Abstract methods
-////////////////////////////////////////////////////////////////////////
-
-	protected abstract boolean isChanged(T oldValue,
-										 T newValue);
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods
-////////////////////////////////////////////////////////////////////////
-
-	public T get()
-	{
-		return value;
-	}
-
-	//------------------------------------------------------------------
-
-	public void set(T value)
-	{
-		// Get old value
-		T oldValue = this.value;
-
-		// Set new value
-		this.value = value;
-
-		// If value has changed, notify observers
-		if (isChanged(oldValue, value))
-		{
-			for (int i = observers.size() - 1; i >= 0; i--)
-				observers.get(i).changed(this, oldValue, value);
-		}
-	}
-
-	//------------------------------------------------------------------
-
-	public void addObserver(IObserver<T> observer)
-	{
-		observers.add(observer);
-	}
-
-	//------------------------------------------------------------------
-
-	public boolean removeObserver(IObserver<T> observer)
-	{
-		return observers.remove(observer);
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	T					value;
-	private	List<IObserver<T>>	observers;
 
 }
 

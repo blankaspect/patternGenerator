@@ -82,6 +82,8 @@ import uk.blankaspect.ui.swing.text.TextRendering;
 import uk.blankaspect.ui.swing.textfield.ConstrainedTextField;
 import uk.blankaspect.ui.swing.textfield.IntegerValueField;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -144,342 +146,43 @@ class PreferencesDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// TABS
-
-
-	private enum Tab
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		GENERAL
-		(
-			"General"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelGeneral();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesGeneral();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesGeneral();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		APPEARANCE
-		(
-			"Appearance"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelAppearance();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesAppearance();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesAppearance();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		PATTERN
-		(
-			"Pattern"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelPattern();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesPattern();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesPattern();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		FONTS
-		(
-			"Fonts"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelFonts();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesFonts();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesFonts();
-			}
-
-			//----------------------------------------------------------
-		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Tab(String text)
-		{
-			this.text = text;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Abstract methods
-	////////////////////////////////////////////////////////////////////
-
-		protected abstract JPanel createPanel(PreferencesDialog dialog);
-
-		//--------------------------------------------------------------
-
-		protected abstract void validatePreferences(PreferencesDialog dialog)
-			throws AppException;
-
-		//--------------------------------------------------------------
-
-		protected abstract void setPreferences(PreferencesDialog dialog);
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-
-	}
-
-	//==================================================================
+	private static	Point	location;
+	private static	int		tabIndex;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
+	// Main panel
+	private	boolean										accepted;
+	private	JTabbedPane									tabbedPanel;
 
-	// PATTERN NAME FIELD
+	// General panel
+	private	FComboBox<DocumentKind>						defaultDocumentKindComboBox;
+	private	BooleanComboBox								showUnixPathnamesComboBox;
+	private	BooleanComboBox								selectTextOnFocusGainedComboBox;
+	private	BooleanComboBox								saveMainWindowLocationComboBox;
+	private	FIntegerSpinner								maxEditListLengthSpinner;
+	private	BooleanComboBox								clearEditListOnSaveComboBox;
+	private	BooleanComboBox								keepSequenceWindowOnTopComboBox;
 
+	// Appearance panel
+	private	FComboBox<String>							lookAndFeelComboBox;
+	private	FComboBox<TextRendering.Antialiasing>		textAntialiasingComboBox;
 
-	private static class PatternNameField
-		extends ConstrainedTextField
-	{
+	// Pattern panel
+	private	Map<PatternKind, PatternNameField>			nameFields;
+	private	Map<PatternKind, DimensionsSpinnerPanel>	defaultSizePanels;
+	private	Map<PatternKind, FIntegerSpinner>			numSlideShowThreadsSpinners;
+	private	FIntegerSpinner								pattern1NumRenderingThreadsSpinner;
+	private	BooleanComboBox								pattern1PhaseAnimationComboBox;
+	private	FComboBox<Pattern2Image.PathRendering>		pattern2PathRenderingComboBox;
 
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private PatternNameField(String text)
-		{
-			super(PatternKind.MAX_NAME_LENGTH, text);
-			AppFont.TEXT_FIELD.apply(this);
-			GuiUtils.setTextComponentMargins(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		protected boolean acceptCharacter(char ch,
-										  int  index)
-		{
-			return !Character.isISOControl(ch);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// FONT PANEL CLASS
-
-
-	private static class FontPanel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	MIN_SIZE	= 0;
-		private static final	int	MAX_SIZE	= 99;
-
-		private static final	int	SIZE_FIELD_LENGTH	= 2;
-
-		private static final	String	DEFAULT_FONT_STR	= "<default font>";
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SIZE SPINNER CLASS
-
-
-		private static class SizeSpinner
-			extends IntegerSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private SizeSpinner(int value)
-			{
-				super(value, MIN_SIZE, MAX_SIZE, SIZE_FIELD_LENGTH);
-				AppFont.TEXT_FIELD.apply(this);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			/**
-			 * @throws NumberFormatException
-			 */
-
-			@Override
-			protected int getEditorValue()
-			{
-				IntegerValueField field = (IntegerValueField)getEditor();
-				return (field.isEmpty() ? 0 : field.getValue());
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setEditorValue(int value)
-			{
-				IntegerValueField field = (IntegerValueField)getEditor();
-				if (value == 0)
-					field.setText(null);
-				else
-					field.setValue(value);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private FontPanel(FontEx   font,
-						  String[] fontNames)
-		{
-			nameComboBox = new FComboBox<>();
-			nameComboBox.addItem(DEFAULT_FONT_STR);
-			for (String fontName : fontNames)
-				nameComboBox.addItem(fontName);
-			nameComboBox.setSelectedIndex(Utils.indexOf(font.getName(), fontNames) + 1);
-
-			styleComboBox = new FComboBox<>(FontStyle.values());
-			styleComboBox.setSelectedValue(font.getStyle());
-
-			sizeSpinner = new SizeSpinner(font.getSize());
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public FontEx getFont()
-		{
-			String name = (nameComboBox.getSelectedIndex() <= 0) ? null : nameComboBox.getSelectedValue();
-			return new FontEx(name, styleComboBox.getSelectedValue(), sizeSpinner.getIntValue());
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	FComboBox<String>		nameComboBox;
-		private	FComboBox<FontStyle>	styleComboBox;
-		private	SizeSpinner				sizeSpinner;
-
-	}
-
-	//==================================================================
+	// Fonts panel
+	private	FontPanel[]									fontPanels;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -609,11 +312,22 @@ class PreferencesDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -654,18 +368,15 @@ class PreferencesDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.SAVE_CONFIGURATION))
-			onSaveConfiguration();
-
-		else if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.SAVE_CONFIGURATION -> onSaveConfiguration();
+			case Command.ACCEPT             -> onAccept();
+			case Command.CLOSE              -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -752,7 +463,6 @@ class PreferencesDialog
 
 	private JPanel createPanelGeneral()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -998,14 +708,12 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelAppearance()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -1116,14 +824,12 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelPattern()
 	{
-
 		//----  Pattern-specific panels
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -1287,7 +993,6 @@ class PreferencesDialog
 		}
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
@@ -1619,43 +1324,343 @@ class PreferencesDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
-	private static	int		tabIndex;
+
+	// TABS
+
+
+	private enum Tab
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		GENERAL
+		(
+			"General"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelGeneral();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesGeneral();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesGeneral();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		APPEARANCE
+		(
+			"Appearance"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelAppearance();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesAppearance();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesAppearance();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		PATTERN
+		(
+			"Pattern"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelPattern();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesPattern();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesPattern();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		FONTS
+		(
+			"Fonts"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelFonts();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesFonts();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesFonts();
+			}
+
+			//----------------------------------------------------------
+		};
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Tab(String text)
+		{
+			this.text = text;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Abstract methods
+	////////////////////////////////////////////////////////////////////
+
+		protected abstract JPanel createPanel(PreferencesDialog dialog);
+
+		//--------------------------------------------------------------
+
+		protected abstract void validatePreferences(PreferencesDialog dialog)
+			throws AppException;
+
+		//--------------------------------------------------------------
+
+		protected abstract void setPreferences(PreferencesDialog dialog);
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	// Main panel
-	private	boolean										accepted;
-	private	JTabbedPane									tabbedPanel;
 
-	// General panel
-	private	FComboBox<DocumentKind>						defaultDocumentKindComboBox;
-	private	BooleanComboBox								showUnixPathnamesComboBox;
-	private	BooleanComboBox								selectTextOnFocusGainedComboBox;
-	private	BooleanComboBox								saveMainWindowLocationComboBox;
-	private	FIntegerSpinner								maxEditListLengthSpinner;
-	private	BooleanComboBox								clearEditListOnSaveComboBox;
-	private	BooleanComboBox								keepSequenceWindowOnTopComboBox;
+	// PATTERN NAME FIELD
 
-	// Appearance panel
-	private	FComboBox<String>							lookAndFeelComboBox;
-	private	FComboBox<TextRendering.Antialiasing>		textAntialiasingComboBox;
 
-	// Pattern panel
-	private	Map<PatternKind, PatternNameField>			nameFields;
-	private	Map<PatternKind, DimensionsSpinnerPanel>	defaultSizePanels;
-	private	Map<PatternKind, FIntegerSpinner>			numSlideShowThreadsSpinners;
-	private	FIntegerSpinner								pattern1NumRenderingThreadsSpinner;
-	private	BooleanComboBox								pattern1PhaseAnimationComboBox;
-	private	FComboBox<Pattern2Image.PathRendering>		pattern2PathRenderingComboBox;
+	private static class PatternNameField
+		extends ConstrainedTextField
+	{
 
-	// Fonts panel
-	private	FontPanel[]									fontPanels;
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private PatternNameField(String text)
+		{
+			super(PatternKind.MAX_NAME_LENGTH, text);
+			AppFont.TEXT_FIELD.apply(this);
+			GuiUtils.setTextComponentMargins(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected boolean acceptCharacter(char ch,
+										  int  index)
+		{
+			return !Character.isISOControl(ch);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// FONT PANEL CLASS
+
+
+	private static class FontPanel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		MIN_SIZE	= 0;
+		private static final	int		MAX_SIZE	= 99;
+
+		private static final	int		SIZE_FIELD_LENGTH	= 2;
+
+		private static final	String	DEFAULT_FONT_STR	= "<default font>";
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	FComboBox<String>		nameComboBox;
+		private	FComboBox<FontStyle>	styleComboBox;
+		private	SizeSpinner				sizeSpinner;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private FontPanel(FontEx   font,
+						  String[] fontNames)
+		{
+			nameComboBox = new FComboBox<>();
+			nameComboBox.addItem(DEFAULT_FONT_STR);
+			for (String fontName : fontNames)
+				nameComboBox.addItem(fontName);
+			nameComboBox.setSelectedIndex(Utils.indexOf(font.getName(), fontNames) + 1);
+
+			styleComboBox = new FComboBox<>(FontStyle.values());
+			styleComboBox.setSelectedValue(font.getStyle());
+
+			sizeSpinner = new SizeSpinner(font.getSize());
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public FontEx getFont()
+		{
+			String name = (nameComboBox.getSelectedIndex() <= 0) ? null : nameComboBox.getSelectedValue();
+			return new FontEx(name, styleComboBox.getSelectedValue(), sizeSpinner.getIntValue());
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SIZE SPINNER CLASS
+
+
+		private static class SizeSpinner
+			extends IntegerSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private SizeSpinner(int value)
+			{
+				super(value, MIN_SIZE, MAX_SIZE, SIZE_FIELD_LENGTH);
+				AppFont.TEXT_FIELD.apply(this);
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			/**
+			 * @throws NumberFormatException
+			 */
+
+			@Override
+			protected int getEditorValue()
+			{
+				IntegerValueField field = (IntegerValueField)getEditor();
+				return field.isEmpty() ? 0 : field.getValue();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setEditorValue(int value)
+			{
+				IntegerValueField field = (IntegerValueField)getEditor();
+				if (value == 0)
+					field.setText(null);
+				else
+					field.setValue(value);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	}
+
+	//==================================================================
 
 }
 

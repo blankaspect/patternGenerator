@@ -2,7 +2,7 @@
 
 AppConstants.java
 
-Application constants interface.
+Interface: application constants.
 
 \*====================================================================*/
 
@@ -22,10 +22,12 @@ import java.awt.Insets;
 
 import java.text.DecimalFormat;
 
+import uk.blankaspect.common.misc.FilenameSuffixFilter;
+
 //----------------------------------------------------------------------
 
 
-// APPLICATION CONSTANTS INTERFACE
+// INTERFACE: APPLICATION CONSTANTS
 
 
 interface AppConstants
@@ -67,12 +69,13 @@ interface AppConstants
 	String	PG_DEF_FILENAME_SUFFIX	= ".pgdef.xml";
 	String	PG_PAR_FILENAME_SUFFIX	= ".pgpar.xml";
 
-	// File-filter descriptions
-	String	PG_DEF_FILES_STR	= "Pattern-definition files";
-	String	PG_PAR_FILES_STR	= "Pattern-parameter files";
-	String	PNG_FILES_STR		= "PNG files";
-	String	SVG_FILES_STR		= "SVG files";
-	String	XML_FILES_STR		= "XML files";
+	// Filters for file choosers
+	FilenameSuffixFilter PNG_FILE_FILTER	=
+			new FilenameSuffixFilter("PNG files", PNG_FILENAME_EXTENSION);
+	FilenameSuffixFilter SVG_FILE_FILTER	=
+			new FilenameSuffixFilter("SVG files", SVG_FILENAME_EXTENSION);
+	FilenameSuffixFilter XML_FILE_FILTER	=
+			new FilenameSuffixFilter("XML files", XML_FILENAME_EXTENSION);
 
 }
 

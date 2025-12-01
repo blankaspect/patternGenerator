@@ -2,7 +2,7 @@
 
 IEvaluable.java
 
-Evaluable interface.
+Interface: evaluable function.
 
 \*====================================================================*/
 
@@ -15,7 +15,7 @@ package uk.blankaspect.common.misc;
 //----------------------------------------------------------------------
 
 
-// EVALUABLE INTERFACE
+// INTERFACE: EVALUABLE FUNCTION
 
 
 public interface IEvaluable
@@ -29,7 +29,8 @@ public interface IEvaluable
 
 	//------------------------------------------------------------------
 
-	double evaluate(double x);
+	double evaluate(
+		double	x);
 
 	//------------------------------------------------------------------
 

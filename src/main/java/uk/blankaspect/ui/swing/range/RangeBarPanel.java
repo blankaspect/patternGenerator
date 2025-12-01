@@ -177,7 +177,7 @@ public abstract class RangeBarPanel
 
 		private int getUpperBoundSpinnerX()
 		{
-			return (lowerBoundSpinner.getPreferredSize().width + label.getPreferredSize().width);
+			return lowerBoundSpinner.getPreferredSize().width + label.getPreferredSize().width;
 		}
 
 		//--------------------------------------------------------------
@@ -385,18 +385,15 @@ public abstract class RangeBarPanel
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.SHOW_RANGE_BAR))
-			onShowRangeBar();
-
-		else if (command.equals(Command.SET_LOWER_BOUND_TO_UPPER_BOUND))
-			onSetLowerBoundToUpperBound();
-
-		else if (command.equals(Command.SET_UPPER_BOUND_TO_LOWER_BOUND))
-			onSetUpperBoundToLowerBound();
+		switch (event.getActionCommand())
+		{
+			case Command.SHOW_RANGE_BAR                 -> onShowRangeBar();
+			case Command.SET_LOWER_BOUND_TO_UPPER_BOUND -> onSetLowerBoundToUpperBound();
+			case Command.SET_UPPER_BOUND_TO_LOWER_BOUND -> onSetUpperBoundToLowerBound();
+		}
 	}
 
 	//------------------------------------------------------------------

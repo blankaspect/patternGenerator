@@ -109,7 +109,7 @@ public class SimpleNode
 	@Override
 	public boolean isFixed(int bandIndex)
 	{
-		return (fixedX && fixedY);
+		return fixedX && fixedY;
 	}
 
 	//------------------------------------------------------------------
@@ -117,7 +117,7 @@ public class SimpleNode
 	@Override
 	public boolean isPartiallyFixed(int bandIndex)
 	{
-		return (fixedX || fixedY);
+		return fixedX || fixedY;
 	}
 
 	//------------------------------------------------------------------

@@ -69,6 +69,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.text.TextRendering;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -173,8 +175,7 @@ class SequenceDialog
 
 		buttonPanel = new JPanel(null);
 		buttonPanel.setBackground(BUTTON_PANEL_BACKGROUND_COLOUR);
-		GuiUtils.setPaddedLineBorder(buttonPanel, BUTTON_PANEL_VERTICAL_MARGIN,
-									 BUTTON_PANEL_BORDER_COLOUR);
+		GuiUtils.setPaddedLineBorder(buttonPanel, BUTTON_PANEL_VERTICAL_MARGIN, BUTTON_PANEL_BORDER_COLOUR);
 		layeredPane.add(buttonPanel, Integer.valueOf(BELOW_IMAGE_LAYER));
 
 		// Button: play/pause
@@ -251,9 +252,8 @@ class SequenceDialog
 		setContentPane(mainPanel);
 
 		// Add mouse event listener
-		Toolkit.getDefaultToolkit().
-						addAWTEventListener(mouseEventListener,
-											AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+		Toolkit.getDefaultToolkit().addAWTEventListener(mouseEventListener,
+														AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 
 		// Omit frame from dialog
 		setUndecorated(true);
@@ -261,11 +261,22 @@ class SequenceDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onStop();
 			}
@@ -304,25 +315,11 @@ class SequenceDialog
 		{
 			switch (command)
 			{
-				case PLAY:
-					onPlay();
-					break;
-
-				case PAUSE:
-					onPause();
-					break;
-
-				case STOP:
-					onStop();
-					break;
-
-				case CREATE_DOCUMENT:
-					onCreateDocument();
-					break;
-
-				case SHOW_CONTEXT_MENU:
-					onShowContextMenu();
-					break;
+				case PLAY              -> onPlay();
+				case PAUSE             -> onPause();
+				case STOP              -> onStop();
+				case CREATE_DOCUMENT   -> onCreateDocument();
+				case SHOW_CONTEXT_MENU -> onShowContextMenu();
 			}
 		}
 	}
@@ -699,8 +696,8 @@ class SequenceDialog
 	//  Constants
 	////////////////////////////////////////////////////////////////////
 
-		private static final	int	HORIZONTAL_MARGIN	= 8;
-		private static final	int	VERTICAL_MARGIN		= 3;
+		private static final	int		HORIZONTAL_MARGIN	= 8;
+		private static final	int		VERTICAL_MARGIN		= 3;
 
 		private static final	Color	BORDER_COLOUR					= BUTTON_PANEL_BORDER_COLOUR;
 		private static final	Color	BACKGROUND_COLOUR				= BUTTON_PANEL_BACKGROUND_COLOUR;
@@ -858,8 +855,8 @@ class SequenceDialog
 	//  Constants
 	////////////////////////////////////////////////////////////////////
 
-		private static final	int	VERTICAL_MARGIN		= 2;
-		private static final	int	HORIZONTAL_MARGIN	= 4;
+		private static final	int		VERTICAL_MARGIN		= 2;
+		private static final	int		HORIZONTAL_MARGIN	= 4;
 
 		private static final	Color	BACKGROUND_COLOUR	= new Color(248, 232, 192);
 		private static final	Color	TEXT_COLOUR			= Color.BLACK;
@@ -902,27 +899,27 @@ class SequenceDialog
 		protected void paintComponent(Graphics gr)
 		{
 			// Create copy of graphics context
-			gr = gr.create();
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 			// Get dimensions
 			int width = getWidth();
 			int height = getHeight();
 
 			// Fill background
-			gr.setColor(BACKGROUND_COLOUR);
-			gr.fillRect(0, 0, width, height);
+			gr2d.setColor(BACKGROUND_COLOUR);
+			gr2d.fillRect(0, 0, width, height);
 
 			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
+			TextRendering.setHints(gr2d);
 
 			// Draw text
-			FontMetrics fontMetrics = gr.getFontMetrics();
-			gr.setColor(TEXT_COLOUR);
-			gr.drawString(text, HORIZONTAL_MARGIN, VERTICAL_MARGIN + fontMetrics.getAscent());
+			FontMetrics fontMetrics = gr2d.getFontMetrics();
+			gr2d.setColor(TEXT_COLOUR);
+			gr2d.drawString(text, HORIZONTAL_MARGIN, VERTICAL_MARGIN + fontMetrics.getAscent());
 
 			// Draw border
-			gr.setColor(BORDER_COLOUR);
-			gr.drawRect(0, 0, width - 1, height - 1);
+			gr2d.setColor(BORDER_COLOUR);
+			gr2d.drawRect(0, 0, width - 1, height - 1);
 		}
 
 		//--------------------------------------------------------------

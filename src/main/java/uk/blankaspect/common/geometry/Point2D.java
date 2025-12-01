@@ -126,14 +126,14 @@ public class Point2D
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	public double getX()
+	public double x()
 	{
 		return x;
 	}
 
 	//------------------------------------------------------------------
 
-	public double getY()
+	public double y()
 	{
 		return y;
 	}

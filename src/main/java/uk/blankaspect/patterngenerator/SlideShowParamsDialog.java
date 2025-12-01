@@ -50,6 +50,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.spinner.FDoubleSpinner;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -67,7 +69,7 @@ class SlideShowParamsDialog
 
 	private static final	double	DELTA_INTERVAL	= 0.01;
 
-	private static final	int	INTERVAL_FIELD_LENGTH	= 6;
+	private static final	int		INTERVAL_FIELD_LENGTH	= 6;
 
 	private static final	double	INTERVAL_FACTOR		= 1000.0;
 	private static final	double	INTERVAL_FACTOR_INV	= 1.0 / INTERVAL_FACTOR;
@@ -85,6 +87,20 @@ class SlideShowParamsDialog
 		String	ACCEPT	= "accept";
 		String	CLOSE	= "close";
 	}
+
+////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	Point	location;
+	private static	double	interval	= (double)AppConfig.INSTANCE.getSlideShowInterval() * INTERVAL_FACTOR_INV;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	boolean			accepted;
+	private	FDoubleSpinner	intervalSpinner;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -233,11 +249,22 @@ class SlideShowParamsDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -285,15 +312,14 @@ class SlideShowParamsDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.ACCEPT -> onAccept();
+			case Command.CLOSE  -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -319,20 +345,6 @@ class SlideShowParamsDialog
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	Point	location;
-	private static	double	interval	= (double)AppConfig.INSTANCE.getSlideShowInterval() * INTERVAL_FACTOR_INV;
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	boolean			accepted;
-	private	FDoubleSpinner	intervalSpinner;
 
 }
 

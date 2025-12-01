@@ -41,6 +41,15 @@ class MotionRateEnvelope
 {
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	List<SimpleViewNode>	nodes;
+	private	double					xCoeff;
+	private	double					yCoeff;
+	private	EnvelopeEvaluator		envelopeEvaluator;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
@@ -179,19 +188,10 @@ class MotionRateEnvelope
 	public double evaluate(int frameIndex)
 	{
 		envelopeEvaluator.initEvaluation();
-		return (envelopeEvaluator.evaluate(((double)frameIndex % xCoeff) / xCoeff) * yCoeff);
+		return envelopeEvaluator.evaluate(((double)frameIndex % xCoeff) / xCoeff) * yCoeff;
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	List<SimpleViewNode>	nodes;
-	private	double					xCoeff;
-	private	double					yCoeff;
-	private	EnvelopeEvaluator		envelopeEvaluator;
 
 }
 

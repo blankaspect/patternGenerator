@@ -194,7 +194,7 @@ class Pattern1Document
 	@Override
 	public BufferedImage getImage()
 	{
-		return ((patternImage == null) ? null : patternImage.getImage());
+		return (patternImage == null) ? null : patternImage.getImage();
 	}
 
 	//------------------------------------------------------------------
@@ -202,7 +202,7 @@ class Pattern1Document
 	@Override
 	public BufferedImage getExportImage()
 	{
-		return ((patternImage == null) ? null : patternImage.getExportImage());
+		return (patternImage == null) ? null : patternImage.getExportImage();
 	}
 
 	//------------------------------------------------------------------
@@ -270,8 +270,7 @@ class Pattern1Document
 	public PatternDocument createDefinitionDocument(boolean temporary)
 		throws AppException
 	{
-		return ((patternImage == null) ? null
-									   : new Pattern1Document(null, patternImage.clone(), temporary));
+		return (patternImage == null) ? null : new Pattern1Document(null, patternImage.clone(), temporary);
 	}
 
 	//------------------------------------------------------------------
@@ -318,9 +317,11 @@ class Pattern1Document
 	@Override
 	protected String getDescription()
 	{
-		return ((params != null) ? params.getDescription()
-								 : (patternImage != null) ? patternImage.getDescription()
-														  : null);
+		return (params != null)
+					? params.getDescription()
+					: (patternImage != null)
+							? patternImage.getDescription()
+							: null;
 	}
 
 	//------------------------------------------------------------------

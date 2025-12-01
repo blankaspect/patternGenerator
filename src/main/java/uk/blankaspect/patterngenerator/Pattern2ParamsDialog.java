@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -92,6 +93,8 @@ import uk.blankaspect.ui.swing.slider.HorizontalSlider;
 import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
 import uk.blankaspect.ui.swing.text.TextRendering;
+
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
 
 //----------------------------------------------------------------------
 
@@ -1134,11 +1137,22 @@ class Pattern2ParamsDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -1181,30 +1195,19 @@ class Pattern2ParamsDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.SELECT_TERMINAL_EMPHASIS))
-			onSelectTerminalEmphasis();
-
-		else if (command.equals(Command.TOGGLE_SYMMETRICAL))
-			onToggleSymmetrical();
-
-		else if (command.equals(Command.SELECT_DIRECTION_MODE))
-			onSelectDirectionProbabilityMode();
-
-		else if (command.equals(Command.CHOOSE_TRANSPARENCY_COLOUR))
-			onChooseTransparencyColour();
-
-		else if (command.equals(Command.CHOOSE_BACKGROUND_COLOUR))
-			onChooseBackgroundColour();
-
-		else if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.SELECT_TERMINAL_EMPHASIS   -> onSelectTerminalEmphasis();
+			case Command.TOGGLE_SYMMETRICAL         -> onToggleSymmetrical();
+			case Command.SELECT_DIRECTION_MODE      -> onSelectDirectionProbabilityMode();
+			case Command.CHOOSE_TRANSPARENCY_COLOUR -> onChooseTransparencyColour();
+			case Command.CHOOSE_BACKGROUND_COLOUR   -> onChooseBackgroundColour();
+			case Command.ACCEPT                     -> onAccept();
+			case Command.CLOSE                      -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -1213,6 +1216,7 @@ class Pattern2ParamsDialog
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		Object eventSource = event.getSource();
@@ -1252,6 +1256,7 @@ class Pattern2ParamsDialog
 //  Instance methods : DocumentListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void changedUpdate(DocumentEvent event)
 	{
 		// do nothing
@@ -1259,6 +1264,7 @@ class Pattern2ParamsDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void insertUpdate(DocumentEvent event)
 	{
 		updateAcceptButton();
@@ -1266,6 +1272,7 @@ class Pattern2ParamsDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void removeUpdate(DocumentEvent event)
 	{
 		updateAcceptButton();
@@ -1436,8 +1443,7 @@ class Pattern2ParamsDialog
 
 	private void onChooseBackgroundColour()
 	{
-		Color colour = JColorChooser.showDialog(this, BACKGROUND_COLOUR_TITLE_STR,
-												backgroundColourButton.getColour());
+		Color colour = JColorChooser.showDialog(this, BACKGROUND_COLOUR_TITLE_STR, backgroundColourButton.getColour());
 		if (colour != null)
 			backgroundColourButton.setColour(colour);
 	}
@@ -1511,6 +1517,7 @@ class Pattern2ParamsDialog
 	//  Instance methods : AppException.IId interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public String getMessage()
 		{
 			return message;
@@ -1587,34 +1594,33 @@ class Pattern2ParamsDialog
 		protected void paintComponent(Graphics gr)
 		{
 			// Create copy of graphics context
-			gr = gr.create();
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 			// Fill background
-			Rectangle rect = gr.getClipBounds();
-			gr.setColor(BACKGROUND_COLOUR);
-			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
+			Rectangle rect = gr2d.getClipBounds();
+			gr2d.setColor(BACKGROUND_COLOUR);
+			gr2d.fillRect(rect.x, rect.y, rect.width, rect.height);
 
 			// Draw text
 			if (text != null)
 			{
 				// Set rendering hints for text antialiasing and fractional metrics
-				TextRendering.setHints((Graphics2D)gr);
+				TextRendering.setHints(gr2d);
 
 				// Draw text
-				gr.setColor(TEXT_COLOUR);
-				gr.drawString(text, HORIZONTAL_MARGIN,
-							  VERTICAL_MARGIN - 1 + gr.getFontMetrics().getAscent());
+				gr2d.setColor(TEXT_COLOUR);
+				gr2d.drawString(text, HORIZONTAL_MARGIN, VERTICAL_MARGIN - 1 + gr2d.getFontMetrics().getAscent());
 			}
 
 			// Draw border
-			gr.setColor(BORDER_COLOUR);
+			gr2d.setColor(BORDER_COLOUR);
 			int x1 = 0;
 			int x2 = getWidth() - 1;
 			int y1 = 0;
 			int y2 = getHeight() - 1;
-			gr.drawLine(x1, y1, x1, y2);
-			gr.drawLine(x2, y1, x2, y2);
-			gr.drawLine(x1, y2, x2, y2);
+			gr2d.drawLine(x1, y1, x1, y2);
+			gr2d.drawLine(x2, y1, x2, y2);
+			gr2d.drawLine(x1, y2, x2, y2);
 		}
 
 		//--------------------------------------------------------------
@@ -1625,7 +1631,7 @@ class Pattern2ParamsDialog
 
 		private void setText(String text)
 		{
-			if ((text == null) ? (this.text != null) : !text.equals(this.text))
+			if (!Objects.equals(text, this.text))
 			{
 				this.text = text;
 				repaint();

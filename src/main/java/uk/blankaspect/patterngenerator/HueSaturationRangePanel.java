@@ -47,11 +47,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import uk.blankaspect.common.misc.MaxValueMap;
-
 import uk.blankaspect.common.string.StringUtils;
-
-import uk.blankaspect.ui.swing.button.FixedWidthRadioButton;
 
 import uk.blankaspect.ui.swing.colour.Colours;
 import uk.blankaspect.ui.swing.colour.ColourUtils;
@@ -81,33 +77,33 @@ class HueSaturationRangePanel
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		int	HUE_RANGE	= 360;
+	public static final		int		HUE_RANGE	= 360;
 
-	private static final	int	MIN_HUE			= 0;
-	private static final	int	MAX_HUE			= HUE_RANGE - 1;
-	private static final	int	DEFAULT_HUE1	= 30;
-	private static final	int	DEFAULT_HUE2	= 60;
+	private static final	int		MIN_HUE			= 0;
+	private static final	int		MAX_HUE			= HUE_RANGE - 1;
+	private static final	int		DEFAULT_HUE1	= 30;
+	private static final	int		DEFAULT_HUE2	= 60;
 
-	private static final	int	MIN_SATURATION		= 0;
-	private static final	int	MAX_SATURATION		= 100;
-	private static final	int	DEFAULT_SATURATION1	= 100;
-	private static final	int	DEFAULT_SATURATION2	= 75;
+	private static final	int		MIN_SATURATION		= 0;
+	private static final	int		MAX_SATURATION		= 100;
+	private static final	int		DEFAULT_SATURATION1	= 100;
+	private static final	int		DEFAULT_SATURATION2	= 75;
 
-	private static final	int	MIN_BRIGHTNESS		= 0;
-	private static final	int	MAX_BRIGHTNESS		= 100;
-	private static final	int	DEFAULT_BRIGHTNESS	= MAX_BRIGHTNESS;
+	private static final	int		MIN_BRIGHTNESS		= 0;
+	private static final	int		MAX_BRIGHTNESS		= 100;
+	private static final	int		DEFAULT_BRIGHTNESS	= MAX_BRIGHTNESS;
 
-	private static final	int	MIN_OPACITY		= 0;
-	private static final	int	MAX_OPACITY		= 100;
-	private static final	int	DEFAULT_OPACITY	= MAX_OPACITY;
+	private static final	int		MIN_OPACITY		= 0;
+	private static final	int		MAX_OPACITY		= 100;
+	private static final	int		DEFAULT_OPACITY	= MAX_OPACITY;
 
-	private static final	int	HUE_FIELD_LENGTH		= 3;
-	private static final	int	SATURATION_FIELD_LENGTH	= 3;
-	private static final	int	BRIGHTNESS_FIELD_LENGTH	= 3;
-	private static final	int	OPACITY_FIELD_LENGTH	= 3;
+	private static final	int		HUE_FIELD_LENGTH		= 3;
+	private static final	int		SATURATION_FIELD_LENGTH	= 3;
+	private static final	int		BRIGHTNESS_FIELD_LENGTH	= 3;
+	private static final	int		OPACITY_FIELD_LENGTH	= 3;
 
-	private static final	int	SLIDER_KNOB_WIDTH	= 24;
-	private static final	int	SLIDER_HEIGHT		= 18;
+	private static final	int		SLIDER_KNOB_WIDTH	= 24;
+	private static final	int		SLIDER_HEIGHT		= 18;
 
 	private static final	String	HUE_STR			= "Hue";
 	private static final	String	SATURATION_STR	= "Saturation";
@@ -128,519 +124,23 @@ class HueSaturationRangePanel
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// BOUND
-
-
-	private enum Bound
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		BOUND1  ("Bound 1"),
-		BOUND2  ("Bound 2");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Bound(String text)
-		{
-			this.text = text;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public String toString()
-		{
-			return text;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private Bound getComplement()
-		{
-			Bound value = null;
-			switch (this)
-			{
-				case BOUND1:
-					value = BOUND2;
-					break;
-
-				case BOUND2:
-					value = BOUND1;
-					break;
-			}
-			return value;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// PARAMETERS CLASS
-
-
-	public static class Params
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public Params()
-		{
-			hue1 = DEFAULT_HUE1;
-			saturation1 = DEFAULT_SATURATION1;
-			hue2 = DEFAULT_HUE2;
-			saturation2 = DEFAULT_SATURATION2;
-			brightness = DEFAULT_BRIGHTNESS;
-			opacity1 = DEFAULT_OPACITY;
-			opacity2 = DEFAULT_OPACITY;
-		}
-
-		//--------------------------------------------------------------
-
-		public Params(int hue1,
-					  int saturation1,
-					  int hue2,
-					  int saturation2,
-					  int brightness,
-					  int opacity1,
-					  int opacity2)
-		{
-			this.hue1 = hue1;
-			this.saturation1 = saturation1;
-			this.hue2 = hue2;
-			this.saturation2 = saturation2;
-			this.brightness = brightness;
-			this.opacity1 = opacity1;
-			this.opacity2 = opacity2;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		int	hue1;
-		int	saturation1;
-		int	hue2;
-		int	saturation2;
-		int	brightness;
-		int	opacity1;
-		int	opacity2;
-
-	}
-
-	//==================================================================
-
-
-	// RADIO BUTTON CLASS
-
-
-	private static class RadioButton
-		extends FixedWidthRadioButton
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	String	KEY	= RadioButton.class.getCanonicalName();
-
-		private static final	Color	BACKGROUND_COLOUR	= new Color(252, 224, 128);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private RadioButton(String text)
-		{
-			super(text);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		private static void reset()
-		{
-			MaxValueMap.removeAll(KEY);
-		}
-
-		//--------------------------------------------------------------
-
-		private static void update()
-		{
-			MaxValueMap.update(KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Color getBackground()
-		{
-			return (isSelected() ? BACKGROUND_COLOUR : super.getBackground());
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected String getKey()
-		{
-			return KEY;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// COLOUR PANEL CLASS
-
-
-	private class ColourPanel
-		extends JComponent
-		implements MouseListener, MouseMotionListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	COLOUR_AREA_HALF_WIDTH	= HUE_RANGE / 2;
-		private static final	int	COLOUR_AREA_WIDTH		= 2 * COLOUR_AREA_HALF_WIDTH;
-		private static final	int	COLOUR_AREA_HEIGHT		= MAX_SATURATION - MIN_SATURATION + 1;
-		private static final	int	BORDER_WIDTH			= 1;
-		private static final	int	MARKER_LENGTH			= 5;
-		private static final	int	LEFT_MARGIN				= MARKER_LENGTH;
-		private static final	int	RIGHT_MARGIN			= LEFT_MARGIN;
-		private static final	int	TOP_MARGIN				= MARKER_LENGTH;
-		private static final	int	BOTTOM_MARGIN			= TOP_MARGIN;
-		private static final	int	COLOUR_AREA_X			= LEFT_MARGIN + BORDER_WIDTH;
-		private static final	int	COLOUR_AREA_Y			= TOP_MARGIN + BORDER_WIDTH;
-
-		private static final	float	H_FACTOR	= 2.0f / (float)COLOUR_AREA_WIDTH;
-		private static final	float	S_FACTOR	= 1.0f / (float)(COLOUR_AREA_HEIGHT - 1);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ColourPanel(Params params)
-		{
-			// Initialise instance variables
-			hue1 = params.hue1;
-			saturation1 = params.saturation1;
-			hue2 = params.hue2;
-			saturation2 = params.saturation2;
-
-			// Initialise image for colour area
-			colourAreaImage = new BufferedImage(COLOUR_AREA_WIDTH, COLOUR_AREA_HEIGHT,
-												BufferedImage.TYPE_INT_RGB);
-			updateColourAreaImage(params.brightness);
-
-			// Set properties
-			setOpaque(true);
-			setFocusable(false);
-
-			// Add listeners
-			addMouseListener(this);
-			addMouseMotionListener(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : MouseListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void mouseClicked(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseEntered(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseExited(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mousePressed(MouseEvent event)
-		{
-			setValues(event);
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseReleased(MouseEvent event)
-		{
-			setValues(event);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : MouseMotionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void mouseDragged(MouseEvent event)
-		{
-			setValues(event);
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseMoved(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(LEFT_MARGIN + RIGHT_MARGIN + 2 * BORDER_WIDTH + COLOUR_AREA_WIDTH,
-								 TOP_MARGIN + BOTTOM_MARGIN + 2 * BORDER_WIDTH + COLOUR_AREA_HEIGHT);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Fill background
-			Rectangle rect = gr.getClipBounds();
-			gr.setColor(getBackground());
-			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
-
-			// Draw colour-area image
-			gr.drawImage(colourAreaImage, COLOUR_AREA_X, COLOUR_AREA_Y, null);
-
-			// Draw border
-			gr.setColor(COLOUR_PANEL_BORDER_COLOUR);
-			gr.drawRect(LEFT_MARGIN, TOP_MARGIN, 2 * BORDER_WIDTH + COLOUR_AREA_WIDTH - 1,
-						2 * BORDER_WIDTH + COLOUR_AREA_HEIGHT - 1);
-
-			// Draw range box
-			int xh1 = COLOUR_AREA_X + hue1 / 2;
-			int xh2 = COLOUR_AREA_X + hue2 / 2;
-			if (xh2 < xh1)
-				xh2 += COLOUR_AREA_HALF_WIDTH;
-			int ys1 = COLOUR_AREA_Y + COLOUR_AREA_HEIGHT - 1 - saturation1;
-			int ys2 = COLOUR_AREA_Y + COLOUR_AREA_HEIGHT - 1 - saturation2;
-			int y1 = Math.min(ys1, ys2);
-			int y2 = Math.max(ys1, ys2);
-			gr.setColor(COLOUR_PANEL_RANGE_BOX_COLOUR);
-			gr.setXORMode(COLOUR_PANEL_RANGE_BOX_XOR_COLOUR);
-			gr.drawRect(xh1, y1, xh2 - xh1, y2 - y1);
-
-			// Draw hue marker 1
-			gr.setPaintMode();
-			gr.setColor(COLOUR_PANEL_MARKER_COLOUR);
-			int x1 = xh1 - MARKER_LENGTH + 1;
-			int x2 = xh1 + MARKER_LENGTH - 1;
-			int y = COLOUR_AREA_Y - BORDER_WIDTH - MARKER_LENGTH;
-			while (x1 <= x2)
-			{
-				gr.drawLine(x1, y, x2, y);
-				++x1;
-				--x2;
-				++y;
-			}
-
-			// Draw saturation marker 1
-			int x = 0;
-			y1 = ys1 - MARKER_LENGTH + 1;
-			y2 = ys1 + MARKER_LENGTH - 1;
-			while (y1 <= y2)
-			{
-				gr.drawLine(x, y1, x, y2);
-				++x;
-				++y1;
-				--y2;
-			}
-
-			// Draw hue marker 2
-			int yh2 = COLOUR_AREA_Y + COLOUR_AREA_HEIGHT + BORDER_WIDTH + MARKER_LENGTH - 1;
-			x1 = xh2 - MARKER_LENGTH + 1;
-			x2 = xh2 + MARKER_LENGTH - 1;
-			y = yh2;
-			while (x1 <= x2)
-			{
-				gr.drawLine(x1, y, x2, y);
-				++x1;
-				--x2;
-				--y;
-			}
-
-			// Draw saturation marker 2
-			int xs2 = COLOUR_AREA_X + COLOUR_AREA_WIDTH + BORDER_WIDTH + MARKER_LENGTH - 1;
-			x = xs2;
-			y1 = ys2 - MARKER_LENGTH + 1;
-			y2 = ys2 + MARKER_LENGTH - 1;
-			while (y1 <= y2)
-			{
-				gr.drawLine(x, y1, x, y2);
-				--x;
-				++y1;
-				--y2;
-			}
-
-			// Draw lines on second hue and saturation markers
-			gr.setColor(getBackground());
-			gr.drawLine(xh2, yh2, xh2, yh2 - 1);
-			gr.drawLine(xs2, ys2, xs2 - 1, ys2);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private void updateBrightness(int brightness)
-		{
-			updateColourAreaImage(brightness);
-			repaint();
-		}
-
-		//--------------------------------------------------------------
-
-		private void setValues(Bound bound,
-							   int   hue,
-							   int   saturation)
-		{
-			switch (bound)
-			{
-				case BOUND1:
-					if ((hue1 != hue) || (saturation1 != saturation))
-					{
-						hue1 = hue;
-						saturation1 = saturation;
-						repaint();
-					}
-					break;
-
-				case BOUND2:
-					if ((hue2 != hue) || (saturation2 != saturation))
-					{
-						hue2 = hue;
-						saturation2 = saturation;
-						repaint();
-					}
-					break;
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private void updateColourAreaImage(int brightness)
-		{
-			for (int y = 0; y < COLOUR_AREA_HEIGHT; y++)
-			{
-				for (int x = 0; x < COLOUR_AREA_WIDTH; x++)
-				{
-					float h = (float)x * H_FACTOR;
-					float s = (float)(COLOUR_AREA_HEIGHT - 1 - y) * S_FACTOR;
-					float b = (float)brightness / (float)MAX_BRIGHTNESS;
-					colourAreaImage.setRGB(x, y, Color.HSBtoRGB(h, s, b));
-				}
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private void setValues(MouseEvent event)
-		{
-			int x = event.getX();
-			if (x >= COLOUR_AREA_HALF_WIDTH)
-				x -= COLOUR_AREA_HALF_WIDTH;
-			int hue = Math.min(Math.max(MIN_HUE, (x - COLOUR_AREA_X) * 2), MAX_HUE);
-			int saturation = Math.min(Math.max(MIN_SATURATION, COLOUR_AREA_Y + COLOUR_AREA_HEIGHT - 1 - event.getY()),
-									  MAX_SATURATION);
-			Bound b = SwingUtilities.isLeftMouseButton(event) ? bound : bound.getComplement();
-			setValues(b, hue, saturation);
-			HueSaturationRangePanel.this.setValues(b, hue, saturation);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int				hue1;
-		private	int				saturation1;
-		private	int				hue2;
-		private	int				saturation2;
-		private	BufferedImage	colourAreaImage;
-
-	}
-
-	//==================================================================
+	private	Bound						bound;
+	private	ColourPanel					colourPanel;
+	private	Map<Bound, FIntegerSpinner>	hueSpinners;
+	private	Map<Bound, FIntegerSpinner>	saturationSpinners;
+	private	Map<Bound, FIntegerSpinner>	opacitySpinners;
+	private	Map<Bound, ColourSampleBox>	sampleBoxes;
+	private	IntegerSpinnerSliderPanel	brightnessSpinnerSlider;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	public HueSaturationRangePanel(Params params)
+	public HueSaturationRangePanel(
+		Params	params)
 	{
 		// Initialise instance variables
 		bound = Bound.BOUND1;
@@ -659,9 +159,6 @@ class HueSaturationRangePanel
 
 
 		//----  Hue and saturation panel
-
-		// Reset fixed-width radio buttons
-		RadioButton.reset();
 
 		JPanel hueSatPanel = new JPanel(gridBag);
 		GuiUtils.setPaddedLineBorder(hueSatPanel);
@@ -712,7 +209,7 @@ class HueSaturationRangePanel
 			gbc.weightx = 0.0;
 			gbc.weighty = 0.0;
 			gbc.anchor = GridBagConstraints.LINE_END;
-			gbc.fill = GridBagConstraints.NONE;
+			gbc.fill = GridBagConstraints.VERTICAL;
 			gbc.insets = AppConstants.COMPONENT_INSETS;
 			gridBag.setConstraints(boundRadioButton, gbc);
 			hueSatPanel.add(boundRadioButton);
@@ -851,7 +348,7 @@ class HueSaturationRangePanel
 		}
 
 		// Update widths of radio buttons
-		RadioButton.update();
+//		RadioButton.update();
 
 
 		//----  Brightness panel
@@ -945,10 +442,11 @@ class HueSaturationRangePanel
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static Color hsbToColour(int hue,
-									int saturation,
-									int brightness,
-									int opacity)
+	public static Color hsbToColour(
+		int	hue,
+		int	saturation,
+		int	brightness,
+		int	opacity)
 	{
 		int rgb = Color.HSBtoRGB((float)hue / (float)HUE_RANGE, (float)saturation / (float)MAX_SATURATION,
 								 (float)brightness / (float)MAX_BRIGHTNESS);
@@ -962,7 +460,9 @@ class HueSaturationRangePanel
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void actionPerformed(ActionEvent event)
+	@Override
+	public void actionPerformed(
+		ActionEvent	event)
 	{
 		String command = event.getActionCommand();
 
@@ -976,7 +476,9 @@ class HueSaturationRangePanel
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void stateChanged(ChangeEvent event)
+	@Override
+	public void stateChanged(
+		ChangeEvent	event)
 	{
 		Object eventSource = event.getSource();
 
@@ -1036,14 +538,16 @@ class HueSaturationRangePanel
 
 	//------------------------------------------------------------------
 
-	private int getHue(Bound bound)
+	private int getHue(
+		Bound	bound)
 	{
 		return hueSpinners.get(bound).getIntValue();
 	}
 
 	//------------------------------------------------------------------
 
-	private int getSaturation(Bound bound)
+	private int getSaturation(
+		Bound	bound)
 	{
 		return saturationSpinners.get(bound).getIntValue();
 	}
@@ -1057,16 +561,18 @@ class HueSaturationRangePanel
 
 	//------------------------------------------------------------------
 
-	private int getOpacity(Bound bound)
+	private int getOpacity(
+		Bound	bound)
 	{
 		return opacitySpinners.get(bound).getIntValue();
 	}
 
 	//------------------------------------------------------------------
 
-	private void setValues(Bound bound,
-						   int   hue,
-						   int   saturation)
+	private void setValues(
+		Bound	bound,
+		int		hue,
+		int		saturation)
 	{
 		hueSpinners.get(bound).setIntValue(hue);
 		saturationSpinners.get(bound).setIntValue(saturation);
@@ -1074,7 +580,8 @@ class HueSaturationRangePanel
 
 	//------------------------------------------------------------------
 
-	private void onSetBound(String key)
+	private void onSetBound(
+		String	key)
 	{
 		for (Bound value : Bound.values())
 		{
@@ -1089,16 +596,501 @@ class HueSaturationRangePanel
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private	Bound						bound;
-	private	ColourPanel					colourPanel;
-	private	Map<Bound, FIntegerSpinner>	hueSpinners;
-	private	Map<Bound, FIntegerSpinner>	saturationSpinners;
-	private	Map<Bound, FIntegerSpinner>	opacitySpinners;
-	private	Map<Bound, ColourSampleBox>	sampleBoxes;
-	private	IntegerSpinnerSliderPanel	brightnessSpinnerSlider;
+
+	// BOUND
+
+
+	private enum Bound
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		BOUND1  ("Bound 1"),
+		BOUND2  ("Bound 2");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Bound(
+			String	text)
+		{
+			this.text = text;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String toString()
+		{
+			return text;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private Bound other()
+		{
+			return switch (this)
+			{
+				case BOUND1 -> BOUND2;
+				case BOUND2 -> BOUND1;
+			};
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// PARAMETERS CLASS
+
+
+	public static class Params
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		int	hue1;
+		int	saturation1;
+		int	hue2;
+		int	saturation2;
+		int	brightness;
+		int	opacity1;
+		int	opacity2;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		public Params()
+		{
+			hue1 = DEFAULT_HUE1;
+			saturation1 = DEFAULT_SATURATION1;
+			hue2 = DEFAULT_HUE2;
+			saturation2 = DEFAULT_SATURATION2;
+			brightness = DEFAULT_BRIGHTNESS;
+			opacity1 = DEFAULT_OPACITY;
+			opacity2 = DEFAULT_OPACITY;
+		}
+
+		//--------------------------------------------------------------
+
+		public Params(
+			int	hue1,
+			int	saturation1,
+			int	hue2,
+			int	saturation2,
+			int	brightness,
+			int	opacity1,
+			int	opacity2)
+		{
+			this.hue1 = hue1;
+			this.saturation1 = saturation1;
+			this.hue2 = hue2;
+			this.saturation2 = saturation2;
+			this.brightness = brightness;
+			this.opacity1 = opacity1;
+			this.opacity2 = opacity2;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// RADIO BUTTON CLASS
+
+
+	private static class RadioButton
+		extends JRadioButton
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	Color	BACKGROUND_COLOUR	= new Color(252, 224, 128);
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private RadioButton(
+			String	text)
+		{
+			super(text);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Color getBackground()
+		{
+			return isSelected() ? BACKGROUND_COLOUR : super.getBackground();
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// COLOUR PANEL CLASS
+
+
+	private class ColourPanel
+		extends JComponent
+		implements MouseListener, MouseMotionListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		COLOUR_AREA_HALF_WIDTH	= HUE_RANGE / 2;
+		private static final	int		COLOUR_AREA_WIDTH		= 2 * COLOUR_AREA_HALF_WIDTH;
+		private static final	int		COLOUR_AREA_HEIGHT		= MAX_SATURATION - MIN_SATURATION + 1;
+		private static final	int		BORDER_WIDTH			= 1;
+		private static final	int		MARKER_LENGTH			= 5;
+		private static final	int		LEFT_MARGIN				= MARKER_LENGTH;
+		private static final	int		RIGHT_MARGIN			= LEFT_MARGIN;
+		private static final	int		TOP_MARGIN				= MARKER_LENGTH;
+		private static final	int		BOTTOM_MARGIN			= TOP_MARGIN;
+		private static final	int		COLOUR_AREA_X			= LEFT_MARGIN + BORDER_WIDTH;
+		private static final	int		COLOUR_AREA_Y			= TOP_MARGIN + BORDER_WIDTH;
+
+		private static final	float	H_FACTOR	= 2.0f / (float)COLOUR_AREA_WIDTH;
+		private static final	float	S_FACTOR	= 1.0f / (float)(COLOUR_AREA_HEIGHT - 1);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int				hue1;
+		private	int				saturation1;
+		private	int				hue2;
+		private	int				saturation2;
+		private	BufferedImage	colourAreaImage;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ColourPanel(
+			Params	params)
+		{
+			// Initialise instance variables
+			hue1 = params.hue1;
+			saturation1 = params.saturation1;
+			hue2 = params.hue2;
+			saturation2 = params.saturation2;
+
+			// Initialise image for colour area
+			colourAreaImage = new BufferedImage(COLOUR_AREA_WIDTH, COLOUR_AREA_HEIGHT,
+												BufferedImage.TYPE_INT_RGB);
+			updateColourAreaImage(params.brightness);
+
+			// Set properties
+			setOpaque(true);
+			setFocusable(false);
+
+			// Add listeners
+			addMouseListener(this);
+			addMouseMotionListener(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : MouseListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void mouseClicked(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseEntered(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseExited(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mousePressed(
+			MouseEvent	event)
+		{
+			setValues(event);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseReleased(
+			MouseEvent	event)
+		{
+			setValues(event);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : MouseMotionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void mouseDragged(
+			MouseEvent	event)
+		{
+			setValues(event);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseMoved(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(LEFT_MARGIN + RIGHT_MARGIN + 2 * BORDER_WIDTH + COLOUR_AREA_WIDTH,
+								 TOP_MARGIN + BOTTOM_MARGIN + 2 * BORDER_WIDTH + COLOUR_AREA_HEIGHT);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(
+			Graphics	gr)
+		{
+			// Fill background
+			Rectangle rect = gr.getClipBounds();
+			gr.setColor(getBackground());
+			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+			// Draw colour-area image
+			gr.drawImage(colourAreaImage, COLOUR_AREA_X, COLOUR_AREA_Y, null);
+
+			// Draw border
+			gr.setColor(COLOUR_PANEL_BORDER_COLOUR);
+			gr.drawRect(LEFT_MARGIN, TOP_MARGIN, 2 * BORDER_WIDTH + COLOUR_AREA_WIDTH - 1,
+						2 * BORDER_WIDTH + COLOUR_AREA_HEIGHT - 1);
+
+			// Draw range box
+			int xh1 = COLOUR_AREA_X + hue1 / 2;
+			int xh2 = COLOUR_AREA_X + hue2 / 2;
+			if (xh2 < xh1)
+				xh2 += COLOUR_AREA_HALF_WIDTH;
+			int ys1 = COLOUR_AREA_Y + COLOUR_AREA_HEIGHT - 1 - saturation1;
+			int ys2 = COLOUR_AREA_Y + COLOUR_AREA_HEIGHT - 1 - saturation2;
+			int y1 = Math.min(ys1, ys2);
+			int y2 = Math.max(ys1, ys2);
+			gr.setColor(COLOUR_PANEL_RANGE_BOX_COLOUR);
+			gr.setXORMode(COLOUR_PANEL_RANGE_BOX_XOR_COLOUR);
+			gr.drawRect(xh1, y1, xh2 - xh1, y2 - y1);
+
+			// Draw hue marker 1
+			gr.setPaintMode();
+			gr.setColor(COLOUR_PANEL_MARKER_COLOUR);
+			int x1 = xh1 - MARKER_LENGTH + 1;
+			int x2 = xh1 + MARKER_LENGTH - 1;
+			int y = COLOUR_AREA_Y - BORDER_WIDTH - MARKER_LENGTH;
+			while (x1 <= x2)
+			{
+				gr.drawLine(x1, y, x2, y);
+				++x1;
+				--x2;
+				++y;
+			}
+
+			// Draw saturation marker 1
+			int x = 0;
+			y1 = ys1 - MARKER_LENGTH + 1;
+			y2 = ys1 + MARKER_LENGTH - 1;
+			while (y1 <= y2)
+			{
+				gr.drawLine(x, y1, x, y2);
+				++x;
+				++y1;
+				--y2;
+			}
+
+			// Draw hue marker 2
+			int yh2 = COLOUR_AREA_Y + COLOUR_AREA_HEIGHT + BORDER_WIDTH + MARKER_LENGTH - 1;
+			x1 = xh2 - MARKER_LENGTH + 1;
+			x2 = xh2 + MARKER_LENGTH - 1;
+			y = yh2;
+			while (x1 <= x2)
+			{
+				gr.drawLine(x1, y, x2, y);
+				++x1;
+				--x2;
+				--y;
+			}
+
+			// Draw saturation marker 2
+			int xs2 = COLOUR_AREA_X + COLOUR_AREA_WIDTH + BORDER_WIDTH + MARKER_LENGTH - 1;
+			x = xs2;
+			y1 = ys2 - MARKER_LENGTH + 1;
+			y2 = ys2 + MARKER_LENGTH - 1;
+			while (y1 <= y2)
+			{
+				gr.drawLine(x, y1, x, y2);
+				--x;
+				++y1;
+				--y2;
+			}
+
+			// Draw lines on second hue and saturation markers
+			gr.setColor(getBackground());
+			gr.drawLine(xh2, yh2, xh2, yh2 - 1);
+			gr.drawLine(xs2, ys2, xs2 - 1, ys2);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private void updateBrightness(
+			int	brightness)
+		{
+			updateColourAreaImage(brightness);
+			repaint();
+		}
+
+		//--------------------------------------------------------------
+
+		private void setValues(
+			Bound	bound,
+			int		hue,
+			int		saturation)
+		{
+			switch (bound)
+			{
+				case BOUND1:
+					if ((hue1 != hue) || (saturation1 != saturation))
+					{
+						hue1 = hue;
+						saturation1 = saturation;
+						repaint();
+					}
+					break;
+
+				case BOUND2:
+					if ((hue2 != hue) || (saturation2 != saturation))
+					{
+						hue2 = hue;
+						saturation2 = saturation;
+						repaint();
+					}
+					break;
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private void updateColourAreaImage(
+			int	brightness)
+		{
+			for (int y = 0; y < COLOUR_AREA_HEIGHT; y++)
+			{
+				for (int x = 0; x < COLOUR_AREA_WIDTH; x++)
+				{
+					float h = (float)x * H_FACTOR;
+					float s = (float)(COLOUR_AREA_HEIGHT - 1 - y) * S_FACTOR;
+					float b = (float)brightness / (float)MAX_BRIGHTNESS;
+					colourAreaImage.setRGB(x, y, Color.HSBtoRGB(h, s, b));
+				}
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private void setValues(
+			MouseEvent	event)
+		{
+			int x = event.getX();
+			if (x >= COLOUR_AREA_HALF_WIDTH)
+				x -= COLOUR_AREA_HALF_WIDTH;
+			int hue = Math.min(Math.max(MIN_HUE, (x - COLOUR_AREA_X) * 2), MAX_HUE);
+			int saturation = Math.min(Math.max(MIN_SATURATION, COLOUR_AREA_Y + COLOUR_AREA_HEIGHT - 1 - event.getY()),
+									  MAX_SATURATION);
+			Bound b = SwingUtilities.isLeftMouseButton(event) ? bound : bound.other();
+			setValues(b, hue, saturation);
+			HueSaturationRangePanel.this.setValues(b, hue, saturation);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

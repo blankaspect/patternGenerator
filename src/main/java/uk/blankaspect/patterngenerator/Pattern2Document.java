@@ -180,7 +180,7 @@ class Pattern2Document
 	@Override
 	public BufferedImage getImage()
 	{
-		return ((patternImage == null) ? null : patternImage.getImage());
+		return (patternImage == null) ? null : patternImage.getImage();
 	}
 
 	//------------------------------------------------------------------
@@ -189,7 +189,7 @@ class Pattern2Document
 	public BufferedImage getExportImage()
 		throws InterruptedException
 	{
-		return ((patternImage == null) ? null : patternImage.getExportImage());
+		return (patternImage == null) ? null : patternImage.getExportImage();
 	}
 
 	//------------------------------------------------------------------
@@ -256,7 +256,7 @@ class Pattern2Document
 	public PatternDocument createDefinitionDocument(boolean temporary)
 		throws AppException
 	{
-		return ((patternImage == null) ? null : new Pattern2Document(null, patternImage.clone(), temporary));
+		return (patternImage == null) ? null : new Pattern2Document(null, patternImage.clone(), temporary);
 	}
 
 	//------------------------------------------------------------------
@@ -303,9 +303,11 @@ class Pattern2Document
 	@Override
 	protected String getDescription()
 	{
-		return ((params != null) ? params.getDescription()
-								 : (patternImage != null) ? patternImage.getDescription()
-														  : null);
+		return (params != null)
+					? params.getDescription()
+					: (patternImage != null)
+							? patternImage.getDescription()
+							: null;
 	}
 
 	//------------------------------------------------------------------
@@ -324,7 +326,7 @@ class Pattern2Document
 	@Override
 	protected int getNumAnimationKinds()
 	{
-		return (hasParameters() ? 1 : 0);
+		return hasParameters() ? 1 : 0;
 	}
 
 	//------------------------------------------------------------------
@@ -333,10 +335,10 @@ class Pattern2Document
 	protected AnimationParams selectAnimation(boolean imageSequence)
 	{
 		return hasParameters()
-						? imageSequence
-								? AnimationParams.of(0)
-								: Pattern2AnimationParamsDialog.showDialog(getWindow())
-						: null;
+					? imageSequence
+							? AnimationParams.of(0)
+							: Pattern2AnimationParamsDialog.showDialog(getWindow())
+					: null;
 	}
 
 	//------------------------------------------------------------------

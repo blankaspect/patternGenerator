@@ -21,11 +21,14 @@ package uk.blankaspect.patterngenerator;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import javax.swing.JComponent;
 
 import uk.blankaspect.ui.swing.colour.Colours;
+
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
@@ -41,8 +44,8 @@ class ColourSampleBox
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	WIDTH	= 40;
-	private static final	int	HEIGHT	= 24;
+	private static final	int		WIDTH	= 40;
+	private static final	int		HEIGHT	= 24;
 
 	private static final	Color	BORDER_COLOUR	= Colours.LINE_BORDER;
 
@@ -68,16 +71,16 @@ class ColourSampleBox
 	protected void paintComponent(Graphics gr)
 	{
 		// Create copy of graphics context
-		gr = gr.create();
+		Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 		// Fill background
-		Rectangle rect = gr.getClipBounds();
-		gr.setColor(getBackground());
-		gr.fillRect(rect.x, rect.y, rect.width, rect.height);
+		Rectangle rect = gr2d.getClipBounds();
+		gr2d.setColor(getBackground());
+		gr2d.fillRect(rect.x, rect.y, rect.width, rect.height);
 
 		// Draw border
-		gr.setColor(BORDER_COLOUR);
-		gr.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+		gr2d.setColor(BORDER_COLOUR);
+		gr2d.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 	}
 
 	//------------------------------------------------------------------

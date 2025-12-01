@@ -100,14 +100,14 @@ public class VerticalRangeBar
 
 	public static int heightToExtent(int height)
 	{
-		return (height - EXTENT_ADJUSTMENT);
+		return height - EXTENT_ADJUSTMENT;
 	}
 
 	//------------------------------------------------------------------
 
 	public static int extentToHeight(int extent)
 	{
-		return (extent + EXTENT_ADJUSTMENT);
+		return extent + EXTENT_ADJUSTMENT;
 	}
 
 	//------------------------------------------------------------------

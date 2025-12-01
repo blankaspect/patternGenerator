@@ -52,18 +52,18 @@ public abstract class HorizontalSlider
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
-									 Command.DECREMENT_UNIT),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
-									 Command.INCREMENT_UNIT),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK),
-									 Command.DECREMENT_BLOCK),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK),
-									 Command.INCREMENT_BLOCK),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
-									 Command.DECREMENT_MAX),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
-									 Command.INCREMENT_MAX)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
+						  Command.DECREMENT_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
+						  Command.INCREMENT_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK),
+						  Command.DECREMENT_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK),
+						  Command.INCREMENT_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
+						  Command.DECREMENT_MAX),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
+						  Command.INCREMENT_MAX)
 	};
 
 ////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ public abstract class HorizontalSlider
 	public static int extentToWidth(int extent,
 									int knobWidth)
 	{
-		return (extent + knobWidth + 2 * BORDER_WIDTH);
+		return extent + knobWidth + 2 * BORDER_WIDTH;
 	}
 
 	//------------------------------------------------------------------
@@ -135,7 +135,7 @@ public abstract class HorizontalSlider
 	public static int widthToExtent(int width,
 									int knobWidth)
 	{
-		return (width - knobWidth - 2 * BORDER_WIDTH);
+		return width - knobWidth - 2 * BORDER_WIDTH;
 	}
 
 	//------------------------------------------------------------------

@@ -72,6 +72,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.slider.HorizontalSlider;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -87,11 +89,11 @@ class Pattern1SourceDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	WAVE_COEFF_FIELD_LENGTH			= 3;
-	private static final	int	ATTENUATION_COEFF_FIELD_LENGTH	= 3;
+	private static final	int		WAVE_COEFF_FIELD_LENGTH			= 3;
+	private static final	int		ATTENUATION_COEFF_FIELD_LENGTH	= 3;
 
-	private static final	int	SLIDER_KNOB_WIDTH	= 24;
-	private static final	int	SLIDER_HEIGHT		= 18;
+	private static final	int		SLIDER_KNOB_WIDTH	= 24;
+	private static final	int		SLIDER_HEIGHT		= 18;
 
 	private static final	String	ADD_STR					= "Add";
 	private static final	String	EDIT_STR				= "Edit";
@@ -118,177 +120,26 @@ class Pattern1SourceDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
+	private static	Point	location;
 
-	// LABEL CLASS
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
 
-
-	private static class Label
-		extends FixedWidthLabel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	String	KEY	= Label.class.getCanonicalName();
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Label(String text)
-		{
-			super(text);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		private static void reset()
-		{
-			MaxValueMap.removeAll(KEY);
-		}
-
-		//--------------------------------------------------------------
-
-		private static void update()
-		{
-			MaxValueMap.update(KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected String getKey()
-		{
-			return KEY;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// WAVE PLOT PANEL CLASS
-
-
-	private static class WavePlotPanel
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	WIDTH			= 360;
-		private static final	int	HEIGHT			= 120;
-		private static final	int	BORDER_WIDTH	= 1;
-
-		private static final	Color	BACKGROUND_COLOUR	= Colours.BACKGROUND;
-		private static final	Color	FOREGROUND_COLOUR	= new Color(0, 0, 192);
-		private static final	Color	BORDER_COLOUR		= new Color(208, 208, 192);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private WavePlotPanel(Pattern1Image.Source.Waveform waveform,
-							  int                           waveCoeff)
-		{
-			// Initialise instance variables
-			this.waveform = waveform;
-			this.waveCoeff = waveCoeff;
-			source = Pattern1Image.createWaveTableSource(waveform, waveCoeff, WIDTH);
-
-			// Set properties
-			setOpaque(true);
-			setFocusable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(2 * BORDER_WIDTH + WIDTH, 2 * BORDER_WIDTH + HEIGHT);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Fill background
-			Rectangle rect = gr.getClipBounds();
-			gr.setColor(BACKGROUND_COLOUR);
-			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
-
-			// Draw function
-			gr.setColor(FOREGROUND_COLOUR);
-			int x1 = Math.max(BORDER_WIDTH, rect.x - 1);
-			int x2 = Math.min(rect.x + rect.width - 1, BORDER_WIDTH + WIDTH - 1);
-			int prevY = 0;
-			for (int x = x1; x <= x2; x++)
-			{
-				double value = source.getWaveValue(x - BORDER_WIDTH);
-				int y = BORDER_WIDTH + HEIGHT - 1 - (int)Math.round(value * (double)(HEIGHT - 1));
-				if (x > x1)
-					gr.drawLine(x - 1, prevY, x, y);
-				prevY = y;
-			}
-
-			// Draw border
-			gr.setColor(BORDER_COLOUR);
-			gr.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private void setValues(Pattern1Image.Source.Waveform waveform,
-							   int                           waveCoeff)
-		{
-			if ((waveform != this.waveform) || (waveCoeff != this.waveCoeff))
-			{
-				this.waveform = waveform;
-				this.waveCoeff = waveCoeff;
-				source = Pattern1Image.createWaveTableSource(waveform, waveCoeff, WIDTH);
-				repaint();
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	Pattern1Image.Source.Waveform	waveform;
-		private	int								waveCoeff;
-		private	Pattern1Image.Source			source;
-
-	}
-
-	//==================================================================
+	private	boolean										accepted;
+	private	FComboBox<Pattern1Image.Source.Shape>		shapeComboBox;
+	private	FComboBox<Pattern1Image.Source.Waveform>	waveformComboBox;
+	private	IntegerSpinnerSliderPanel					waveCoeffSpinnerSlider;
+	private	WavePlotPanel								wavePlotPanel;
+	private	IntegerSpinnerSliderPanel					attenuationCoeffSpinnerSlider;
+	private	FComboBox<Pattern1Image.Source.Constraint>	constraintComboBox;
+	private	JPanel										shapeParamPanel;
+	private	HueSaturationPanel							hueSaturationPanel;
+	private	FComboBox<Integer>							eccentricityComboBox;
+	private	FComboBox<Integer>							numEdgesComboBox;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -586,9 +437,6 @@ class Pattern1SourceDialog
 		gridBag.setConstraints(constraintComboBox, gbc);
 		controlPanel.add(constraintComboBox);
 
-		// Update widths of labels
-		Label.update();
-
 		// Align spinner-slider panels
 		SpinnerSliderPanel.align(SPINNER_SLIDER_PANEL_KEY);
 
@@ -697,14 +545,28 @@ class Pattern1SourceDialog
 		// Set content pane
 		setContentPane(mainPanel);
 
+		// Update widths of labels
+		Label.update();
+
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -747,24 +609,17 @@ class Pattern1SourceDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.SELECT_SHAPE))
-			onSelectShape();
-
-		else if (command.equals(Command.SELECT_WAVEFORM))
-			onSelectWaveform();
-
-		else if (command.equals(Command.SET_WAVE_COEFFICIENT))
-			onSetWaveCoefficient();
-
-		else if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.SELECT_SHAPE         -> onSelectShape();
+			case Command.SELECT_WAVEFORM      -> onSelectWaveform();
+			case Command.SET_WAVE_COEFFICIENT -> onSetWaveCoefficient();
+			case Command.ACCEPT               -> onAccept();
+			case Command.CLOSE                -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -773,6 +628,7 @@ class Pattern1SourceDialog
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		updateWavePlot();
@@ -1001,26 +857,177 @@ class Pattern1SourceDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
 
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
+	// LABEL CLASS
 
-	private	boolean										accepted;
-	private	FComboBox<Pattern1Image.Source.Shape>		shapeComboBox;
-	private	FComboBox<Pattern1Image.Source.Waveform>	waveformComboBox;
-	private	IntegerSpinnerSliderPanel					waveCoeffSpinnerSlider;
-	private	WavePlotPanel								wavePlotPanel;
-	private	IntegerSpinnerSliderPanel					attenuationCoeffSpinnerSlider;
-	private	FComboBox<Pattern1Image.Source.Constraint>	constraintComboBox;
-	private	JPanel										shapeParamPanel;
-	private	HueSaturationPanel							hueSaturationPanel;
-	private	FComboBox<Integer>							eccentricityComboBox;
-	private	FComboBox<Integer>							numEdgesComboBox;
+
+	private static class Label
+		extends FixedWidthLabel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	String	KEY	= Label.class.getCanonicalName();
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Label(String text)
+		{
+			super(text);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		private static void reset()
+		{
+			MaxValueMap.removeAll(KEY);
+		}
+
+		//--------------------------------------------------------------
+
+		private static void update()
+		{
+			MaxValueMap.update(KEY);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected String getKey()
+		{
+			return KEY;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// WAVE PLOT PANEL CLASS
+
+
+	private static class WavePlotPanel
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	WIDTH			= 360;
+		private static final	int	HEIGHT			= 120;
+		private static final	int	BORDER_WIDTH	= 1;
+
+		private static final	Color	BACKGROUND_COLOUR	= Colours.BACKGROUND;
+		private static final	Color	FOREGROUND_COLOUR	= new Color(0, 0, 192);
+		private static final	Color	BORDER_COLOUR		= new Color(208, 208, 192);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	Pattern1Image.Source.Waveform	waveform;
+		private	int								waveCoeff;
+		private	Pattern1Image.Source			source;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private WavePlotPanel(Pattern1Image.Source.Waveform waveform,
+							  int                           waveCoeff)
+		{
+			// Initialise instance variables
+			this.waveform = waveform;
+			this.waveCoeff = waveCoeff;
+			source = Pattern1Image.createWaveTableSource(waveform, waveCoeff, WIDTH);
+
+			// Set properties
+			setOpaque(true);
+			setFocusable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(2 * BORDER_WIDTH + WIDTH, 2 * BORDER_WIDTH + HEIGHT);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Fill background
+			Rectangle rect = gr.getClipBounds();
+			gr.setColor(BACKGROUND_COLOUR);
+			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+			// Draw function
+			gr.setColor(FOREGROUND_COLOUR);
+			int x1 = Math.max(BORDER_WIDTH, rect.x - 1);
+			int x2 = Math.min(rect.x + rect.width - 1, BORDER_WIDTH + WIDTH - 1);
+			int prevY = 0;
+			for (int x = x1; x <= x2; x++)
+			{
+				double value = source.getWaveValue(x - BORDER_WIDTH);
+				int y = BORDER_WIDTH + HEIGHT - 1 - (int)Math.round(value * (double)(HEIGHT - 1));
+				if (x > x1)
+					gr.drawLine(x - 1, prevY, x, y);
+				prevY = y;
+			}
+
+			// Draw border
+			gr.setColor(BORDER_COLOUR);
+			gr.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private void setValues(Pattern1Image.Source.Waveform waveform,
+							   int                           waveCoeff)
+		{
+			if ((waveform != this.waveform) || (waveCoeff != this.waveCoeff))
+			{
+				this.waveform = waveform;
+				this.waveCoeff = waveCoeff;
+				source = Pattern1Image.createWaveTableSource(waveform, waveCoeff, WIDTH);
+				repaint();
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

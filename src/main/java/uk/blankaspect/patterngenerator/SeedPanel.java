@@ -95,7 +95,7 @@ class SeedPanel
 		@Override
 		protected int getColumnWidth()
 		{
-			return (FontUtils.getCharWidth('0', getFontMetrics(getFont())) + 1);
+			return FontUtils.getCharWidth('0', getFontMetrics(getFont())) + 1;
 		}
 
 		//--------------------------------------------------------------
@@ -182,7 +182,7 @@ class SeedPanel
 
 	public Long getSeed()
 	{
-		return (field.isEmpty() ? null : field.getValue());
+		return field.isEmpty() ? null : field.getValue();
 	}
 
 	//------------------------------------------------------------------

@@ -101,6 +101,8 @@ import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
 import uk.blankaspect.ui.swing.text.TextRendering;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -664,11 +666,22 @@ class Pattern1ParamsDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -711,21 +724,16 @@ class Pattern1ParamsDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.TOGGLE_MOTION_RATE_ENVELOPE_ENABLED))
-			onToggleMotionRateEnvelopeEnabled();
-
-		else if (command.equals(Command.EDIT_MOTION_RATE_ENVELOPE))
-			onEditMotionRateEnvelope();
-
-		else if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.TOGGLE_MOTION_RATE_ENVELOPE_ENABLED -> onToggleMotionRateEnvelopeEnabled();
+			case Command.EDIT_MOTION_RATE_ENVELOPE           -> onEditMotionRateEnvelope();
+			case Command.ACCEPT                              -> onAccept();
+			case Command.CLOSE                               -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -734,6 +742,7 @@ class Pattern1ParamsDialog
 //  Instance methods : DocumentListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void changedUpdate(DocumentEvent event)
 	{
 		// do nothing
@@ -741,6 +750,7 @@ class Pattern1ParamsDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void insertUpdate(DocumentEvent event)
 	{
 		updateAcceptButton();
@@ -748,6 +758,7 @@ class Pattern1ParamsDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void removeUpdate(DocumentEvent event)
 	{
 		updateAcceptButton();
@@ -981,43 +992,7 @@ class Pattern1ParamsDialog
 		private static final	double	OFFSET	= Math.log(Pattern1Params.MIN_WAVELENGTH);
 		private static final	double	FACTOR	= Math.log(Pattern1Params.MAX_WAVELENGTH) - OFFSET;
 
-		private static final	int	BAR_EXTENT	= 200;
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SPINNER CLASS
-
-
-		private static class Spinner
-			extends FDoubleSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	double	DELTA_VALUE	= 0.001;
-
-			private static final	int	FIELD_LENGTH	= 5;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Spinner()
-			{
-				super(Pattern1Params.MIN_WAVELENGTH, Pattern1Params.MIN_WAVELENGTH,
-					  Pattern1Params.MAX_WAVELENGTH, DELTA_VALUE, FIELD_LENGTH, AppConstants.FORMAT_1_3);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
+		private static final	int		BAR_EXTENT	= 200;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -1037,7 +1012,7 @@ class Pattern1ParamsDialog
 		@Override
 		public double normaliseValue(double value)
 		{
-			return ((Math.log(value) - OFFSET) / FACTOR);
+			return (Math.log(value) - OFFSET) / FACTOR;
 		}
 
 		//--------------------------------------------------------------
@@ -1049,6 +1024,42 @@ class Pattern1ParamsDialog
 		}
 
 		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SPINNER CLASS
+
+
+		private static class Spinner
+			extends FDoubleSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private static final	double	DELTA_VALUE	= 0.001;
+
+			private static final	int		FIELD_LENGTH	= 5;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Spinner()
+			{
+				super(Pattern1Params.MIN_WAVELENGTH, Pattern1Params.MIN_WAVELENGTH,
+					  Pattern1Params.MAX_WAVELENGTH, DELTA_VALUE, FIELD_LENGTH, AppConstants.FORMAT_1_3);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
 
 	}
 
@@ -1155,43 +1166,7 @@ class Pattern1ParamsDialog
 		private static final	double	OFFSET	= Math.log(Pattern1Image.MIN_MOTION_RATE);
 		private static final	double	FACTOR	= Math.log(Pattern1Image.MAX_MOTION_RATE) - OFFSET;
 
-		private static final	int	BAR_EXTENT	= 200;
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SPINNER CLASS
-
-
-		private static class Spinner
-			extends FDoubleSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	double	DELTA_VALUE	= 0.01;
-
-			private static final	int	FIELD_LENGTH	= 4;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Spinner()
-			{
-				super(Pattern1Image.MIN_MOTION_RATE, Pattern1Image.MIN_MOTION_RATE,
-					  Pattern1Image.MAX_MOTION_RATE, DELTA_VALUE, FIELD_LENGTH, AppConstants.FORMAT_1_2);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
+		private static final	int		BAR_EXTENT	= 200;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -1224,6 +1199,42 @@ class Pattern1ParamsDialog
 
 		//--------------------------------------------------------------
 
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SPINNER CLASS
+
+
+		private static class Spinner
+			extends FDoubleSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private static final	double	DELTA_VALUE	= 0.01;
+
+			private static final	int		FIELD_LENGTH	= 4;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Spinner()
+			{
+				super(Pattern1Image.MIN_MOTION_RATE, Pattern1Image.MIN_MOTION_RATE,
+					  Pattern1Image.MAX_MOTION_RATE, DELTA_VALUE, FIELD_LENGTH, AppConstants.FORMAT_1_2);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
 	}
 
 	//==================================================================
@@ -1243,7 +1254,38 @@ class Pattern1ParamsDialog
 		private static final	double	OFFSET	= Math.log(Pattern1Params.MIN_ROTATION_PERIOD);
 		private static final	double	FACTOR	= Math.log(Pattern1Params.MAX_ROTATION_PERIOD) - OFFSET;
 
-		private static final	int	BAR_EXTENT	= 200;
+		private static final	int		BAR_EXTENT	= 200;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private RotationPeriodRangePanel()
+		{
+			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public double normaliseValue(double value)
+		{
+			return (Math.log(value) - OFFSET) / FACTOR;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public double denormaliseValue(double value)
+		{
+			return Math.exp(OFFSET + value * FACTOR);
+		}
+
+		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
 	//  Member classes : non-inner classes
@@ -1282,37 +1324,6 @@ class Pattern1ParamsDialog
 
 		//==============================================================
 
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private RotationPeriodRangePanel()
-		{
-			super(TO_STR, new Spinner(), new Spinner(), BAR_EXTENT, RANGE_BAR_PANEL_KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public double normaliseValue(double value)
-		{
-			return ((Math.log(value) - OFFSET) / FACTOR);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public double denormaliseValue(double value)
-		{
-			return Math.exp(OFFSET + value * FACTOR);
-		}
-
-		//--------------------------------------------------------------
-
 	}
 
 	//==================================================================
@@ -1343,16 +1354,10 @@ class Pattern1ParamsDialog
 
 		private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 		{
-			new KeyAction.KeyCommandPair
-			(
-				KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK),
-				Command.FOCUS_PREVIOUS
-			),
-			new KeyAction.KeyCommandPair
-			(
-				KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0),
-				Command.FOCUS_NEXT
-			)
+			KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK),
+							  Command.FOCUS_PREVIOUS),
+			KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0),
+							  Command.FOCUS_NEXT)
 		};
 
 	////////////////////////////////////////////////////////////////////
@@ -1473,15 +1478,14 @@ class Pattern1ParamsDialog
 	//  Instance methods : ActionListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void actionPerformed(ActionEvent event)
 		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.FOCUS_PREVIOUS))
-				onFocusPrevious();
-
-			else if (command.equals(Command.FOCUS_NEXT))
-				onFocusNext();
+			switch (event.getActionCommand())
+			{
+				case Command.FOCUS_PREVIOUS -> onFocusPrevious();
+				case Command.FOCUS_NEXT     -> onFocusNext();
+			}
 		}
 
 		//--------------------------------------------------------------
@@ -1490,6 +1494,7 @@ class Pattern1ParamsDialog
 	//  Instance methods : FocusListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void focusGained(FocusEvent event)
 		{
 			getTableHeader().repaint();
@@ -1498,6 +1503,7 @@ class Pattern1ParamsDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void focusLost(FocusEvent event)
 		{
 			getTableHeader().repaint();
@@ -1510,6 +1516,7 @@ class Pattern1ParamsDialog
 	//  Instance methods : MouseListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void mouseClicked(MouseEvent event)
 		{
 			// do nothing
@@ -1517,6 +1524,7 @@ class Pattern1ParamsDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseEntered(MouseEvent event)
 		{
 			// do nothing
@@ -1524,6 +1532,7 @@ class Pattern1ParamsDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseExited(MouseEvent event)
 		{
 			// do nothing
@@ -1531,6 +1540,7 @@ class Pattern1ParamsDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mousePressed(MouseEvent event)
 		{
 			if (SwingUtilities.isLeftMouseButton(event))
@@ -1539,6 +1549,7 @@ class Pattern1ParamsDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public void mouseReleased(MouseEvent event)
 		{
 			// do nothing
@@ -1667,7 +1678,7 @@ class Pattern1ParamsDialog
 								key = Pattern1Image.SourceParams.Key.NUM_EDGES;
 								break;
 						}
-						return ((key == null) ? "" : source.getShapeParamValue(key));
+						return (key == null) ? "" : source.getShapeParamValue(key);
 					}
 
 					case WAVEFORM:
@@ -1825,31 +1836,31 @@ class Pattern1ParamsDialog
 		protected void paintComponent(Graphics gr)
 		{
 			// Create copy of graphics context
-			gr = gr.create();
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 			// Fill background
 			int width = getWidth();
 			int height = getHeight();
-			gr.setColor(getBackground());
-			gr.fillRect(0, 0, width, height);
+			gr2d.setColor(getBackground());
+			gr2d.fillRect(0, 0, width, height);
 
 			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
+			TextRendering.setHints(gr2d);
 
 			// Draw text
-			gr.setColor(getForeground());
-			FontMetrics fontMetrics = gr.getFontMetrics();
+			gr2d.setColor(getForeground());
+			FontMetrics fontMetrics = gr2d.getFontMetrics();
 			int x = (alignment == SwingConstants.LEADING)
-						? SourceTable.CELL_HORIZONTAL_MARGIN
-						: width - (fontMetrics.stringWidth(text) + SourceTable.CELL_HORIZONTAL_MARGIN);
-			gr.drawString(text, x, FontUtils.getBaselineOffset(height, fontMetrics));
+							? SourceTable.CELL_HORIZONTAL_MARGIN
+							: width - (fontMetrics.stringWidth(text) + SourceTable.CELL_HORIZONTAL_MARGIN);
+			gr2d.drawString(text, x, FontUtils.getBaselineOffset(height, fontMetrics));
 
 			// Draw cell border
 			--width;
 			--height;
-			gr.setColor(isHeader ? borderColour : Colours.Table.GRID.getColour());
-			gr.drawLine(width, 0, width, height);
-			gr.drawLine(0, height, width, height);
+			gr2d.setColor(isHeader ? borderColour : Colours.Table.GRID.getColour());
+			gr2d.drawLine(width, 0, width, height);
+			gr2d.drawLine(0, height, width, height);
 		}
 
 		//--------------------------------------------------------------
@@ -1898,6 +1909,7 @@ class Pattern1ParamsDialog
 	//  Instance methods : TableCellRenderer interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public Component getTableCellRendererComponent(JTable  table,
 													   Object  value,
 													   boolean isSelected,
@@ -1985,6 +1997,7 @@ class Pattern1ParamsDialog
 	//  Instance methods : TableCellEditor interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public Object getCellEditorValue()
 		{
 			return null;
@@ -1992,6 +2005,7 @@ class Pattern1ParamsDialog
 
 		//--------------------------------------------------------------
 
+		@Override
 		public Component getTableCellEditorComponent(JTable  table,
 													 Object  value,
 													 boolean selected,
@@ -2060,11 +2074,8 @@ class Pattern1ParamsDialog
 
 		private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 		{
-			new KeyAction.KeyCommandPair
-			(
-				KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK),
-				Command.DELETE
-			)
+			KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK),
+							  Command.DELETE)
 		};
 
 	////////////////////////////////////////////////////////////////////
@@ -2174,21 +2185,16 @@ class Pattern1ParamsDialog
 	//  Instance methods : ActionListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void actionPerformed(ActionEvent event)
 		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.ADD))
-				onAdd();
-
-			else if (command.equals(Command.DUPLICATE))
-				onDuplicate();
-
-			else if (command.equals(Command.EDIT))
-				onEdit();
-
-			else if (command.equals(Command.DELETE))
-				onDelete();
+			switch (event.getActionCommand())
+			{
+				case Command.ADD       -> onAdd();
+				case Command.DUPLICATE -> onDuplicate();
+				case Command.EDIT      -> onEdit();
+				case Command.DELETE    -> onDelete();
+			}
 		}
 
 		//--------------------------------------------------------------
@@ -2197,6 +2203,7 @@ class Pattern1ParamsDialog
 	//  Instance methods : ListSelectionListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void valueChanged(ListSelectionEvent event)
 		{
 			updateButtons();

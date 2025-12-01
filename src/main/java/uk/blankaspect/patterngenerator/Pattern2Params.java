@@ -54,21 +54,21 @@ class Pattern2Params
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final	int	MIN_WIDTH		= 1 << 5;   // 32;
-	public static final	int	MAX_WIDTH		= 1 << 13;  // 8192
-	public static final	int	DEFAULT_WIDTH	= 640;
+	public static final	int		MIN_WIDTH		= 1 << 5;   // 32;
+	public static final	int		MAX_WIDTH		= 1 << 13;  // 8192
+	public static final	int		DEFAULT_WIDTH	= 640;
 
-	public static final	int	MIN_HEIGHT		= 1 << 5;   // 32
-	public static final	int	MAX_HEIGHT		= 1 << 13;  // 8192
-	public static final	int	DEFAULT_HEIGHT	= 480;
+	public static final	int		MIN_HEIGHT		= 1 << 5;   // 32
+	public static final	int		MAX_HEIGHT		= 1 << 13;  // 8192
+	public static final	int		DEFAULT_HEIGHT	= 480;
 
-	public static final	int	MIN_END_MARGIN		= 1;
-	public static final	int	MAX_END_MARGIN		= 8;
-	public static final	int	DEFAULT_END_MARGIN	= 2;
+	public static final	int		MIN_END_MARGIN		= 1;
+	public static final	int		MAX_END_MARGIN		= 8;
+	public static final	int		DEFAULT_END_MARGIN	= 2;
 
-	public static final	int	MIN_SIDE_MARGIN		= 1;
-	public static final	int	MAX_SIDE_MARGIN		= 16;
-	public static final	int	DEFAULT_SIDE_MARGIN	= 4;
+	public static final	int		MIN_SIDE_MARGIN		= 1;
+	public static final	int		MAX_SIDE_MARGIN		= 16;
+	public static final	int		DEFAULT_SIDE_MARGIN	= 4;
 
 	public static final	double	MIN_GRID_INTERVAL		= 3.0;
 	public static final	double	MAX_GRID_INTERVAL		= 128.0;
@@ -82,19 +82,19 @@ class Pattern2Params
 	public static final	double	MAX_TERMINAL_DIAMETER		= 96.0;
 	public static final	double	DEFAULT_TERMINAL_DIAMETER	= 12.0;
 
-	public static final	int	MIN_EXPECTED_PATH_LENGTH		= 1;
-	public static final	int	MAX_EXPECTED_PATH_LENGTH		= 64;
-	public static final	int	DEFAULT_EXPECTED_PATH_LENGTH	= 6;
+	public static final	int		MIN_EXPECTED_PATH_LENGTH		= 1;
+	public static final	int		MAX_EXPECTED_PATH_LENGTH		= 64;
+	public static final	int		DEFAULT_EXPECTED_PATH_LENGTH	= 6;
 
-	public static final	int	MIN_DIRECTION_PROBABILITY	= 0;
-	public static final	int	MAX_DIRECTION_PROBABILITY	= 100;
+	public static final	int		MIN_DIRECTION_PROBABILITY	= 0;
+	public static final	int		MAX_DIRECTION_PROBABILITY	= 100;
 
 	public static final	Pattern2Image.Direction.Mode	DEFAULT_DIRECTION_MODE	= Pattern2Image.Direction.Mode.ABSOLUTE;
 
 	public static final	Pattern2Image.Orientation	DEFAULT_ORIENTATION	= Pattern2Image.Orientation.UP;
 
 	public static final	Pattern2Image.TerminalEmphasis	DEFAULT_TERMINAL_EMPHASIS	=
-																				Pattern2Image.TerminalEmphasis.START;
+			Pattern2Image.TerminalEmphasis.START;
 
 	public static final	boolean	DEFAULT_SHOW_EMPTY_PATHS	= true;
 
@@ -102,8 +102,8 @@ class Pattern2Params
 	public static final	Color	DEFAULT_TRANSPARENCY_COLOUR	= Color.WHITE;
 	public static final	Color	DEFAULT_PATH_COLOUR			= new Color(208, 208, 208);
 
-	public static final	int	MIN_NUM_PATH_COLOURS	= 1;
-	public static final	int	MAX_NUM_PATH_COLOURS	= 40;
+	public static final	int		MIN_NUM_PATH_COLOURS	= 1;
+	public static final	int		MAX_NUM_PATH_COLOURS	= 40;
 
 	public static final	long	MIN_SEED	= PatternGeneratorApp.MIN_SEED;
 	public static final	long	MAX_SEED	= PatternGeneratorApp.MAX_SEED;
@@ -135,6 +135,19 @@ class Pattern2Params
 	}
 
 ////////////////////////////////////////////////////////////////////////
+//  Static initialiser
+////////////////////////////////////////////////////////////////////////
+
+	static
+	{
+		Map<Pattern2Image.Direction, Integer> probabilities = new EnumMap<>(Pattern2Image.Direction.class);
+		probabilities.put(Pattern2Image.Direction.FORE,       34);
+		probabilities.put(Pattern2Image.Direction.FORE_RIGHT, 33);
+		probabilities.put(Pattern2Image.Direction.FORE_LEFT,  33);
+		DEFAULT_PROBABILITIES = Collections.unmodifiableMap(probabilities);
+	}
+
+////////////////////////////////////////////////////////////////////////
 //  Member classes : inner classes
 ////////////////////////////////////////////////////////////////////////
 
@@ -161,9 +174,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public String getDescription()
 	{
@@ -179,9 +192,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPDescription	ppDescription	= new PPDescription();
 
@@ -211,9 +224,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	@Override
 	public int getWidth()
@@ -231,9 +244,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPWidth	ppWidth	= new PPWidth();
 
@@ -263,9 +276,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	@Override
 	public int getHeight()
@@ -283,9 +296,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPHeight	ppHeight	= new PPHeight();
 
@@ -315,9 +328,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Pattern2Image.Orientation getOrientation()
 	{
@@ -333,9 +346,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPOrientation	ppOrientation	= new PPOrientation();
 
@@ -365,9 +378,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public int getEndMargin()
 	{
@@ -383,9 +396,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPEndMargin	ppEndMargin	= new PPEndMargin();
 
@@ -415,9 +428,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public int getSideMargin()
 	{
@@ -433,9 +446,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPSideMargin	ppSideMargin	= new PPSideMargin();
 
@@ -465,9 +478,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public double getGridInterval()
 	{
@@ -483,9 +496,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPGridInterval	ppGridInterval	= new PPGridInterval();
 
@@ -515,9 +528,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public double getPathThickness()
 	{
@@ -533,9 +546,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPPathThickness	ppPathThickness	= new PPPathThickness();
 
@@ -555,8 +568,7 @@ class Pattern2Params
 
 		private PPTerminalDiameter()
 		{
-			super(Key.TERMINAL_DIAMETER, MIN_TERMINAL_DIAMETER, MAX_TERMINAL_DIAMETER,
-				  AppConstants.FORMAT_1_3);
+			super(Key.TERMINAL_DIAMETER, MIN_TERMINAL_DIAMETER, MAX_TERMINAL_DIAMETER, AppConstants.FORMAT_1_3);
 			value = DEFAULT_TERMINAL_DIAMETER;
 		}
 
@@ -566,9 +578,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public double getTerminalDiameter()
 	{
@@ -584,9 +596,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPTerminalDiameter	ppTerminalDiameter	= new PPTerminalDiameter();
 
@@ -616,9 +628,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public int getExpectedPathLength()
 	{
@@ -634,9 +646,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPExpectedPathLength	ppExpectedPathLength	= new PPExpectedPathLength();
 
@@ -671,8 +683,7 @@ class Pattern2Params
 						  Pattern2Image.Direction direction)
 			throws AppException
 		{
-			int outValue = input.parseInteger(new IntegerRange(MIN_DIRECTION_PROBABILITY,
-															   MAX_DIRECTION_PROBABILITY));
+			int outValue = input.parseInteger(new IntegerRange(MIN_DIRECTION_PROBABILITY, MAX_DIRECTION_PROBABILITY));
 			values.put(direction, outValue);
 		}
 
@@ -682,7 +693,7 @@ class Pattern2Params
 		public String toString(Pattern2Image.Direction direction)
 		{
 			Integer value = getValue(direction);
-			return ((value == null) ? "0" : value.toString());
+			return (value == null) ? "0" : value.toString();
 		}
 
 		//--------------------------------------------------------------
@@ -691,9 +702,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Integer getDirectionProbability(Pattern2Image.Direction key)
 	{
@@ -726,9 +737,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPDirectionProbability	ppDirectionProbability	= new PPDirectionProbability();
 
@@ -758,9 +769,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Pattern2Image.Direction.Mode getDirectionMode()
 	{
@@ -776,9 +787,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPDirectionMode	ppDirectionMode	= new PPDirectionMode();
 
@@ -808,9 +819,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Pattern2Image.TerminalEmphasis getTerminalEmphasis()
 	{
@@ -826,9 +837,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPTerminalEmphasis	ppTerminalEmphasis	= new PPTerminalEmphasis();
 
@@ -858,9 +869,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isShowEmptyPaths()
 	{
@@ -876,9 +887,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPShowEmptyPaths	ppShowEmptyPaths	= new PPShowEmptyPaths();
 
@@ -908,9 +919,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getTransparencyColour()
 	{
@@ -926,9 +937,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPTransparencyColour	ppTransparencyColour	= new PPTransparencyColour();
 
@@ -958,9 +969,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getBackgroundColour()
 	{
@@ -976,9 +987,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPBackgroundColour	ppBackgroundColour	= new PPBackgroundColour();
 
@@ -1044,9 +1055,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getPathColour(int index)
 	{
@@ -1069,9 +1080,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPPathColours	ppPathColours	= new PPPathColours();
 
@@ -1102,9 +1113,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public int getActiveFraction()
 	{
@@ -1120,9 +1131,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPActiveFraction	ppActiveFraction	= new PPActiveFraction();
 
@@ -1168,7 +1179,7 @@ class Pattern2Params
 		@Override
 		public String toString()
 		{
-			return (value.lowerBound + ", " + value.upperBound);
+			return value.lowerBound + ", " + value.upperBound;
 		}
 
 		//--------------------------------------------------------------
@@ -1177,9 +1188,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public IntegerRange getTransitionIntervalRange()
 	{
@@ -1195,9 +1206,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPTransitionIntervalRange	ppTransitionIntervalRange	= new PPTransitionIntervalRange();
 
@@ -1239,7 +1250,7 @@ class Pattern2Params
 		@Override
 		public String toString()
 		{
-			return ((value == null) ? "" : value.toString());
+			return (value == null) ? "" : value.toString();
 		}
 
 		//--------------------------------------------------------------
@@ -1248,9 +1259,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	@Override
 	public Long getSeed()
@@ -1268,9 +1279,9 @@ class Pattern2Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPSeed	ppSeed	= new PPSeed();
 
@@ -1408,19 +1419,6 @@ class Pattern2Params
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Static initialiser
-////////////////////////////////////////////////////////////////////////
-
-	static
-	{
-		Map<Pattern2Image.Direction, Integer> probabilities = new EnumMap<>(Pattern2Image.Direction.class);
-		probabilities.put(Pattern2Image.Direction.FORE,       34);
-		probabilities.put(Pattern2Image.Direction.FORE_RIGHT, 33);
-		probabilities.put(Pattern2Image.Direction.FORE_LEFT,  33);
-		DEFAULT_PROBABILITIES = Collections.unmodifiableMap(probabilities);
-	}
 
 }
 

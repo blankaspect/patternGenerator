@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -59,6 +58,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.spinner.FDoubleSpinner;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -74,10 +75,10 @@ class Pattern2AnimationParamsDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	MAX_NUM_START_FRAMES	= 32;
+	private static final	int		MAX_NUM_START_FRAMES	= 32;
 
-	private static final	int	RATE_FIELD_LENGTH			= 6;
-	private static final	int	START_FRAME_FIELD_LENGTH	= 10;
+	private static final	int		RATE_FIELD_LENGTH			= 6;
+	private static final	int		START_FRAME_FIELD_LENGTH	= 10;
 
 	private static final	double	DELTA_RATE	= 0.01;
 
@@ -94,55 +95,22 @@ class Pattern2AnimationParamsDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
+	private static	Point			location;
+	private static	double			rate				= AppConfig.INSTANCE.getAnimationRate();
+	private static	List<Integer>	startFrameIndices	= List.of(0);
+	private static	int				startFrameIndex;
 
-	// ERROR IDENTIFIERS
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
 
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		NO_START_FRAME
-		("No first frame was specified.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private	boolean					accepted;
+	private	FDoubleSpinner			rateSpinner;
+	private	UnsignedIntegerComboBox	startFrameComboBox;
+	private	JButton					okButton;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -322,11 +290,22 @@ class Pattern2AnimationParamsDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -367,15 +346,14 @@ class Pattern2AnimationParamsDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.ACCEPT -> onAccept();
+			case Command.CLOSE  -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -386,7 +364,7 @@ class Pattern2AnimationParamsDialog
 
 	public PatternDocument.AnimationParams getAnimationParams()
 	{
-		return (accepted ? new PatternDocument.AnimationParams(0, rate, startFrameIndex) : null);
+		return accepted ? new PatternDocument.AnimationParams(0, rate, startFrameIndex) : null;
 	}
 
 	//------------------------------------------------------------------
@@ -439,22 +417,56 @@ class Pattern2AnimationParamsDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point			location;
-	private static	double			rate				= AppConfig.INSTANCE.getAnimationRate();
-	private static	List<Integer>	startFrameIndices	= Collections.singletonList(0);
-	private static	int				startFrameIndex;
 
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
+	// ERROR IDENTIFIERS
 
-	private	boolean					accepted;
-	private	FDoubleSpinner			rateSpinner;
-	private	UnsignedIntegerComboBox	startFrameComboBox;
-	private	JButton					okButton;
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		NO_START_FRAME
+		("No first frame was specified.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

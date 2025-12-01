@@ -100,14 +100,14 @@ public class HorizontalRangeBar
 
 	public static int widthToExtent(int width)
 	{
-		return (width - EXTENT_ADJUSTMENT);
+		return width - EXTENT_ADJUSTMENT;
 	}
 
 	//------------------------------------------------------------------
 
 	public static int extentToWidth(int extent)
 	{
-		return (extent + EXTENT_ADJUSTMENT);
+		return extent + EXTENT_ADJUSTMENT;
 	}
 
 	//------------------------------------------------------------------

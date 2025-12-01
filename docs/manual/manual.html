@@ -528,8 +528,9 @@
         can control the number of threads that are used to render a Pattern 1 image with the <a
         class="configProperty"
         href="#cp-pattern1-numRenderingThreads">pattern1.numRenderingThreads</a> configuration
-        property.  If the value of the property is zero, the number of threads will be set to
-        the number of processors that are available to the system.
+        property.  If the value of the property is 0, the number of threads will be set to the
+        number of processors that are available to the system minus 1, or 1 if the system has a
+        single processor.
       </p>
 
       <h4 id="section5-1-2">5.1.2&nbsp; Pattern 1 parameters</h4>
@@ -2326,10 +2327,11 @@
               <dd class="wrap">
                 This is the number of processor threads that will be used to render the images
                 of a Pattern 1 slide show.  If the value is 0, the number of threads will be the
-                number of processors that are available to the system.
+                number of processors that are available to the system minus 1, or 1 if the
+                system has a single processor.
               </dd>
               <dd class="spaceAbove wrap">
-                The default value is 0 (ie, the number of available processors).
+                The default value is 0 (ie, the number of available processors minus 1).
               </dd>
             </dl>
           </div>
@@ -2341,12 +2343,13 @@
               <dd class="wrap">
                 This is the number of processor threads that will be used to render a single
                 Pattern 1 image.  If the value is 0, the number of threads will be the number of
-                processors that are available to the system.  You can optimise this value to
-                minimise the rendering time per pixel that is displayed in the <span
-                class="component">Image rendering time</span> dialog.
+                processors that are available to the system minus 1, or 1 if the system has a
+                single processor.  You can optimise this value to minimise the rendering time
+                per pixel that is displayed in the <span class="component">Image rendering
+                time</span> dialog.
               </dd>
               <dd class="spaceAbove wrap">
-                The default value is 0 (ie, the number of available processors).
+                The default value is 0 (ie, the number of available processors minus 1).
               </dd>
             </dl>
           </div>
@@ -2417,10 +2420,11 @@
               <dd class="wrap">
                 This is the number of processor threads that will be used to render the images
                 of a Pattern 2 slide show.  If the value is 0, the number of threads will be the
-                number of processors that are available to the system.
+                number of processors that are available to the system minus 1, or 1 if the
+                system has a single processor.
               </dd>
               <dd class="spaceAbove wrap">
-                The default value is 0 (ie, the number of available processors).
+                The default value is 0 (ie, the number of available processors minus 1).
               </dd>
             </dl>
           </div>
@@ -2813,7 +2817,7 @@
     <div id="lastModified">
       <div>
         <div>
-         Last modified: 2023-08-13
+         Last modified: 2025-09-12
         </div>
         <div class="image">
           <a class="hideHover" href="http://validator.w3.org/check?uri=referer">

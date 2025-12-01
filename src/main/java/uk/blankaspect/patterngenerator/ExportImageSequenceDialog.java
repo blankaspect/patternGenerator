@@ -65,6 +65,8 @@ import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
 import uk.blankaspect.ui.swing.textfield.FTextField;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -80,13 +82,13 @@ class ExportImageSequenceDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	FILENAME_STEM_FIELD_LENGTH	= 24;
-	private static final	int	FRAME_WIDTH_FIELD_LENGTH	= 4;
-	private static final	int	FRAME_HEIGHT_FIELD_LENGTH	= 4;
-	private static final	int	START_FRAME_FIELD_LENGTH	= 10;
-	private static final	int	NUM_FRAMES_FIELD_LENGTH		= 6;
-	private static final	int	FADE_IN_FIELD_LENGTH		= 4;
-	private static final	int	FADE_OUT_FIELD_LENGTH		= FADE_IN_FIELD_LENGTH;
+	private static final	int		FILENAME_STEM_FIELD_LENGTH	= 24;
+	private static final	int		FRAME_WIDTH_FIELD_LENGTH	= 4;
+	private static final	int		FRAME_HEIGHT_FIELD_LENGTH	= 4;
+	private static final	int		START_FRAME_FIELD_LENGTH	= 10;
+	private static final	int		NUM_FRAMES_FIELD_LENGTH		= 6;
+	private static final	int		FADE_IN_FIELD_LENGTH		= 4;
+	private static final	int		FADE_OUT_FIELD_LENGTH		= FADE_IN_FIELD_LENGTH;
 
 	private static final	Insets	IMAGE_BUTTON_MARGINS	= new Insets(2, 6, 2, 6);
 
@@ -116,61 +118,40 @@ class ExportImageSequenceDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
+	private static	Point			location;
+	private static	JFileChooser	directoryChooser;
 
-	// ERROR IDENTIFIERS
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
 
+	private	boolean					accepted;
+	private	int						imageWidth;
+	private	int						imageHeight;
+	private	FPathnameField			directoryField;
+	private	FTextField				filenameStemField;
+	private	DimensionsSpinnerPanel	frameSizePanel;
+	private	FIntegerSpinner			startFrameSpinner;
+	private	FIntegerSpinner			numFramesSpinner;
+	private	FIntegerSpinner			fadeInSpinner;
+	private	FIntegerSpinner			fadeOutSpinner;
 
-	private enum ErrorId
-		implements AppException.IId
+////////////////////////////////////////////////////////////////////////
+//  Static initialiser
+////////////////////////////////////////////////////////////////////////
+
+	static
 	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		NO_DIRECTORY
-		("No directory was specified."),
-
-		NOT_A_DIRECTORY
-		("The pathname does not denote a directory."),
-
-		NO_FILENAME_STEM
-		("No filename stem was specified.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
+		directoryChooser = new JFileChooser();
+		directoryChooser.setDialogTitle(IMAGE_SEQ_DIRECTORY_STR);
+		directoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		directoryChooser.setApproveButtonMnemonic(KeyEvent.VK_S);
+		directoryChooser.setApproveButtonToolTipText(SELECT_DIRECTORY_STR);
+		directoryChooser.setSelectedFile(AppConfig.INSTANCE.getExportImageSequenceDirectory());
 	}
-
-	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -540,11 +521,22 @@ class ExportImageSequenceDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -596,21 +588,16 @@ class ExportImageSequenceDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.CHOOSE_DIRECTORY))
-			onChooseDirectory();
-
-		else if (command.equals(Command.SET_FRAME_SIZE_FROM_IMAGE))
-			onSetFrameSizeFromImage();
-
-		else if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.CHOOSE_DIRECTORY          -> onChooseDirectory();
+			case Command.SET_FRAME_SIZE_FROM_IMAGE -> onSetFrameSizeFromImage();
+			case Command.ACCEPT                    -> onAccept();
+			case Command.CLOSE                     -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -619,6 +606,7 @@ class ExportImageSequenceDialog
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		Object eventSource = event.getSource();
@@ -635,15 +623,16 @@ class ExportImageSequenceDialog
 
 	private ImageSequenceParams getParameters()
 	{
-		return (accepted ? new ImageSequenceParams(directoryField.getFile(),
-												   filenameStemField.getText(),
-												   frameSizePanel.getValue1(),
-												   frameSizePanel.getValue2(),
-												   startFrameSpinner.getIntValue(),
-												   numFramesSpinner.getIntValue(),
-												   fadeInSpinner.getIntValue(),
-												   fadeOutSpinner.getIntValue())
-						 : null);
+		return accepted
+				? new ImageSequenceParams(directoryField.getFile(),
+										  filenameStemField.getText(),
+										  frameSizePanel.getValue1(),
+										  frameSizePanel.getValue2(),
+										  startFrameSpinner.getIntValue(),
+										  numFramesSpinner.getIntValue(),
+										  fadeInSpinner.getIntValue(),
+										  fadeOutSpinner.getIntValue())
+				: null;
 	}
 
 	//------------------------------------------------------------------
@@ -737,40 +726,62 @@ class ExportImageSequenceDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point			location;
-	private static	JFileChooser	directoryChooser;
 
-////////////////////////////////////////////////////////////////////////
-//  Static initialiser
-////////////////////////////////////////////////////////////////////////
+	// ERROR IDENTIFIERS
 
-	static
+
+	private enum ErrorId
+		implements AppException.IId
 	{
-		directoryChooser = new JFileChooser();
-		directoryChooser.setDialogTitle(IMAGE_SEQ_DIRECTORY_STR);
-		directoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		directoryChooser.setApproveButtonMnemonic(KeyEvent.VK_S);
-		directoryChooser.setApproveButtonToolTipText(SELECT_DIRECTORY_STR);
-		directoryChooser.setSelectedFile(AppConfig.INSTANCE.getExportImageSequenceDirectory());
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		NO_DIRECTORY
+		("No directory was specified."),
+
+		NOT_A_DIRECTORY
+		("The pathname does not denote a directory."),
+
+		NO_FILENAME_STEM
+		("No filename stem was specified.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
 	}
 
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	boolean					accepted;
-	private	int						imageWidth;
-	private	int						imageHeight;
-	private	FPathnameField			directoryField;
-	private	FTextField				filenameStemField;
-	private	DimensionsSpinnerPanel	frameSizePanel;
-	private	FIntegerSpinner			startFrameSpinner;
-	private	FIntegerSpinner			numFramesSpinner;
-	private	FIntegerSpinner			fadeInSpinner;
-	private	FIntegerSpinner			fadeOutSpinner;
+	//==================================================================
 
 }
 

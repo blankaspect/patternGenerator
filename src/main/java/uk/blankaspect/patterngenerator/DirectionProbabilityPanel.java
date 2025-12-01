@@ -62,11 +62,11 @@ class DirectionProbabilityPanel
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	WIDTH	= 212;
-	private static final	int	HEIGHT	= 232;
+	private static final	int		WIDTH	= 212;
+	private static final	int		HEIGHT	= 232;
 
-	private static final	int	CENTRE_X	= WIDTH / 2;
-	private static final	int	CENTRE_Y	= HEIGHT / 2;
+	private static final	int		CENTRE_X	= WIDTH / 2;
+	private static final	int		CENTRE_Y	= HEIGHT / 2;
 
 	private static final	double	HUB_DIAMETER	= 16.0;
 
@@ -89,6 +89,130 @@ class DirectionProbabilityPanel
 	private static final	Map<Pattern2Image.Direction, Point2D.Double[]>	STROKE_LINE_POINTS;
 	private static final	Map<Pattern2Image.Direction, Path2D.Double>		STROKE_PATHS;
 	private static final	AffineTransform									ROTATION;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	Pattern2ParamsDialog					paramsDialog;
+	private	Map<Pattern2Image.Direction, Integer>	probabilities;
+	private	Pattern2Image.Direction.Mode			directionMode;
+	private	boolean									symmetrical;
+	private	Pattern2Image.Direction					activeDirection;
+
+////////////////////////////////////////////////////////////////////////
+//  Static initialiser
+////////////////////////////////////////////////////////////////////////
+
+	static
+	{
+		STROKE_LINE_POINTS = new EnumMap<>(Pattern2Image.Direction.class);
+		STROKE_PATHS = new EnumMap<>(Pattern2Image.Direction.class);
+		ROTATION = new AffineTransform();
+		ROTATION.setToRotation(-Math.PI / 3.0, (double)CENTRE_X, (double)CENTRE_Y);
+
+		AffineTransform transform1 = new AffineTransform();
+		transform1.setToRotation(Math.PI / 3.0);
+		AffineTransform transform2 = new AffineTransform();
+		transform2.setToRotation(-Math.PI / 3.0);
+
+		double x = 0.0;
+		double halfWidth = SPOKE_WIDTH * 0.5;
+		double y = SPOKE_OFFSET;
+		Point2D.Double p1 = new Point2D.Double(x, y);
+		Point2D.Double v1 = new Point2D.Double(x - halfWidth, y);
+		Point2D.Double v2 = new Point2D.Double(x + halfWidth, y);
+
+		y += SPOKE_HEIGHT;
+		Point2D.Double p2 = new Point2D.Double(x, y);
+		Point2D.Double v3 = new Point2D.Double(x + halfWidth, y);
+		Point2D.Double v4 = new Point2D.Double(x - halfWidth, y);
+
+		Point2D.Double[] inPoints = null;
+		Point2D.Double[] outPoints = null;
+
+		Map<Pattern2Image.Direction, Point2D.Double[]> strokeBoxPoints =
+															new EnumMap<>(Pattern2Image.Direction.class);
+
+		inPoints = new Point2D.Double[] { p1, p2 };
+		STROKE_LINE_POINTS.put(Pattern2Image.Direction.FORE, inPoints);
+
+		outPoints = new Point2D.Double[inPoints.length];
+		transform1.transform(inPoints, 0, outPoints, 0, inPoints.length);
+		STROKE_LINE_POINTS.put(Pattern2Image.Direction.FORE_LEFT, outPoints);
+
+		outPoints = new Point2D.Double[inPoints.length];
+		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
+		STROKE_LINE_POINTS.put(Pattern2Image.Direction.FORE_RIGHT, outPoints);
+
+		inPoints = new Point2D.Double[] { v1, v2, v3, v4 };
+		strokeBoxPoints.put(Pattern2Image.Direction.FORE, inPoints);
+
+		outPoints = new Point2D.Double[inPoints.length];
+		transform1.transform(inPoints, 0, outPoints, 0, inPoints.length);
+		strokeBoxPoints.put(Pattern2Image.Direction.FORE_LEFT, outPoints);
+
+		outPoints = new Point2D.Double[inPoints.length];
+		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
+		strokeBoxPoints.put(Pattern2Image.Direction.FORE_RIGHT, outPoints);
+
+		y = -SPOKE_OFFSET;
+		p1 = new Point2D.Double(x, y);
+		v1 = new Point2D.Double(x - halfWidth, y);
+		v2 = new Point2D.Double(x + halfWidth, y);
+
+		y -= SPOKE_HEIGHT;
+		p2 = new Point2D.Double(x, y);
+		v3 = new Point2D.Double(x + halfWidth, y);
+		v4 = new Point2D.Double(x - halfWidth, y);
+
+		inPoints = new Point2D.Double[] { p1, p2 };
+		STROKE_LINE_POINTS.put(Pattern2Image.Direction.BACK, inPoints);
+
+		outPoints = new Point2D.Double[inPoints.length];
+		transform1.transform(inPoints, 0, outPoints, 0, inPoints.length);
+		STROKE_LINE_POINTS.put(Pattern2Image.Direction.BACK_RIGHT, outPoints);
+
+		outPoints = new Point2D.Double[inPoints.length];
+		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
+		STROKE_LINE_POINTS.put(Pattern2Image.Direction.BACK_LEFT, outPoints);
+
+		inPoints = new Point2D.Double[] { v1, v2, v3, v4 };
+		strokeBoxPoints.put(Pattern2Image.Direction.BACK, inPoints);
+
+		outPoints = new Point2D.Double[inPoints.length];
+		transform1.transform(inPoints, 0, outPoints, 0, inPoints.length);
+		strokeBoxPoints.put(Pattern2Image.Direction.BACK_RIGHT, outPoints);
+
+		outPoints = new Point2D.Double[inPoints.length];
+		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
+		strokeBoxPoints.put(Pattern2Image.Direction.BACK_LEFT, outPoints);
+
+		halfWidth = (double)(WIDTH / 2);
+		double halfHeight = (double)(HEIGHT / 2);
+		for (Pattern2Image.Direction direction : STROKE_LINE_POINTS.keySet())
+		{
+			for (Point2D.Double p : STROKE_LINE_POINTS.get(direction))
+				p.setLocation(p.x + halfWidth, halfHeight - p.y);
+		}
+
+		for (Pattern2Image.Direction direction : strokeBoxPoints.keySet())
+		{
+			Point2D.Double[] points = strokeBoxPoints.get(direction);
+			for (Point2D.Double p : points)
+				p.setLocation(p.x + halfWidth, halfHeight - p.y);
+			Path2D.Double path = new Path2D.Double();
+			for (int i = 0; i < points.length; i++)
+			{
+				if (i == 0)
+					path.moveTo(points[i].x, points[i].y);
+				else
+					path.lineTo(points[i].x, points[i].y);
+			}
+			path.closePath();
+			STROKE_PATHS.put(direction, path);
+		}
+	}
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -314,8 +438,7 @@ class DirectionProbabilityPanel
 
 	private boolean isDirectionEnabled(Pattern2Image.Direction direction)
 	{
-		return ((directionMode != Pattern2Image.Direction.Mode.RELATIVE) ||
-				 (direction != Pattern2Image.Direction.BACK));
+		return (directionMode != Pattern2Image.Direction.Mode.RELATIVE) || (direction != Pattern2Image.Direction.BACK);
 	}
 
 	//------------------------------------------------------------------
@@ -369,130 +492,6 @@ class DirectionProbabilityPanel
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Static initialiser
-////////////////////////////////////////////////////////////////////////
-
-	static
-	{
-		STROKE_LINE_POINTS = new EnumMap<>(Pattern2Image.Direction.class);
-		STROKE_PATHS = new EnumMap<>(Pattern2Image.Direction.class);
-		ROTATION = new AffineTransform();
-		ROTATION.setToRotation(-Math.PI / 3.0, (double)CENTRE_X, (double)CENTRE_Y);
-
-		AffineTransform transform1 = new AffineTransform();
-		transform1.setToRotation(Math.PI / 3.0);
-		AffineTransform transform2 = new AffineTransform();
-		transform2.setToRotation(-Math.PI / 3.0);
-
-		double x = 0.0;
-		double halfWidth = SPOKE_WIDTH * 0.5;
-		double y = SPOKE_OFFSET;
-		Point2D.Double p1 = new Point2D.Double(x, y);
-		Point2D.Double v1 = new Point2D.Double(x - halfWidth, y);
-		Point2D.Double v2 = new Point2D.Double(x + halfWidth, y);
-
-		y += SPOKE_HEIGHT;
-		Point2D.Double p2 = new Point2D.Double(x, y);
-		Point2D.Double v3 = new Point2D.Double(x + halfWidth, y);
-		Point2D.Double v4 = new Point2D.Double(x - halfWidth, y);
-
-		Point2D.Double[] inPoints = null;
-		Point2D.Double[] outPoints = null;
-
-		Map<Pattern2Image.Direction, Point2D.Double[]> strokeBoxPoints =
-															new EnumMap<>(Pattern2Image.Direction.class);
-
-		inPoints = new Point2D.Double[] { p1, p2 };
-		STROKE_LINE_POINTS.put(Pattern2Image.Direction.FORE, inPoints);
-
-		outPoints = new Point2D.Double[inPoints.length];
-		transform1.transform(inPoints, 0, outPoints, 0, inPoints.length);
-		STROKE_LINE_POINTS.put(Pattern2Image.Direction.FORE_LEFT, outPoints);
-
-		outPoints = new Point2D.Double[inPoints.length];
-		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
-		STROKE_LINE_POINTS.put(Pattern2Image.Direction.FORE_RIGHT, outPoints);
-
-		inPoints = new Point2D.Double[] { v1, v2, v3, v4 };
-		strokeBoxPoints.put(Pattern2Image.Direction.FORE, inPoints);
-
-		outPoints = new Point2D.Double[inPoints.length];
-		transform1.transform(inPoints, 0, outPoints, 0, inPoints.length);
-		strokeBoxPoints.put(Pattern2Image.Direction.FORE_LEFT, outPoints);
-
-		outPoints = new Point2D.Double[inPoints.length];
-		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
-		strokeBoxPoints.put(Pattern2Image.Direction.FORE_RIGHT, outPoints);
-
-		y = -SPOKE_OFFSET;
-		p1 = new Point2D.Double(x, y);
-		v1 = new Point2D.Double(x - halfWidth, y);
-		v2 = new Point2D.Double(x + halfWidth, y);
-
-		y -= SPOKE_HEIGHT;
-		p2 = new Point2D.Double(x, y);
-		v3 = new Point2D.Double(x + halfWidth, y);
-		v4 = new Point2D.Double(x - halfWidth, y);
-
-		inPoints = new Point2D.Double[] { p1, p2 };
-		STROKE_LINE_POINTS.put(Pattern2Image.Direction.BACK, inPoints);
-
-		outPoints = new Point2D.Double[inPoints.length];
-		transform1.transform(inPoints, 0, outPoints, 0, inPoints.length);
-		STROKE_LINE_POINTS.put(Pattern2Image.Direction.BACK_RIGHT, outPoints);
-
-		outPoints = new Point2D.Double[inPoints.length];
-		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
-		STROKE_LINE_POINTS.put(Pattern2Image.Direction.BACK_LEFT, outPoints);
-
-		inPoints = new Point2D.Double[] { v1, v2, v3, v4 };
-		strokeBoxPoints.put(Pattern2Image.Direction.BACK, inPoints);
-
-		outPoints = new Point2D.Double[inPoints.length];
-		transform1.transform(inPoints, 0, outPoints, 0, inPoints.length);
-		strokeBoxPoints.put(Pattern2Image.Direction.BACK_RIGHT, outPoints);
-
-		outPoints = new Point2D.Double[inPoints.length];
-		transform2.transform(inPoints, 0, outPoints, 0, inPoints.length);
-		strokeBoxPoints.put(Pattern2Image.Direction.BACK_LEFT, outPoints);
-
-		halfWidth = (double)(WIDTH / 2);
-		double halfHeight = (double)(HEIGHT / 2);
-		for (Pattern2Image.Direction direction : STROKE_LINE_POINTS.keySet())
-		{
-			for (Point2D.Double p : STROKE_LINE_POINTS.get(direction))
-				p.setLocation(p.x + halfWidth, halfHeight - p.y);
-		}
-
-		for (Pattern2Image.Direction direction : strokeBoxPoints.keySet())
-		{
-			Point2D.Double[] points = strokeBoxPoints.get(direction);
-			for (Point2D.Double p : points)
-				p.setLocation(p.x + halfWidth, halfHeight - p.y);
-			Path2D.Double path = new Path2D.Double();
-			for (int i = 0; i < points.length; i++)
-			{
-				if (i == 0)
-					path.moveTo(points[i].x, points[i].y);
-				else
-					path.lineTo(points[i].x, points[i].y);
-			}
-			path.closePath();
-			STROKE_PATHS.put(direction, path);
-		}
-	}
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	Pattern2ParamsDialog					paramsDialog;
-	private	Map<Pattern2Image.Direction, Integer>	probabilities;
-	private	Pattern2Image.Direction.Mode			directionMode;
-	private	boolean									symmetrical;
-	private	Pattern2Image.Direction					activeDirection;
 
 }
 

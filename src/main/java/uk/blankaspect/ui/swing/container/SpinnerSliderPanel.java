@@ -111,7 +111,7 @@ public abstract class SpinnerSliderPanel
 											Component component)
 		{
 			int index = components.indexOf(component) - 1;
-			return ((index < 0) ? null : components.get(index));
+			return (index < 0) ? null : components.get(index);
 		}
 
 		//--------------------------------------------------------------
@@ -120,7 +120,7 @@ public abstract class SpinnerSliderPanel
 										   Component component)
 		{
 			int index = components.indexOf(component) + 1;
-			return ((index >= components.size()) ? null : components.get(index));
+			return (index >= components.size()) ? null : components.get(index);
 		}
 
 		//--------------------------------------------------------------

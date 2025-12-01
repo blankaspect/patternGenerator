@@ -1499,7 +1499,7 @@ abstract class PatternDocument
 			Task.setCancelled(false);
 			int numThreads = AppConfig.INSTANCE.getNumSlideShowThreads(getPatternKind());
 			if (numThreads == 0)
-				numThreads = Runtime.getRuntime().availableProcessors();
+				numThreads = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
 			new Thread(new SlideShow(numThreads, SlideShowParamsDialog.getInterval())).start();
 
 			// Show dialog
@@ -2239,14 +2239,14 @@ abstract class PatternDocument
 
 		private Edit removeUndo()
 		{
-			return (canUndo() ? get(--currentIndex) : null);
+			return canUndo() ? get(--currentIndex) : null;
 		}
 
 		//--------------------------------------------------------------
 
 		private Edit removeRedo()
 		{
-			return (canRedo() ? get(currentIndex++) : null);
+			return canRedo() ? get(currentIndex++) : null;
 		}
 
 		//--------------------------------------------------------------

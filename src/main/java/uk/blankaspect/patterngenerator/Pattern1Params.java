@@ -48,13 +48,13 @@ class Pattern1Params
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final	int	MIN_WIDTH		= 1 << 5;   // 32
-	public static final	int	MAX_WIDTH		= 1 << 13;  // 8192
-	public static final	int	DEFAULT_WIDTH	= 320;
+	public static final	int		MIN_WIDTH		= 1 << 5;   // 32
+	public static final	int		MAX_WIDTH		= 1 << 13;  // 8192
+	public static final	int		DEFAULT_WIDTH	= 320;
 
-	public static final	int	MIN_HEIGHT		= 1 << 5;   // 32
-	public static final	int	MAX_HEIGHT		= 1 << 13;  // 8192
-	public static final	int	DEFAULT_HEIGHT	= 240;
+	public static final	int		MIN_HEIGHT		= 1 << 5;   // 32
+	public static final	int		MAX_HEIGHT		= 1 << 13;  // 8192
+	public static final	int		DEFAULT_HEIGHT	= 240;
 
 	public static final	double		MIN_WAVELENGTH				= 0.01;
 	public static final	double		MAX_WAVELENGTH				= 4.0;
@@ -62,18 +62,17 @@ class Pattern1Params
 
 	public static final	Pattern1Image.Symmetry	DEFAULT_SYMMETRY	= Pattern1Image.Symmetry.NONE;
 
-	public static final	int	MIN_NUM_SOURCES		= 1;
-	public static final	int	MAX_NUM_SOURCES		= 16;
-	public static final	int	DEFAULT_NUM_SOURCES	= 4;
+	public static final	int		MIN_NUM_SOURCES		= 1;
+	public static final	int		MAX_NUM_SOURCES		= 16;
+	public static final	int		DEFAULT_NUM_SOURCES	= 4;
 
 	public static final	Pattern1Image.SourceParams	DEFAULT_SOURCE	=
-							new Pattern1Image.SourceParams(Pattern1Image.Source.Shape.CIRCLE, null,
-														   Pattern1Image.Source.Waveform.COSINE,
-														   Pattern1Image.Source.Waveform.COSINE.getDefaultCoefficient(),
-														   Pattern1Image.Source.DEFAULT_ATTENUATION_COEFFICIENT,
-														   Pattern1Image.Source.Constraint.NONE,
-														   Pattern1Image.Source.DEFAULT_HUE,
-														   Pattern1Image.Source.DEFAULT_SATURATION);
+			new Pattern1Image.SourceParams(Pattern1Image.Source.Shape.CIRCLE, null,
+										   Pattern1Image.Source.Waveform.COSINE,
+										   Pattern1Image.Source.Waveform.COSINE.getDefaultCoefficient(),
+										   Pattern1Image.Source.DEFAULT_ATTENUATION_COEFFICIENT,
+										   Pattern1Image.Source.Constraint.NONE, Pattern1Image.Source.DEFAULT_HUE,
+										   Pattern1Image.Source.DEFAULT_SATURATION);
 
 	public static final	Pattern1Image.SaturationMode	DEFAULT_SATURATION_MODE	= Pattern1Image.SaturationMode.VARIABLE;
 
@@ -131,9 +130,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public String getDescription()
 	{
@@ -149,9 +148,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPDescription	ppDescription	= new PPDescription();
 
@@ -181,9 +180,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	@Override
 	public int getWidth()
@@ -201,9 +200,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPWidth	ppWidth	= new PPWidth();
 
@@ -233,9 +232,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	@Override
 	public int getHeight()
@@ -253,9 +252,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPHeight	ppHeight	= new PPHeight();
 
@@ -285,9 +284,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Pattern1Image.Symmetry getSymmetry()
 	{
@@ -303,9 +302,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPSymmetry	ppSymmetry	= new PPSymmetry();
 
@@ -335,9 +334,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Pattern1Image.SaturationMode getSaturationMode()
 	{
@@ -353,9 +352,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPSaturationMode	ppSaturationMode	= new PPSaturationMode();
 
@@ -400,8 +399,8 @@ class Pattern1Params
 		@Override
 		public String toString()
 		{
-			return (AppConstants.FORMAT_1_8.format(value.lowerBound) + ", " +
-													AppConstants.FORMAT_1_8.format(value.upperBound));
+			return AppConstants.FORMAT_1_8.format(value.lowerBound) + ", "
+					+ AppConstants.FORMAT_1_8.format(value.upperBound);
 		}
 
 		//--------------------------------------------------------------
@@ -410,9 +409,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public DoubleRange getWavelengthRange()
 	{
@@ -428,9 +427,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPWavelengthRange	ppWavelengthRange	= new PPWavelengthRange();
 
@@ -507,9 +506,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Pattern1Image.SourceParams getSource(int index)
 	{
@@ -532,9 +531,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPSources	ppSources	= new PPSources();
 
@@ -580,8 +579,8 @@ class Pattern1Params
 		@Override
 		public String toString()
 		{
-			return (AppConstants.FORMAT_1_8.format(value.lowerBound) + ", " +
-													AppConstants.FORMAT_1_8.format(value.upperBound));
+			return AppConstants.FORMAT_1_8.format(value.lowerBound) + ", "
+					+ AppConstants.FORMAT_1_8.format(value.upperBound);
 		}
 
 		//--------------------------------------------------------------
@@ -590,9 +589,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public DoubleRange getMotionRateRange()
 	{
@@ -608,9 +607,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPMotionRateRange	ppMotionRateRange	= new PPMotionRateRange();
 
@@ -658,7 +657,7 @@ class Pattern1Params
 		@Override
 		public String toString()
 		{
-			return ((value == null) ? null : value.toString());
+			return (value == null) ? null : value.toString();
 		}
 
 		//--------------------------------------------------------------
@@ -667,9 +666,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isMotionRateEnvelope()
 	{
@@ -692,9 +691,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPMotionRateEnvelope	ppMotionRateEnvelope	= new PPMotionRateEnvelope();
 
@@ -740,7 +739,7 @@ class Pattern1Params
 		@Override
 		public String toString()
 		{
-			return (value.lowerBound + ", " + value.upperBound);
+			return value.lowerBound + ", " + value.upperBound;
 		}
 
 		//--------------------------------------------------------------
@@ -749,9 +748,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public IntegerRange getPhaseIncrementRange()
 	{
@@ -767,9 +766,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPPhaseIncrementRange	ppPhaseIncrementRange	= new PPPhaseIncrementRange();
 
@@ -814,8 +813,8 @@ class Pattern1Params
 		@Override
 		public String toString()
 		{
-			return (AppConstants.FORMAT_1_8.format(value.lowerBound) + ", " +
-													AppConstants.FORMAT_1_8.format(value.upperBound));
+			return AppConstants.FORMAT_1_8.format(value.lowerBound) + ", "
+					+ AppConstants.FORMAT_1_8.format(value.upperBound);
 		}
 
 		//--------------------------------------------------------------
@@ -824,9 +823,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public DoubleRange getRotationPeriodRange()
 	{
@@ -842,9 +841,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPRotationPeriodRange	ppRotationPeriodRange	= new PPRotationPeriodRange();
 
@@ -874,9 +873,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Pattern1Image.RotationSense getRotationSense()
 	{
@@ -892,9 +891,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPRotationSense	ppRotationSense	= new PPRotationSense();
 
@@ -936,7 +935,7 @@ class Pattern1Params
 		@Override
 		public String toString()
 		{
-			return ((value == null) ? "" : value.toString());
+			return (value == null) ? "" : value.toString();
 		}
 
 		//--------------------------------------------------------------
@@ -945,9 +944,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	@Override
 	public Long getSeed()
@@ -965,9 +964,9 @@ class Pattern1Params
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	PPSeed	ppSeed	= new PPSeed();
 

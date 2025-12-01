@@ -58,7 +58,7 @@ public abstract class Slider
 	public static final		double	MAX_VALUE		= 1.0;
 	public static final		double	DEFAULT_VALUE	= 0.0;
 
-	protected static final	int	BORDER_WIDTH	= 2;
+	protected static final	int		BORDER_WIDTH	= 2;
 
 	// Commands
 	protected interface Command
@@ -126,29 +126,20 @@ public abstract class Slider
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		if (isEnabled())
 		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.DECREMENT_UNIT))
-				onDecrementUnit();
-
-			else if (command.equals(Command.INCREMENT_UNIT))
-				onIncrementUnit();
-
-			else if (command.equals(Command.DECREMENT_BLOCK))
-				onDecrementBlock();
-
-			else if (command.equals(Command.INCREMENT_BLOCK))
-				onIncrementBlock();
-
-			else if (command.equals(Command.DECREMENT_MAX))
-				onDecrementMax();
-
-			else if (command.equals(Command.INCREMENT_MAX))
-				onIncrementMax();
+			switch (event.getActionCommand())
+			{
+				case Command.DECREMENT_UNIT  -> onDecrementUnit();
+				case Command.INCREMENT_UNIT  -> onIncrementUnit();
+				case Command.DECREMENT_BLOCK -> onDecrementBlock();
+				case Command.INCREMENT_BLOCK -> onIncrementBlock();
+				case Command.DECREMENT_MAX   -> onDecrementMax();
+				case Command.INCREMENT_MAX   -> onIncrementMax();
+			}
 		}
 	}
 
@@ -158,6 +149,7 @@ public abstract class Slider
 //  Instance methods : FocusListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void focusGained(FocusEvent event)
 	{
 		repaint();
@@ -165,6 +157,7 @@ public abstract class Slider
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void focusLost(FocusEvent event)
 	{
 		repaint();
@@ -176,6 +169,7 @@ public abstract class Slider
 //  Instance methods : MouseListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseClicked(MouseEvent event)
 	{
 		// do nothing
@@ -183,6 +177,7 @@ public abstract class Slider
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseEntered(MouseEvent event)
 	{
 		// do nothing
@@ -190,6 +185,7 @@ public abstract class Slider
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseExited(MouseEvent event)
 	{
 		// do nothing
@@ -197,6 +193,7 @@ public abstract class Slider
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mousePressed(MouseEvent event)
 	{
 		if (isEnabled())
@@ -228,6 +225,7 @@ public abstract class Slider
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseReleased(MouseEvent event)
 	{
 		if (isEnabled() && SwingUtilities.isLeftMouseButton(event) && isAdjusting())
@@ -246,6 +244,7 @@ public abstract class Slider
 //  Instance methods : MouseMotionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseDragged(MouseEvent event)
 	{
 		if (isEnabled() && SwingUtilities.isLeftMouseButton(event) && isAdjusting())
@@ -254,6 +253,7 @@ public abstract class Slider
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseMoved(MouseEvent event)
 	{
 		// do nothing

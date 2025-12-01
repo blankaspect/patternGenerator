@@ -476,14 +476,14 @@ class Pattern2Image
 
 		public int incrementIndex0(int i0)
 		{
-			return (i0 + delta0);
+			return i0 + delta0;
 		}
 
 		//--------------------------------------------------------------
 
 		public int incrementIndex1(int i1)
 		{
-			return (i1 + delta1);
+			return i1 + delta1;
 		}
 
 		//--------------------------------------------------------------
@@ -813,8 +813,7 @@ class Pattern2Image
 		private static final	int	MAX_I1	= 10000;
 
 		private static final	Comparator<Path>	LENGTH_COMPARATOR =
-				Comparator.<Path>comparingInt(Path::getLength)
-						.thenComparing(Comparator.<Path>comparingInt(path ->
+				Comparator.comparingInt(Path::getLength).thenComparing(Comparator.<Path>comparingInt(path ->
 								Math.max(path.start.lengthenFrameIndex, path.end.lengthenFrameIndex)).reversed());
 
 		private enum Change
@@ -904,7 +903,7 @@ class Pattern2Image
 			private boolean isAt(int i0,
 								 int i1)
 			{
-				return ((this.i0 == i0) && (this.i1 == i1));
+				return (this.i0 == i0) && (this.i1 == i1);
 			}
 
 			//----------------------------------------------------------
@@ -1209,7 +1208,7 @@ class Pattern2Image
 
 		private boolean isChanging()
 		{
-			return ((start.change != Change.NONE) || (end.change != Change.NONE));
+			return (start.change != Change.NONE) || (end.change != Change.NONE);
 		}
 
 		//--------------------------------------------------------------
@@ -2762,7 +2761,7 @@ class Pattern2Image
 
 	private int getFirstIndex0(int i1)
 	{
-		return (i1 & 1);
+		return i1 & 1;
 	}
 
 	//------------------------------------------------------------------
@@ -2770,7 +2769,7 @@ class Pattern2Image
 	private int getLastIndex0(int i1)
 	{
 		int i0 = numIndices0 - 1;
-		return ((((i0 ^ i1) & 1) == 0) ? i0 : i0 - 1);
+		return (((i0 ^ i1) & 1) == 0) ? i0 : i0 - 1;
 	}
 
 	//------------------------------------------------------------------
@@ -2832,9 +2831,7 @@ class Pattern2Image
 
 	private int getTransitionLength()
 	{
-		return (transitionIntervalRange.lowerBound
-												+ prngTransitionLength.nextInt(transitionIntervalRange.getInterval()));
-
+		return transitionIntervalRange.lowerBound + prngTransitionLength.nextInt(transitionIntervalRange.getInterval());
 	}
 
 	//------------------------------------------------------------------

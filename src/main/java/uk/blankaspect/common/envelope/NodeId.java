@@ -78,12 +78,8 @@ public class NodeId
 		if (this == obj)
 			return true;
 
-		if (obj instanceof NodeId)
-		{
-			NodeId id = (NodeId)obj;
-			return (envelopeIndex == id.envelopeIndex) && (bandIndex == id.bandIndex) && (nodeIndex == id.nodeIndex);
-		}
-		return false;
+		return (obj instanceof NodeId other) && (envelopeIndex == other.envelopeIndex) && (bandIndex == other.bandIndex)
+				&& (nodeIndex == other.nodeIndex);
 	}
 
 	//------------------------------------------------------------------

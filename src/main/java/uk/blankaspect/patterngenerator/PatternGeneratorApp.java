@@ -27,9 +27,8 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import java.util.stream.Stream;
 
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -53,14 +52,14 @@ import uk.blankaspect.common.filesystem.PathnameUtils;
 
 import uk.blankaspect.common.logging.ErrorLogger;
 
-import uk.blankaspect.common.misc.FilenameSuffixFilter;
-
 import uk.blankaspect.common.random.Prng01;
 
 import uk.blankaspect.common.resource.ResourceProperties;
 import uk.blankaspect.common.resource.ResourceUtils;
 
 import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.ui.swing.filechooser.FileChooserUtils;
 
 import uk.blankaspect.ui.swing.image.PngOutputFile;
 
@@ -203,29 +202,28 @@ public class PatternGeneratorApp
 
 	public PatternDocument getDocument()
 	{
-		return ((hasDocuments() && (mainWindow != null)) ? getDocument(mainWindow.getTabIndex())
-														 : null);
+		return (hasDocuments() && (mainWindow != null)) ? getDocument(mainWindow.getTabIndex()) : null;
 	}
 
 	//------------------------------------------------------------------
 
 	public PatternDocument getDocument(int index)
 	{
-		return (hasDocuments() ? documentsViews.get(index).document : null);
+		return hasDocuments() ? documentsViews.get(index).document : null;
 	}
 
 	//------------------------------------------------------------------
 
 	public PatternView getView()
 	{
-		return ((hasDocuments() && (mainWindow != null)) ? getView(mainWindow.getTabIndex()) : null);
+		return (hasDocuments() && (mainWindow != null)) ? getView(mainWindow.getTabIndex()) : null;
 	}
 
 	//------------------------------------------------------------------
 
 	public PatternView getView(int index)
 	{
-		return (hasDocuments() ? documentsViews.get(index).view : null);
+		return hasDocuments() ? documentsViews.get(index).view : null;
 	}
 
 	//------------------------------------------------------------------
@@ -279,12 +277,10 @@ public class PatternGeneratorApp
 									String title)
 	{
 		String[] optionStrs = Utils.getOptionStrings(AppConstants.REPLACE_STR);
-		return (!file.exists() ||
-				 (JOptionPane.showOptionDialog(mainWindow,
-											   Utils.getPathname(file) + AppConstants.ALREADY_EXISTS_STR,
-											   title, JOptionPane.OK_CANCEL_OPTION,
-											   JOptionPane.WARNING_MESSAGE, null, optionStrs,
-											   optionStrs[1]) == JOptionPane.OK_OPTION));
+		return !file.exists()
+				|| (JOptionPane.showOptionDialog(mainWindow, Utils.getPathname(file) + AppConstants.ALREADY_EXISTS_STR,
+												 title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+												 optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION);
 	}
 
 	//------------------------------------------------------------------
@@ -660,8 +656,10 @@ public class PatternGeneratorApp
 			}
 		}
 		if (lookAndFeelName != null)
+		{
 			showWarningMessage(SHORT_NAME + " : " + CONFIG_ERROR_STR,
 							   LAF_ERROR1_STR + lookAndFeelName + LAF_ERROR2_STR);
+		}
 
 		// Select all text when a text field gains focus
 		if (config.isSelectTextOnFocusGained())
@@ -683,7 +681,7 @@ public class PatternGeneratorApp
 			if (args.length > 0)
 			{
 				// Create list of files from command-line arguments
-				List<File> files = Stream.of(args).map(arg -> new File(PathnameUtils.parsePathname(arg))).toList();
+				List<File> files = Arrays.stream(args).map(arg -> new File(PathnameUtils.parsePathname(arg))).toList();
 
 				// Open files
 				openFiles(files);
@@ -703,9 +701,9 @@ public class PatternGeneratorApp
 		openFileChooser = new JFileChooser(config.getOpenPatternDirectory());
 		openFileChooser.setDialogTitle(OPEN_FILE_STR);
 		openFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		for (DocumentKind documentKind : DocumentKind.values())
-			openFileChooser.setFileFilter(documentKind.getFilter());
-		openFileChooser.setFileFilter(config.getDefaultDocumentKind().getFilter());
+		FileChooserUtils.setFilters(openFileChooser,
+									Arrays.stream(DocumentKind.values()).map(kind -> kind.getFilter()).toList(),
+									config.getDefaultDocumentKind().getFilter());
 
 		saveFileChooser = new JFileChooser(config.getSavePatternDirectory());
 		saveFileChooser.setDialogTitle(SAVE_FILE_STR);
@@ -714,14 +712,12 @@ public class PatternGeneratorApp
 		exportImageFileChooser = new JFileChooser(config.getExportImageDirectory());
 		exportImageFileChooser.setDialogTitle(EXPORT_IMAGE_STR);
 		exportImageFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		exportImageFileChooser.setFileFilter(new FilenameSuffixFilter(AppConstants.PNG_FILES_STR,
-																	  AppConstants.PNG_FILENAME_EXTENSION));
+		FileChooserUtils.setFilter(exportImageFileChooser, AppConstants.PNG_FILE_FILTER);
 
 		exportSvgFileChooser = new JFileChooser(config.getExportSvgDirectory());
 		exportSvgFileChooser.setDialogTitle(EXPORT_AS_SVG_STR);
 		exportSvgFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		exportSvgFileChooser.setFileFilter(new FilenameSuffixFilter(AppConstants.SVG_FILES_STR,
-																	AppConstants.SVG_FILENAME_EXTENSION));
+		FileChooserUtils.setFilter(exportSvgFileChooser, AppConstants.SVG_FILE_FILTER);
 	}
 
 	//------------------------------------------------------------------
@@ -804,10 +800,9 @@ public class PatternGeneratorApp
 		else
 			exportImageFileChooser.setSelectedFile(file.getAbsoluteFile());
 		exportImageFileChooser.rescanCurrentDirectory();
-		return ((exportImageFileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION)
-											? Utils.appendSuffix(exportImageFileChooser.getSelectedFile(),
-																 AppConstants.PNG_FILENAME_EXTENSION)
-											: null);
+		return (exportImageFileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION)
+				? Utils.appendSuffix(exportImageFileChooser.getSelectedFile(), AppConstants.PNG_FILENAME_EXTENSION)
+				: null;
 	}
 
 	//------------------------------------------------------------------
@@ -822,10 +817,9 @@ public class PatternGeneratorApp
 		else
 			exportSvgFileChooser.setSelectedFile(file.getAbsoluteFile());
 		exportSvgFileChooser.rescanCurrentDirectory();
-		return ((exportSvgFileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION)
-											? Utils.appendSuffix(exportSvgFileChooser.getSelectedFile(),
-																 AppConstants.SVG_FILENAME_EXTENSION)
-											: null);
+		return (exportSvgFileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION)
+				? Utils.appendSuffix(exportSvgFileChooser.getSelectedFile(), AppConstants.SVG_FILENAME_EXTENSION)
+				: null;
 	}
 
 	//------------------------------------------------------------------

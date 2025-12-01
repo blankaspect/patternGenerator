@@ -20,6 +20,7 @@ package uk.blankaspect.patterngenerator;
 
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Point;
 
 import java.awt.datatransfer.UnsupportedFlavorException;
 
@@ -57,6 +58,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 import uk.blankaspect.ui.swing.tabbedpane.TabbedPane;
 
 import uk.blankaspect.ui.swing.transfer.DataImporter;
+
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
 
 //----------------------------------------------------------------------
 
@@ -218,7 +221,8 @@ class MainWindow
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				AppCommand.EXIT.execute();
 			}
@@ -237,15 +241,22 @@ class MainWindow
 			setSize(size);
 
 		// Set location of window
-		setLocation(config.isMainWindowLocation()
-								? GuiUtils.getLocationWithinScreen(this, config.getMainWindowLocation())
-								: GuiUtils.getComponentLocation(this));
+		Point location = config.getMainWindowLocation();
+		location = (location == null)
+							? GuiUtils.getComponentLocation(this)
+							: GuiUtils.getLocationWithinScreen(this, location);
+		setLocation(location);
 
 		// Update title and menus
 		updateTitleAndMenus();
 
 		// Make window visible
 		setVisible(true);
+
+		// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards when its
+		// location is set.  The error in the y coordinate is the height of the title bar of the window.  The workaround
+		// is to set the location of the window again with an adjustment for the error.
+		LinuxWorkarounds.fixWindowYCoord(this, location);
 	}
 
 	//------------------------------------------------------------------

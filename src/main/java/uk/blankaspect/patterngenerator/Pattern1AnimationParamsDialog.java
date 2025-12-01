@@ -33,7 +33,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -64,6 +63,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.spinner.FDoubleSpinner;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -79,10 +80,10 @@ class Pattern1AnimationParamsDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	MAX_NUM_START_FRAMES	= 32;
+	private static final	int		MAX_NUM_START_FRAMES	= 32;
 
-	private static final	int	RATE_FIELD_LENGTH			= 6;
-	private static final	int	START_FRAME_FIELD_LENGTH	= 10;
+	private static final	int		RATE_FIELD_LENGTH			= 6;
+	private static final	int		START_FRAME_FIELD_LENGTH	= 10;
 
 	private static final	double	DELTA_RATE	= 0.01;
 
@@ -100,103 +101,34 @@ class Pattern1AnimationParamsDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		NO_START_FRAME
-		("No first frame was specified.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private static	Point								location;
+	private static	Set<Pattern1Image.AnimationKind>	animationKinds		=
+			EnumSet.noneOf(Pattern1Image.AnimationKind.class);
+	private static	double								rate				= AppConfig.INSTANCE.getAnimationRate();
+	private static	List<Integer>						startFrameIndices	= List.of(0);
+	private static	int									startFrameIndex;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// ANIMATION KINDS PANEL
-
-
-	private class AnimationKindsPanel
-		extends Pattern1AnimationKindsPanel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public AnimationKindsPanel(Set<Pattern1Image.AnimationKind> enabledKinds,
-								   Set<Pattern1Image.AnimationKind> selectedKinds)
-		{
-			super(enabledKinds, selectedKinds);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected void animationKindsChanged()
-		{
-			updateAcceptButton();
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	boolean					accepted;
+	private	AnimationKindsPanel		animationKindsPanel;
+	private	FDoubleSpinner			rateSpinner;
+	private	UnsignedIntegerComboBox	startFrameComboBox;
+	private	JButton					okButton;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private Pattern1AnimationParamsDialog(Window                           owner,
-										  Set<Pattern1Image.AnimationKind> enabledAnimationKinds,
-										  Set<Pattern1Image.AnimationKind> selectedAnimationKinds)
+	private Pattern1AnimationParamsDialog(
+		Window								owner,
+		Set<Pattern1Image.AnimationKind>	enabledAnimationKinds,
+		Set<Pattern1Image.AnimationKind>	selectedAnimationKinds)
 	{
 		// Call superclass constructor
 		super(owner, TITLE_STR, ModalityType.APPLICATION_MODAL);
@@ -255,9 +187,8 @@ class Pattern1AnimationParamsDialog
 		controlPanel.add(ratePanel);
 
 		// Spinner: rate
-		rateSpinner = new FDoubleSpinner(rate, Pattern1Document.MIN_ANIMATION_RATE,
-										 Pattern1Document.MAX_ANIMATION_RATE, DELTA_RATE,
-										 RATE_FIELD_LENGTH, AppConstants.FORMAT_1_2);
+		rateSpinner = new FDoubleSpinner(rate, Pattern1Document.MIN_ANIMATION_RATE, Pattern1Document.MAX_ANIMATION_RATE,
+										 DELTA_RATE, RATE_FIELD_LENGTH, AppConstants.FORMAT_1_2);
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -396,11 +327,22 @@ class Pattern1AnimationParamsDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -430,10 +372,10 @@ class Pattern1AnimationParamsDialog
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static PatternDocument.AnimationParams
-									showDialog(Component                        parent,
-											   Set<Pattern1Image.AnimationKind> enabledAnimationKinds,
-											   Set<Pattern1Image.AnimationKind> selectedAnimationKinds)
+	public static PatternDocument.AnimationParams showDialog(
+		Component							parent,
+		Set<Pattern1Image.AnimationKind>	enabledAnimationKinds,
+		Set<Pattern1Image.AnimationKind>	selectedAnimationKinds)
 	{
 		return new Pattern1AnimationParamsDialog(GuiUtils.getWindow(parent), enabledAnimationKinds,
 												 selectedAnimationKinds).getAnimationParams();
@@ -445,15 +387,14 @@ class Pattern1AnimationParamsDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.ACCEPT -> onAccept();
+			case Command.CLOSE  -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -464,10 +405,10 @@ class Pattern1AnimationParamsDialog
 
 	public PatternDocument.AnimationParams getAnimationParams()
 	{
-		return (accepted ? new PatternDocument.AnimationParams(Pattern1Image.AnimationKind.
-																			setToBitField(animationKinds),
-															   rate, startFrameIndex)
-						 : null);
+		return accepted
+				? new PatternDocument.AnimationParams(Pattern1Image.AnimationKind.setToBitField(animationKinds), rate,
+													  startFrameIndex)
+				: null;
 	}
 
 	//------------------------------------------------------------------
@@ -528,27 +469,96 @@ class Pattern1AnimationParamsDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point								location;
-	private static	Set<Pattern1Image.AnimationKind>	animationKinds		=
-													EnumSet.noneOf(Pattern1Image.AnimationKind.class);
-	private static	double								rate				=
-													AppConfig.INSTANCE.getAnimationRate();
-	private static	List<Integer>						startFrameIndices	=
-													Collections.singletonList(0);
-	private static	int									startFrameIndex;
+
+	// ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		NO_START_FRAME
+		("No first frame was specified.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	boolean					accepted;
-	private	AnimationKindsPanel		animationKindsPanel;
-	private	FDoubleSpinner			rateSpinner;
-	private	UnsignedIntegerComboBox	startFrameComboBox;
-	private	JButton					okButton;
+
+	// ANIMATION KINDS PANEL
+
+
+	private class AnimationKindsPanel
+		extends Pattern1AnimationKindsPanel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		public AnimationKindsPanel(Set<Pattern1Image.AnimationKind> enabledKinds,
+								   Set<Pattern1Image.AnimationKind> selectedKinds)
+		{
+			super(enabledKinds, selectedKinds);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected void animationKindsChanged()
+		{
+			updateAcceptButton();
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

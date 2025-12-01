@@ -2,7 +2,7 @@
 
 Utils.java
 
-Utility methods class.
+Class: utility methods.
 
 \*====================================================================*/
 
@@ -30,7 +30,7 @@ import uk.blankaspect.common.filesystem.PathnameUtils;
 //----------------------------------------------------------------------
 
 
-// UTILITY METHODS CLASS
+// CLASS: UTILITY METHODS
 
 
 class Utils
@@ -56,8 +56,9 @@ class Utils
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static int indexOf(Object   target,
-							  Object[] values)
+	public static int indexOf(
+		Object		target,
+		Object[]	values)
 	{
 		for (int i = 0; i < values.length; i++)
 		{
@@ -71,20 +72,22 @@ class Utils
 
 	public static char getFileSeparatorChar()
 	{
-		return (AppConfig.INSTANCE.isShowUnixPathnames() ? '/' : File.separatorChar);
+		return AppConfig.INSTANCE.isShowUnixPathnames() ? '/' : File.separatorChar;
 	}
 
 	//------------------------------------------------------------------
 
-	public static String getPathname(File file)
+	public static String getPathname(
+		File	file)
 	{
 		return getPathname(file, AppConfig.INSTANCE.isShowUnixPathnames());
 	}
 
 	//------------------------------------------------------------------
 
-	public static String getPathname(File    file,
-									 boolean unixStyle)
+	public static String getPathname(
+		File	file,
+		boolean	unixStyle)
 	{
 		String pathname = null;
 		if (file != null)
@@ -118,14 +121,15 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static boolean isSameFile(File file1,
-									 File file2)
+	public static boolean isSameFile(
+		File	file1,
+		File	file2)
 	{
 		try
 		{
 			if (file1 == null)
 				return (file2 == null);
-			return ((file2 != null) && file1.getCanonicalPath().equals(file2.getCanonicalPath()));
+			return (file2 != null) && file1.getCanonicalPath().equals(file2.getCanonicalPath());
 		}
 		catch (IOException e)
 		{
@@ -135,8 +139,9 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static File appendSuffix(File   file,
-									String suffix)
+	public static File appendSuffix(
+		File	file,
+		String	suffix)
 	{
 		String filename = file.getName();
 		if (!filename.isEmpty() && (filename.indexOf('.') < 0))
@@ -146,7 +151,8 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static String[] getOptionStrings(String... optionStrs)
+	public static String[] getOptionStrings(
+		String...	optionStrs)
 	{
 		String[] strs = new String[optionStrs.length + 1];
 		System.arraycopy(optionStrs, 0, strs, 0, optionStrs.length);
@@ -156,9 +162,10 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static void hsToRgb(double   hue,
-							   double   saturation,
-							   double[] rgbValues)
+	public static void hsToRgb(
+		double		hue,
+		double		saturation,
+		double[]	rgbValues)
 	{
 		if (saturation == 0.0)
 		{
@@ -168,12 +175,12 @@ class Utils
 		}
 		else
 		{
-			double h = (hue - Math.floor(hue)) * 6.0;
-			double f = h - Math.floor(h);
+			double h6 = (hue - Math.floor(hue)) * 6.0;
+			double hs = h6 - Math.floor(h6);
 			double a = 1.0 - saturation;
-			double b = 1.0 - saturation * f;
-			double c = 1.0 - (saturation * (1.0 - f));
-			switch ((int)h)
+			double b = 1.0 - saturation * hs;
+			double c = 1.0 - (saturation * (1.0 - hs));
+			switch ((int)h6)
 			{
 				case 0:
 					rgbValues[0] = 1.0;
@@ -216,8 +223,9 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static int hsToRgb(double hue,
-							  double saturation)
+	public static int hsToRgb(
+		double	hue,
+		double	saturation)
 	{
 		double[] rgbValues = new double[3];
 		hsToRgb(hue, saturation, rgbValues);
@@ -232,8 +240,9 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static void rgbToHs(double[] rgbValues,
-							   double[] hsValues)
+	public static void rgbToHs(
+		double[]	rgbValues,
+		double[]	hsValues)
 	{
 		double cMin = (rgbValues[0] < rgbValues[1]) ? rgbValues[0] : rgbValues[1];
 		if (cMin > rgbValues[2])
@@ -250,16 +259,12 @@ class Utils
 			saturation = range / cMax;
 		if (saturation != 0.0)
 		{
-			double factor = 1.0 / range;
-			double red = (cMax - rgbValues[0]) * factor;
-			double green = (cMax - rgbValues[1]) * factor;
-			double blue = (cMax - rgbValues[2]) * factor;
 			if (rgbValues[0] == cMax)
-				hue = blue - green;
+				hue = (rgbValues[1] - rgbValues[2]) / range;
 			else if (rgbValues[1] == cMax)
-				hue = 2.0 + red - blue;
+				hue = 2.0 + (rgbValues[2] - rgbValues[0]) / range;
 			else
-				hue = 4.0 + green - red;
+				hue = 4.0 + (rgbValues[0] - rgbValues[1]) / range;
 			hue /= 6.0;
 			if (hue < 0.0)
 				hue += 1.0;

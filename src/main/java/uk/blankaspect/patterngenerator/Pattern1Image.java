@@ -982,7 +982,7 @@ class Pattern1Image
 		AppConfig config = AppConfig.INSTANCE;
 		numRenderingThreads = config.getPattern1NumRenderingThreads();
 		if (numRenderingThreads == 0)
-			numRenderingThreads = Runtime.getRuntime().availableProcessors();
+			numRenderingThreads = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
 		isPhaseAnimation = config.isPattern1PhaseAnimation();
 	}
 
@@ -1416,12 +1416,7 @@ class Pattern1Image
 		public static Symmetry forKey(
 			String	key)
 		{
-			for (Symmetry value : values())
-			{
-				if (value.key.equals(key))
-					return value;
-			}
-			return null;
+			return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -1430,6 +1425,7 @@ class Pattern1Image
 	//  Instance methods : IStringKeyed interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public String getKey()
 		{
 			return key;
@@ -1505,12 +1501,7 @@ class Pattern1Image
 		public static SaturationMode forKey(
 			String	key)
 		{
-			for (SaturationMode value : values())
-			{
-				if (value.key.equals(key))
-					return value;
-			}
-			return null;
+			return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -1595,12 +1586,7 @@ class Pattern1Image
 		public static RotationSense forKey(
 			String	key)
 		{
-			for (RotationSense value : values())
-			{
-				if (value.key.equals(key))
-					return value;
-			}
-			return null;
+			return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -1685,12 +1671,7 @@ class Pattern1Image
 		public static AnimationKind forKey(
 			String	key)
 		{
-			for (AnimationKind value : values())
-			{
-				if (value.key.equals(key))
-					return value;
-			}
-			return null;
+			return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -3188,12 +3169,7 @@ class Pattern1Image
 			public static Shape forKey(
 				String	key)
 			{
-				for (Shape value : values())
-				{
-					if (value.key.equals(key))
-						return value;
-				}
-				return null;
+				return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 			}
 
 			//----------------------------------------------------------
@@ -3356,12 +3332,7 @@ class Pattern1Image
 			public static Waveform forKey(
 				String	key)
 			{
-				for (Waveform value : values())
-				{
-					if (value.key.equals(key))
-						return value;
-				}
-				return null;
+				return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 			}
 
 			//----------------------------------------------------------
@@ -3463,12 +3434,7 @@ class Pattern1Image
 			public static Constraint forKey(
 				String	key)
 			{
-				for (Constraint value : values())
-				{
-					if (value.key.equals(key))
-						return value;
-				}
-				return null;
+				return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 			}
 
 			//----------------------------------------------------------

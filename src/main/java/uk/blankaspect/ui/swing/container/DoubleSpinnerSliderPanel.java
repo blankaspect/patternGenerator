@@ -283,7 +283,7 @@ public class DoubleSpinnerSliderPanel
 		SpinnerNumberModel model = (SpinnerNumberModel)spinner.getModel();
 		double minValue = (Double)model.getMinimum();
 		double maxValue = (Double)model.getMaximum();
-		return ((value - minValue) / (maxValue - minValue));
+		return (value - minValue) / (maxValue - minValue);
 	}
 
 	//------------------------------------------------------------------
@@ -293,7 +293,7 @@ public class DoubleSpinnerSliderPanel
 		SpinnerNumberModel model = (SpinnerNumberModel)spinner.getModel();
 		double minValue = (Double)model.getMinimum();
 		double maxValue = (Double)model.getMaximum();
-		return (minValue + value * (maxValue - minValue));
+		return minValue + value * (maxValue - minValue);
 	}
 
 	//------------------------------------------------------------------

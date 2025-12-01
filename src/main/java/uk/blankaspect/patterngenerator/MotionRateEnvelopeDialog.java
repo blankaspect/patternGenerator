@@ -73,6 +73,8 @@ import uk.blankaspect.ui.swing.spinner.FDoubleSpinner;
 
 import uk.blankaspect.ui.swing.textfield.DoubleValueField;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -107,6 +109,411 @@ class MotionRateEnvelopeDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	Point	location;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	boolean				accepted;
+	private	SimpleViewEnvelope	envelope;
+	private	CoefficientField	xCoeffField;
+	private	CoefficientField	yCoeffField;
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	private MotionRateEnvelopeDialog(Window             owner,
+									 MotionRateEnvelope envelope)
+	{
+		// Call superclass constructor
+		super(owner, TITLE_STR, ModalityType.APPLICATION_MODAL);
+
+		// Set icons
+		setIconImages(owner.getIconImages());
+
+
+		//----  Envelope panel
+
+		GridBagLayout gridBag = new GridBagLayout();
+		GridBagConstraints gbc = new GridBagConstraints();
+
+		JPanel envelopePanel = new JPanel(gridBag);
+
+		int gridY = 0;
+
+		// Field: node value
+		NodeValueField nodeValueField = new NodeValueField();
+
+		gbc.gridx = 0;
+		gbc.gridy = gridY++;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(0, 0, 0, 0);
+		gridBag.setConstraints(nodeValueField, gbc);
+		envelopePanel.add(nodeValueField);
+
+		// Envelope view
+		this.envelope = new SimpleViewEnvelope(EnvelopeKind.LINEAR);
+		this.envelope.setMinDeltaX(1.0 / (double)(EnvelopeView.NUM_X_DIVS * EnvelopeView.X_DIV_WIDTH));
+		this.envelope.setNodes(envelope.getNodes(), false, false);
+
+		EnvelopeView envelopeView = new EnvelopeView();
+		envelopeView.addEnvelope(this.envelope);
+		envelopeView.setScrollUnitIncrement(2);
+		envelopeView.addChangeListener(nodeValueField);
+		envelopeView.resetSelectedNodeId();
+
+		// Scroll pane: envelope view
+		EnvelopeScrollPane envelopeScrollPane = new EnvelopeScrollPane(envelopeView);
+
+		gbc.gridx = 0;
+		gbc.gridy = gridY++;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(2, 0, 0, 0);
+		gridBag.setConstraints(envelopeScrollPane, gbc);
+		envelopePanel.add(envelopeScrollPane);
+
+
+		//----  Control panel
+
+		JPanel controlPanel = new JPanel(gridBag);
+		GuiUtils.setPaddedLineBorder(controlPanel);
+
+		gridY = 0;
+
+		// Label: x range
+		JLabel xRangeLabel = new FLabel(X_RANGE_STR);
+
+		gbc.gridx = 0;
+		gbc.gridy = gridY;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_END;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = AppConstants.COMPONENT_INSETS;
+		gridBag.setConstraints(xRangeLabel, gbc);
+		controlPanel.add(xRangeLabel);
+
+		// Panel: x coefficient
+		JPanel xRangePanel = new JPanel(gridBag);
+
+		gbc.gridx = 1;
+		gbc.gridy = gridY++;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = AppConstants.COMPONENT_INSETS;
+		gridBag.setConstraints(xRangePanel, gbc);
+		controlPanel.add(xRangePanel);
+
+		// Field: x coefficient
+		xCoeffField = new CoefficientField(envelope.getXCoefficient());
+
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(0, 0, 0, 0);
+		gridBag.setConstraints(xCoeffField, gbc);
+		xRangePanel.add(xCoeffField);
+
+		// Label: frames
+		JLabel framesLabel = new FLabel(FRAMES_STR);
+
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(0, 4, 0, 0);
+		gridBag.setConstraints(framesLabel, gbc);
+		xRangePanel.add(framesLabel);
+
+		// Label: y coefficient
+		JLabel yRangeLabel = new FLabel(Y_RANGE_STR);
+
+		gbc.gridx = 0;
+		gbc.gridy = gridY;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_END;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = AppConstants.COMPONENT_INSETS;
+		gridBag.setConstraints(yRangeLabel, gbc);
+		controlPanel.add(yRangeLabel);
+
+		// Field: y coefficient
+		yCoeffField = new CoefficientField(envelope.getYCoefficient());
+
+		gbc.gridx = 1;
+		gbc.gridy = gridY++;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = AppConstants.COMPONENT_INSETS;
+		gridBag.setConstraints(yCoeffField, gbc);
+		controlPanel.add(yCoeffField);
+
+
+		//----  Button panel
+
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 0, 8, 0));
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(3, 8, 3, 8));
+
+		// Button: OK
+		JButton okButton = new FButton(AppConstants.OK_STR);
+		okButton.setActionCommand(Command.ACCEPT);
+		okButton.addActionListener(this);
+		buttonPanel.add(okButton);
+
+		// Button: cancel
+		JButton cancelButton = new FButton(AppConstants.CANCEL_STR);
+		cancelButton.setActionCommand(Command.CLOSE);
+		cancelButton.addActionListener(this);
+		buttonPanel.add(cancelButton);
+
+
+		//----  Main panel
+
+		JPanel mainPanel = new JPanel(gridBag);
+		mainPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+
+		gridY = 0;
+
+		gbc.gridx = 0;
+		gbc.gridy = gridY++;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.NORTH;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(0, 0, 0, 0);
+		gridBag.setConstraints(envelopePanel, gbc);
+		mainPanel.add(envelopePanel);
+
+		gbc.gridx = 0;
+		gbc.gridy = gridY++;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.NORTH;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(3, 0, 0, 0);
+		gridBag.setConstraints(controlPanel, gbc);
+		mainPanel.add(controlPanel);
+
+		gbc.gridx = 0;
+		gbc.gridy = gridY++;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.NORTH;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(3, 0, 0, 0);
+		gridBag.setConstraints(buttonPanel, gbc);
+		mainPanel.add(buttonPanel);
+
+		// Add commands to action map
+		KeyAction.create(mainPanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+						 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Command.CLOSE, this);
+
+
+		//----  Window
+
+		// Set content pane
+		setContentPane(mainPanel);
+
+		// Dispose of window when it is closed
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+		// Handle window events
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
+			{
+				onClose();
+			}
+		});
+
+		// Prevent dialog from being resized
+		setResizable(false);
+
+		// Resize dialog to its preferred size
+		pack();
+
+		// Set location of dialog
+		if (location == null)
+			location = GuiUtils.getComponentLocation(this, owner);
+		setLocation(location);
+
+		// Set default button
+		getRootPane().setDefaultButton(okButton);
+
+		// Show dialog
+		setVisible(true);
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Class methods
+////////////////////////////////////////////////////////////////////////
+
+	public static MotionRateEnvelope showDialog(Component          parent,
+												MotionRateEnvelope envelope)
+	{
+		return new MotionRateEnvelopeDialog(GuiUtils.getWindow(parent), envelope).getEnvelope();
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods : ActionListener interface
+////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void actionPerformed(ActionEvent event)
+	{
+		switch (event.getActionCommand())
+		{
+			case Command.ACCEPT -> onAccept();
+			case Command.CLOSE  -> onClose();
+		}
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods
+////////////////////////////////////////////////////////////////////////
+
+	public MotionRateEnvelope getEnvelope()
+	{
+		return accepted
+				? new MotionRateEnvelope(envelope.getNodes(), xCoeffField.getValue(), yCoeffField.getValue())
+				: null;
+	}
+
+	//------------------------------------------------------------------
+
+	private void validateUserInput()
+		throws AppException
+	{
+		// x coefficient
+		try
+		{
+			try
+			{
+				double value = xCoeffField.getValue();
+				if (value == 0.0)
+					throw new AppException(ErrorId.X_COORDINATE_OUT_OF_BOUNDS);
+			}
+			catch (NumberFormatException e)
+			{
+				throw new AppException(ErrorId.INVALID_X_COORDINATE);
+			}
+		}
+		catch (AppException e)
+		{
+			GuiUtils.setFocus(xCoeffField);
+			throw e;
+		}
+
+		// y coefficient
+		try
+		{
+			try
+			{
+				double value = yCoeffField.getValue();
+				if (value == 0.0)
+					throw new AppException(ErrorId.Y_COORDINATE_OUT_OF_BOUNDS);
+			}
+			catch (NumberFormatException e)
+			{
+				throw new AppException(ErrorId.INVALID_Y_COORDINATE);
+			}
+		}
+		catch (AppException e)
+		{
+			GuiUtils.setFocus(yCoeffField);
+			throw e;
+		}
+	}
+
+	//------------------------------------------------------------------
+
+	private void onAccept()
+	{
+		try
+		{
+			validateUserInput();
+			accepted = true;
+			onClose();
+		}
+		catch (AppException e)
+		{
+			JOptionPane.showMessageDialog(this, e, PatternGeneratorApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	//------------------------------------------------------------------
+
+	private void onClose()
+	{
+		location = getLocation();
+		setVisible(false);
+		dispose();
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
 //  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
@@ -135,6 +542,12 @@ class MotionRateEnvelopeDialog
 		("The y coordinate must be greater than zero.");
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
@@ -149,18 +562,13 @@ class MotionRateEnvelopeDialog
 	//  Instance methods : AppException.IId interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public String getMessage()
 		{
 			return message;
 		}
 
 		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
 
 	}
 
@@ -443,9 +851,9 @@ class MotionRateEnvelopeDialog
 		@Override
 		protected String getXScaleString(int index)
 		{
-			return ((getHorizontalDivOffset() + index * getHorizontalDivWidth() <= getPlotWidth())
-															? X_SCALE_FORMAT.format((double)index * 0.1)
-															: null);
+			return (getHorizontalDivOffset() + index * getHorizontalDivWidth() <= getPlotWidth())
+					? X_SCALE_FORMAT.format((double)index * 0.1)
+					: null;
 		}
 
 		//--------------------------------------------------------------
@@ -532,401 +940,6 @@ class MotionRateEnvelopeDialog
 	}
 
 	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	Point	location;
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	boolean				accepted;
-	private	SimpleViewEnvelope	envelope;
-	private	CoefficientField	xCoeffField;
-	private	CoefficientField	yCoeffField;
-
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	private MotionRateEnvelopeDialog(Window             owner,
-									 MotionRateEnvelope envelope)
-	{
-		// Call superclass constructor
-		super(owner, TITLE_STR, ModalityType.APPLICATION_MODAL);
-
-		// Set icons
-		setIconImages(owner.getIconImages());
-
-
-		//----  Envelope panel
-
-		GridBagLayout gridBag = new GridBagLayout();
-		GridBagConstraints gbc = new GridBagConstraints();
-
-		JPanel envelopePanel = new JPanel(gridBag);
-
-		int gridY = 0;
-
-		// Field: node value
-		NodeValueField nodeValueField = new NodeValueField();
-
-		gbc.gridx = 0;
-		gbc.gridy = gridY++;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = new Insets(0, 0, 0, 0);
-		gridBag.setConstraints(nodeValueField, gbc);
-		envelopePanel.add(nodeValueField);
-
-		// Envelope view
-		this.envelope = new SimpleViewEnvelope(EnvelopeKind.LINEAR);
-		this.envelope.setMinDeltaX(1.0 / (double)(EnvelopeView.NUM_X_DIVS * EnvelopeView.X_DIV_WIDTH));
-		this.envelope.setNodes(envelope.getNodes(), false, false);
-
-		EnvelopeView envelopeView = new EnvelopeView();
-		envelopeView.addEnvelope(this.envelope);
-		envelopeView.setScrollUnitIncrement(2);
-		envelopeView.addChangeListener(nodeValueField);
-		envelopeView.resetSelectedNodeId();
-
-		// Scroll pane: envelope view
-		EnvelopeScrollPane envelopeScrollPane = new EnvelopeScrollPane(envelopeView);
-
-		gbc.gridx = 0;
-		gbc.gridy = gridY++;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = new Insets(2, 0, 0, 0);
-		gridBag.setConstraints(envelopeScrollPane, gbc);
-		envelopePanel.add(envelopeScrollPane);
-
-
-		//----  Control panel
-
-		JPanel controlPanel = new JPanel(gridBag);
-		GuiUtils.setPaddedLineBorder(controlPanel);
-
-		gridY = 0;
-
-		// Label: x range
-		JLabel xRangeLabel = new FLabel(X_RANGE_STR);
-
-		gbc.gridx = 0;
-		gbc.gridy = gridY;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_END;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = AppConstants.COMPONENT_INSETS;
-		gridBag.setConstraints(xRangeLabel, gbc);
-		controlPanel.add(xRangeLabel);
-
-		// Panel: x coefficient
-		JPanel xRangePanel = new JPanel(gridBag);
-
-		gbc.gridx = 1;
-		gbc.gridy = gridY++;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = AppConstants.COMPONENT_INSETS;
-		gridBag.setConstraints(xRangePanel, gbc);
-		controlPanel.add(xRangePanel);
-
-		// Field: x coefficient
-		xCoeffField = new CoefficientField(envelope.getXCoefficient());
-
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = new Insets(0, 0, 0, 0);
-		gridBag.setConstraints(xCoeffField, gbc);
-		xRangePanel.add(xCoeffField);
-
-		// Label: frames
-		JLabel framesLabel = new FLabel(FRAMES_STR);
-
-		gbc.gridx = 1;
-		gbc.gridy = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = new Insets(0, 4, 0, 0);
-		gridBag.setConstraints(framesLabel, gbc);
-		xRangePanel.add(framesLabel);
-
-		// Label: y coefficient
-		JLabel yRangeLabel = new FLabel(Y_RANGE_STR);
-
-		gbc.gridx = 0;
-		gbc.gridy = gridY;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_END;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = AppConstants.COMPONENT_INSETS;
-		gridBag.setConstraints(yRangeLabel, gbc);
-		controlPanel.add(yRangeLabel);
-
-		// Field: y coefficient
-		yCoeffField = new CoefficientField(envelope.getYCoefficient());
-
-		gbc.gridx = 1;
-		gbc.gridy = gridY++;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = AppConstants.COMPONENT_INSETS;
-		gridBag.setConstraints(yCoeffField, gbc);
-		controlPanel.add(yCoeffField);
-
-
-		//----  Button panel
-
-		JPanel buttonPanel = new JPanel(new GridLayout(1, 0, 8, 0));
-		buttonPanel.setBorder(BorderFactory.createEmptyBorder(3, 8, 3, 8));
-
-		// Button: OK
-		JButton okButton = new FButton(AppConstants.OK_STR);
-		okButton.setActionCommand(Command.ACCEPT);
-		okButton.addActionListener(this);
-		buttonPanel.add(okButton);
-
-		// Button: cancel
-		JButton cancelButton = new FButton(AppConstants.CANCEL_STR);
-		cancelButton.setActionCommand(Command.CLOSE);
-		cancelButton.addActionListener(this);
-		buttonPanel.add(cancelButton);
-
-
-		//----  Main panel
-
-		JPanel mainPanel = new JPanel(gridBag);
-		mainPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-
-		gridY = 0;
-
-		gbc.gridx = 0;
-		gbc.gridy = gridY++;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.NORTH;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = new Insets(0, 0, 0, 0);
-		gridBag.setConstraints(envelopePanel, gbc);
-		mainPanel.add(envelopePanel);
-
-		gbc.gridx = 0;
-		gbc.gridy = gridY++;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.NORTH;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = new Insets(3, 0, 0, 0);
-		gridBag.setConstraints(controlPanel, gbc);
-		mainPanel.add(controlPanel);
-
-		gbc.gridx = 0;
-		gbc.gridy = gridY++;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.NORTH;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = new Insets(3, 0, 0, 0);
-		gridBag.setConstraints(buttonPanel, gbc);
-		mainPanel.add(buttonPanel);
-
-		// Add commands to action map
-		KeyAction.create(mainPanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
-						 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Command.CLOSE, this);
-
-
-		//----  Window
-
-		// Set content pane
-		setContentPane(mainPanel);
-
-		// Dispose of window when it is closed
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
-		// Handle window closing
-		addWindowListener(new WindowAdapter()
-		{
-			@Override
-			public void windowClosing(WindowEvent event)
-			{
-				onClose();
-			}
-		});
-
-		// Prevent dialog from being resized
-		setResizable(false);
-
-		// Resize dialog to its preferred size
-		pack();
-
-		// Set location of dialog
-		if (location == null)
-			location = GuiUtils.getComponentLocation(this, owner);
-		setLocation(location);
-
-		// Set default button
-		getRootPane().setDefaultButton(okButton);
-
-		// Show dialog
-		setVisible(true);
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class methods
-////////////////////////////////////////////////////////////////////////
-
-	public static MotionRateEnvelope showDialog(Component          parent,
-												MotionRateEnvelope envelope)
-	{
-		return new MotionRateEnvelopeDialog(GuiUtils.getWindow(parent), envelope).getEnvelope();
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods : ActionListener interface
-////////////////////////////////////////////////////////////////////////
-
-	public void actionPerformed(ActionEvent event)
-	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods
-////////////////////////////////////////////////////////////////////////
-
-	public MotionRateEnvelope getEnvelope()
-	{
-		return accepted
-				? new MotionRateEnvelope(envelope.getNodes(), xCoeffField.getValue(), yCoeffField.getValue())
-				: null;
-	}
-
-	//------------------------------------------------------------------
-
-	private void validateUserInput()
-		throws AppException
-	{
-		// x coefficient
-		try
-		{
-			try
-			{
-				double value = xCoeffField.getValue();
-				if (value == 0.0)
-					throw new AppException(ErrorId.X_COORDINATE_OUT_OF_BOUNDS);
-			}
-			catch (NumberFormatException e)
-			{
-				throw new AppException(ErrorId.INVALID_X_COORDINATE);
-			}
-		}
-		catch (AppException e)
-		{
-			GuiUtils.setFocus(xCoeffField);
-			throw e;
-		}
-
-		// y coefficient
-		try
-		{
-			try
-			{
-				double value = yCoeffField.getValue();
-				if (value == 0.0)
-					throw new AppException(ErrorId.Y_COORDINATE_OUT_OF_BOUNDS);
-			}
-			catch (NumberFormatException e)
-			{
-				throw new AppException(ErrorId.INVALID_Y_COORDINATE);
-			}
-		}
-		catch (AppException e)
-		{
-			GuiUtils.setFocus(yCoeffField);
-			throw e;
-		}
-	}
-
-	//------------------------------------------------------------------
-
-	private void onAccept()
-	{
-		try
-		{
-			validateUserInput();
-			accepted = true;
-			onClose();
-		}
-		catch (AppException e)
-		{
-			JOptionPane.showMessageDialog(this, e, PatternGeneratorApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
-		}
-	}
-
-	//------------------------------------------------------------------
-
-	private void onClose()
-	{
-		location = getLocation();
-		setVisible(false);
-		dispose();
-	}
-
-	//------------------------------------------------------------------
 
 }
 

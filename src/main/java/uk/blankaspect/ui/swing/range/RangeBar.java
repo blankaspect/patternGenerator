@@ -94,22 +94,22 @@ public abstract class RangeBar
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
-									 Command.DECREMENT_UNIT_LOWER),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
-									 Command.INCREMENT_UNIT_LOWER),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK),
-									 Command.DECREMENT_BLOCK_LOWER),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK),
-									 Command.INCREMENT_BLOCK_LOWER),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
-									 Command.DECREMENT_UNIT_UPPER),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
-									 Command.INCREMENT_UNIT_UPPER),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK),
-									 Command.DECREMENT_BLOCK_UPPER),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK),
-									 Command.INCREMENT_BLOCK_UPPER)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
+						  Command.DECREMENT_UNIT_LOWER),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
+						  Command.INCREMENT_UNIT_LOWER),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK),
+						  Command.DECREMENT_BLOCK_LOWER),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK),
+						  Command.INCREMENT_BLOCK_LOWER),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
+						  Command.DECREMENT_UNIT_UPPER),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
+						  Command.INCREMENT_UNIT_UPPER),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK),
+						  Command.DECREMENT_BLOCK_UPPER),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK),
+						  Command.INCREMENT_BLOCK_UPPER)
 	};
 
 ////////////////////////////////////////////////////////////////////////
@@ -213,33 +213,20 @@ public abstract class RangeBar
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.DECREMENT_UNIT_LOWER))
-			onDecrementUnitLower();
-
-		else if (command.equals(Command.INCREMENT_UNIT_LOWER))
-			onIncrementUnitLower();
-
-		else if (command.equals(Command.DECREMENT_BLOCK_LOWER))
-			onDecrementBlockLower();
-
-		else if (command.equals(Command.INCREMENT_BLOCK_LOWER))
-			onIncrementBlockLower();
-
-		else if (command.equals(Command.DECREMENT_UNIT_UPPER))
-			onDecrementUnitUpper();
-
-		else if (command.equals(Command.INCREMENT_UNIT_UPPER))
-			onIncrementUnitUpper();
-
-		else if (command.equals(Command.DECREMENT_BLOCK_UPPER))
-			onDecrementBlockUpper();
-
-		else if (command.equals(Command.INCREMENT_BLOCK_UPPER))
-			onIncrementBlockUpper();
+		switch (event.getActionCommand())
+		{
+			case Command.DECREMENT_UNIT_LOWER  -> onDecrementUnitLower();
+			case Command.INCREMENT_UNIT_LOWER  -> onIncrementUnitLower();
+			case Command.DECREMENT_BLOCK_LOWER -> onDecrementBlockLower();
+			case Command.INCREMENT_BLOCK_LOWER -> onIncrementBlockLower();
+			case Command.DECREMENT_UNIT_UPPER  -> onDecrementUnitUpper();
+			case Command.INCREMENT_UNIT_UPPER  -> onIncrementUnitUpper();
+			case Command.DECREMENT_BLOCK_UPPER -> onDecrementBlockUpper();
+			case Command.INCREMENT_BLOCK_UPPER -> onIncrementBlockUpper();
+		}
 	}
 
 	//------------------------------------------------------------------

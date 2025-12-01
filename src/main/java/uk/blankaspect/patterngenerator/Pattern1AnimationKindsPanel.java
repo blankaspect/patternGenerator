@@ -95,6 +95,105 @@ class Pattern1AnimationKindsPanel
 	}
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	Map<Pattern1Image.AnimationKind, CheckBox>	checkBoxes;
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	public Pattern1AnimationKindsPanel(Set<Pattern1Image.AnimationKind> enabledKinds,
+									   Set<Pattern1Image.AnimationKind> selectedKinds)
+	{
+		// Set layout manager
+		setLayout(new GridLayout(0, 1, 0, 6));
+
+		// Check boxes
+		checkBoxes = new EnumMap<>(Pattern1Image.AnimationKind.class);
+
+		List<KeyAction.KeyCommandPair> keyCommands = new ArrayList<>();
+		for (Pattern1Image.AnimationKind animationKind : Pattern1Image.AnimationKind.values())
+		{
+			String command = Command.TOGGLE_ANIMATION_KIND + animationKind.getKey();
+
+			CheckBox checkBox = new CheckBox(animationKind.toString());
+			checkBox.setEnabled(enabledKinds.contains(animationKind));
+			checkBox.setSelected(checkBox.isEnabled() && selectedKinds.contains(animationKind));
+			checkBox.setActionCommand(command);
+			checkBox.addActionListener(this);
+			checkBoxes.put(animationKind, checkBox);
+			add(checkBox);
+
+			if (checkBox.isEnabled())
+			{
+				Character ch = (char)('1' + animationKind.ordinal());
+				keyCommands.add(KeyAction.command(KeyStroke.getKeyStroke(ch, 0), command));
+			}
+		}
+
+		// Add commands to action map
+		KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, this, keyCommands);
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods : ActionListener interface
+////////////////////////////////////////////////////////////////////////
+
+	public void actionPerformed(ActionEvent event)
+	{
+		String command = event.getActionCommand();
+
+		if (command.startsWith(Command.TOGGLE_ANIMATION_KIND))
+		{
+			onToggleAnimationKind(StringUtils.removePrefix(command, Command.TOGGLE_ANIMATION_KIND),
+								  event.getSource() == null);
+		}
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods
+////////////////////////////////////////////////////////////////////////
+
+	public Set<Pattern1Image.AnimationKind> getAnimationKinds()
+	{
+		Set<Pattern1Image.AnimationKind> animationKinds = EnumSet.noneOf(Pattern1Image.AnimationKind.class);
+		for (Pattern1Image.AnimationKind animationKind : checkBoxes.keySet())
+		{
+			if (checkBoxes.get(animationKind).isSelected())
+				animationKinds.add(animationKind);
+		}
+		return animationKinds;
+	}
+
+	//------------------------------------------------------------------
+
+	protected void animationKindsChanged()
+	{
+		// may be overridden in subclass
+	}
+
+	//------------------------------------------------------------------
+
+	private void onToggleAnimationKind(String  key,
+									   boolean keyPress)
+	{
+		if (keyPress)
+		{
+			CheckBox checkBox = checkBoxes.get(Pattern1Image.AnimationKind.forKey(key));
+			checkBox.setSelected(!checkBox.isSelected());
+		}
+		animationKindsChanged();
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
 //  Member classes : inner classes
 ////////////////////////////////////////////////////////////////////////
 
@@ -105,6 +204,13 @@ class Pattern1AnimationKindsPanel
 	private class CheckBox
 		extends JToggleButton
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int	width;
+		private	int	height;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -203,114 +309,9 @@ class Pattern1AnimationKindsPanel
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int	width;
-		private	int	height;
-
 	}
 
 	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	public Pattern1AnimationKindsPanel(Set<Pattern1Image.AnimationKind> enabledKinds,
-									   Set<Pattern1Image.AnimationKind> selectedKinds)
-	{
-		// Set layout manager
-		setLayout(new GridLayout(0, 1, 0, 6));
-
-		// Check boxes
-		checkBoxes = new EnumMap<>(Pattern1Image.AnimationKind.class);
-
-		List<KeyAction.KeyCommandPair> keyCommands = new ArrayList<>();
-		for (Pattern1Image.AnimationKind animationKind : Pattern1Image.AnimationKind.values())
-		{
-			String command = Command.TOGGLE_ANIMATION_KIND + animationKind.getKey();
-
-			CheckBox checkBox = new CheckBox(animationKind.toString());
-			checkBox.setEnabled(enabledKinds.contains(animationKind));
-			checkBox.setSelected(checkBox.isEnabled() && selectedKinds.contains(animationKind));
-			checkBox.setActionCommand(command);
-			checkBox.addActionListener(this);
-			checkBoxes.put(animationKind, checkBox);
-			add(checkBox);
-
-			if (checkBox.isEnabled())
-			{
-				Character ch = (char)('1' + animationKind.ordinal());
-				keyCommands.add(new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(ch, 0), command));
-			}
-		}
-
-		// Add commands to action map
-		KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, this, keyCommands);
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods : ActionListener interface
-////////////////////////////////////////////////////////////////////////
-
-	public void actionPerformed(ActionEvent event)
-	{
-		String command = event.getActionCommand();
-
-		if (command.startsWith(Command.TOGGLE_ANIMATION_KIND))
-			onToggleAnimationKind(StringUtils.removePrefix(command, Command.TOGGLE_ANIMATION_KIND),
-								  event.getSource() == null);
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods
-////////////////////////////////////////////////////////////////////////
-
-	public Set<Pattern1Image.AnimationKind> getAnimationKinds()
-	{
-		Set<Pattern1Image.AnimationKind> animationKinds =
-														EnumSet.noneOf(Pattern1Image.AnimationKind.class);
-		for (Pattern1Image.AnimationKind animationKind : checkBoxes.keySet())
-		{
-			if (checkBoxes.get(animationKind).isSelected())
-				animationKinds.add(animationKind);
-		}
-		return animationKinds;
-	}
-
-	//------------------------------------------------------------------
-
-	protected void animationKindsChanged()
-	{
-		// may be overridden in subclass
-	}
-
-	//------------------------------------------------------------------
-
-	private void onToggleAnimationKind(String  key,
-									   boolean keyPress)
-	{
-		if (keyPress)
-		{
-			CheckBox checkBox = checkBoxes.get(Pattern1Image.AnimationKind.forKey(key));
-			checkBox.setSelected(!checkBox.isSelected());
-		}
-		animationKindsChanged();
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	Map<Pattern1Image.AnimationKind, CheckBox>	checkBoxes;
 
 }
 

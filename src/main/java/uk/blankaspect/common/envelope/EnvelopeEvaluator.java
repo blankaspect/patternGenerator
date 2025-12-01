@@ -63,7 +63,7 @@ public class EnvelopeEvaluator
 
 		private Node(Point2D node)
 		{
-			this(node.getX(), node.getY());
+			this(node.x(), node.y());
 		}
 
 		//--------------------------------------------------------------
@@ -88,7 +88,7 @@ public class EnvelopeEvaluator
 		@Override
 		public int compareTo(Node other)
 		{
-			return Double.compare(getX(), other.getX());
+			return Double.compare(x(), other.x());
 		}
 
 		//--------------------------------------------------------------
@@ -194,15 +194,15 @@ public class EnvelopeEvaluator
 			case CUBIC_SPLINE_A:
 			{
 				Point2D node = nodes.get(nodeIndex++);
-				x0 = node.getX();
-				y0 = node.getY();
+				x0 = node.x();
+				y0 = node.y();
 				node = nodes.get(nodeIndex++);
-				x1 = node.getX();
-				y1 = node.getY();
+				x1 = node.x();
+				y1 = node.y();
 				node = (nodeIndex < nodes.size()) ? nodes.get(nodeIndex++)
 												  : new Point2D(x1 + (x1 - x0), y1 + (y1 - y0));
-				x2 = node.getX();
-				y2 = node.getY();
+				x2 = node.x();
+				y2 = node.y();
 
 				double dx01 = x1 - x0;
 				double dx02 = x2 - x0;
@@ -223,15 +223,15 @@ public class EnvelopeEvaluator
 			case CUBIC_SPLINE_B:
 			{
 				Point2D node = nodes.get(nodeIndex++);
-				x0 = node.getX();
-				y0 = node.getY();
+				x0 = node.x();
+				y0 = node.y();
 				node = nodes.get(nodeIndex++);
-				x1 = node.getX();
-				y1 = node.getY();
+				x1 = node.x();
+				y1 = node.y();
 				node = (nodeIndex < nodes.size()) ? nodes.get(nodeIndex++)
 												  : new Point2D(x1 + (x1 - x0), y1 + (y1 - y0));
-				x2 = node.getX();
-				y2 = node.getY();
+				x2 = node.x();
+				y2 = node.y();
 
 				double dx01 = x1 - x0;
 				double dx02 = x2 - x0;
@@ -269,19 +269,19 @@ public class EnvelopeEvaluator
 				case LINEAR:
 				{
 					Point2D node = nodes.get(nodeIndex);
-					x0 = node.getX();
-					y0 = node.getY();
+					x0 = node.x();
+					y0 = node.y();
 					node = nodes.get(nodeIndex + 1);
-					x1 = node.getX();
-					y1 = node.getY();
+					x1 = node.x();
+					y1 = node.y();
 					while (x > x1)
 					{
 						x0 = x1;
 						y0 = y1;
 						++nodeIndex;
 						node = nodes.get(nodeIndex + 1);
-						x1 = node.getX();
-						y1 = node.getY();
+						x1 = node.x();
+						y1 = node.y();
 					}
 
 					evalY = (x0 == x1) ? 0.5 * (y0 + y1)
@@ -292,19 +292,19 @@ public class EnvelopeEvaluator
 				case CUBIC_SEGMENT:
 				{
 					Point2D node = nodes.get(nodeIndex);
-					x0 = node.getX();
-					y0 = node.getY();
+					x0 = node.x();
+					y0 = node.y();
 					node = nodes.get(nodeIndex + 1);
-					x1 = node.getX();
-					y1 = node.getY();
+					x1 = node.x();
+					y1 = node.y();
 					while (x > x1)
 					{
 						x0 = x1;
 						y0 = y1;
 						++nodeIndex;
 						node = nodes.get(nodeIndex + 1);
-						x1 = node.getX();
-						y1 = node.getY();
+						x1 = node.x();
+						y1 = node.y();
 					}
 
 					if (x0 == x1)
@@ -332,8 +332,8 @@ public class EnvelopeEvaluator
 
 						Point2D node = (nodeIndex < nodes.size()) ? nodes.get(nodeIndex++)
 																  : new Point2D(x1 + (x1 - x0), y1 + (y1 - y0));
-						x2 = node.getX();
-						y2 = node.getY();
+						x2 = node.x();
+						y2 = node.y();
 
 						double dx01 = x1 - x0;
 						double dx02 = x2 - x0;
@@ -367,8 +367,8 @@ public class EnvelopeEvaluator
 						y1 = y2;
 
 						Point2D node = nodes.get(nodeIndex++);
-						x2 = node.getX();
-						y2 = node.getY();
+						x2 = node.x();
+						y2 = node.y();
 
 						double dx01 = x1 - x0;
 						double dx02 = x2 - x0;

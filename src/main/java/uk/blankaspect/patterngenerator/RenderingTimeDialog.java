@@ -59,6 +59,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.text.TextRendering;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -89,120 +91,16 @@ class RenderingTimeDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
+	private static	Point	location;
 
-	// TIME FIELD CLASS
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
 
-
-	private static class TimeField
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	VERTICAL_MARGIN		= 3;
-		private static final	int	HORIZONTAL_MARGIN	= 6;
-
-		private static final	Color	TEXT_COLOUR			= Color.BLACK;
-		private static final	Color	BACKGROUND_COLOUR	= new Color(248, 236, 192);
-		private static final	Color	BORDER_COLOUR		= Colours.LINE_BORDER;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private TimeField(String prototypeStr)
-		{
-			// Initialise instance variables
-			AppFont.TEXT_FIELD.apply(this);
-			FontMetrics fontMetrics = getFontMetrics(getFont());
-			preferredWidth = 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(prototypeStr);
-			preferredHeight = 2 * VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent();
-
-			// Set properties
-			setEnabled(false);
-			setOpaque(true);
-			setFocusable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(preferredWidth, preferredHeight);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Get dimensions
-			int width = getWidth();
-			int height = getHeight();
-
-			// Draw background
-			gr.setColor(BACKGROUND_COLOUR);
-			gr.fillRect(0, 0, width, height);
-
-			// Draw text
-			if (text != null)
-			{
-				// Set rendering hints for text antialiasing and fractional metrics
-				TextRendering.setHints((Graphics2D)gr);
-
-				// Draw text
-				FontMetrics fontMetrics = gr.getFontMetrics();
-				gr.setColor(TEXT_COLOUR);
-				gr.drawString(text, width - HORIZONTAL_MARGIN - fontMetrics.stringWidth(text),
-							  VERTICAL_MARGIN + fontMetrics.getAscent());
-			}
-
-			// Draw border
-			gr.setColor(BORDER_COLOUR);
-			gr.drawRect(0, 0, width - 1, height - 1);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public void setText(String text)
-		{
-			if (!Objects.equals(text, this.text))
-			{
-				this.text = text;
-				repaint();
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int		preferredWidth;
-		private	int		preferredHeight;
-		private	String	text;
-
-	}
-
-	//==================================================================
+	private	TimeField	renderingTimeField;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -353,11 +251,22 @@ class RenderingTimeDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -395,15 +304,14 @@ class RenderingTimeDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.RESET))
-			onReset();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.RESET -> onReset();
+			case Command.CLOSE -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -456,16 +364,120 @@ class RenderingTimeDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
 
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
+	// TIME FIELD CLASS
 
-	private	TimeField	renderingTimeField;
+
+	private static class TimeField
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		VERTICAL_MARGIN		= 3;
+		private static final	int		HORIZONTAL_MARGIN	= 6;
+
+		private static final	Color	TEXT_COLOUR			= Color.BLACK;
+		private static final	Color	BACKGROUND_COLOUR	= new Color(248, 236, 192);
+		private static final	Color	BORDER_COLOUR		= Colours.LINE_BORDER;
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int		preferredWidth;
+		private	int		preferredHeight;
+		private	String	text;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private TimeField(String prototypeStr)
+		{
+			// Initialise instance variables
+			AppFont.TEXT_FIELD.apply(this);
+			FontMetrics fontMetrics = getFontMetrics(getFont());
+			preferredWidth = 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(prototypeStr);
+			preferredHeight = 2 * VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent();
+
+			// Set properties
+			setEnabled(false);
+			setOpaque(true);
+			setFocusable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(preferredWidth, preferredHeight);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Create copy of graphics context
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
+
+			// Get dimensions
+			int width = getWidth();
+			int height = getHeight();
+
+			// Draw background
+			gr2d.setColor(BACKGROUND_COLOUR);
+			gr2d.fillRect(0, 0, width, height);
+
+			// Draw text
+			if (text != null)
+			{
+				// Set rendering hints for text antialiasing and fractional metrics
+				TextRendering.setHints(gr2d);
+
+				// Draw text
+				FontMetrics fontMetrics = gr2d.getFontMetrics();
+				gr2d.setColor(TEXT_COLOUR);
+				gr2d.drawString(text, width - HORIZONTAL_MARGIN - fontMetrics.stringWidth(text),
+								VERTICAL_MARGIN + fontMetrics.getAscent());
+			}
+
+			// Draw border
+			gr2d.setColor(BORDER_COLOUR);
+			gr2d.drawRect(0, 0, width - 1, height - 1);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public void setText(String text)
+		{
+			if (!Objects.equals(text, this.text))
+			{
+				this.text = text;
+				repaint();
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

@@ -287,7 +287,7 @@ public class IntegerSpinnerSliderPanel
 		SpinnerNumberModel model = (SpinnerNumberModel)spinner.getModel();
 		int minValue = (Integer)model.getMinimum();
 		int maxValue = (Integer)model.getMaximum();
-		return (minValue + (int)Math.round(value * (double)(maxValue - minValue)));
+		return minValue + (int)Math.round(value * (double)(maxValue - minValue));
 	}
 
 	//------------------------------------------------------------------

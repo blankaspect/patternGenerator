@@ -70,9 +70,80 @@ public abstract class RangeBarDialog
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-									 Command.CLOSE)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Command.CLOSE)
 	};
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	private RangeBarDialog(Window   owner,
+						   RangeBar rangeBar)
+	{
+		// Call superclass constructor
+		super(owner, ModalityType.APPLICATION_MODAL);
+
+
+		//----  Main panel
+
+		// Button: close
+		JButton closeButton = new CloseButton();
+		closeButton.setActionCommand(Command.CLOSE);
+		closeButton.addActionListener(this);
+
+		// Add components to panel
+		GridBagLayout gridBag = new GridBagLayout();
+		JPanel mainPanel = new JPanel(gridBag);
+		addComponents(mainPanel, rangeBar, closeButton, gridBag, new GridBagConstraints());
+
+		// Add commands to action map
+		KeyAction.create(mainPanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, this, KEY_COMMANDS);
+
+
+		//----  Window
+
+		// Set content pane
+		setContentPane(mainPanel);
+
+		// Omit frame from dialog
+		setUndecorated(true);
+
+		// Dispose of window when it is closed
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+		// Prevent dialog from being resized
+		setResizable(false);
+
+		// Resize dialog to its preferred size
+		pack();
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Abstract methods
+////////////////////////////////////////////////////////////////////////
+
+	protected abstract void addComponents(JPanel             panel,
+										  RangeBar           rangeBar,
+										  JButton            closeButton,
+										  GridBagLayout      gridBag,
+										  GridBagConstraints gbc);
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods : ActionListener interface
+////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void actionPerformed(ActionEvent event)
+	{
+		if (event.getActionCommand().equals(Command.CLOSE))
+			dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+	}
+
+	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
 //  Member classes : non-inner classes
@@ -106,6 +177,7 @@ public abstract class RangeBarDialog
 	//  Instance methods : overriding methods
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		protected void addComponents(JPanel             panel,
 									 RangeBar           rangeBar,
 									 JButton            closeButton,
@@ -173,6 +245,7 @@ public abstract class RangeBarDialog
 	//  Instance methods : overriding methods
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		protected void addComponents(JPanel             panel,
 									 RangeBar           rangeBar,
 									 JButton            closeButton,
@@ -224,7 +297,7 @@ public abstract class RangeBarDialog
 	//  Constants
 	////////////////////////////////////////////////////////////////////
 
-		private static final	int	MARGIN	= 2;
+		private static final	int		MARGIN	= 2;
 
 		private static final	Color	BACKGROUND_COLOUR			= Colours.BACKGROUND;
 		private static final	Color	ACTIVE_BACKGROUND_COLOUR	= Colours.FOCUSED_SELECTION_BACKGROUND;
@@ -282,78 +355,6 @@ public abstract class RangeBarDialog
 	}
 
 	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	private RangeBarDialog(Window   owner,
-						   RangeBar rangeBar)
-	{
-		// Call superclass constructor
-		super(owner, ModalityType.APPLICATION_MODAL);
-
-
-		//----  Main panel
-
-		// Button: close
-		JButton closeButton = new CloseButton();
-		closeButton.setActionCommand(Command.CLOSE);
-		closeButton.addActionListener(this);
-
-		// Add components to panel
-		GridBagLayout gridBag = new GridBagLayout();
-		JPanel mainPanel = new JPanel(gridBag);
-		addComponents(mainPanel, rangeBar, closeButton, gridBag, new GridBagConstraints());
-
-		// Add commands to action map
-		KeyAction.create(mainPanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, this, KEY_COMMANDS);
-
-
-		//----  Window
-
-		// Set content pane
-		setContentPane(mainPanel);
-
-		// Omit frame from dialog
-		setUndecorated(true);
-
-		// Dispose of window when it is closed
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-		// Prevent dialog from being resized
-		setResizable(false);
-
-		// Resize dialog to its preferred size
-		pack();
-
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Abstract methods
-////////////////////////////////////////////////////////////////////////
-
-	protected abstract void addComponents(JPanel             panel,
-										  RangeBar           rangeBar,
-										  JButton            closeButton,
-										  GridBagLayout      gridBag,
-										  GridBagConstraints gbc);
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods : ActionListener interface
-////////////////////////////////////////////////////////////////////////
-
-	public void actionPerformed(ActionEvent event)
-	{
-		if (event.getActionCommand().equals(Command.CLOSE))
-			dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-	}
-
-	//------------------------------------------------------------------
 
 }
 
