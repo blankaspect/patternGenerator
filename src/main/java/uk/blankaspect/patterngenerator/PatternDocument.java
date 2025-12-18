@@ -927,52 +927,20 @@ abstract class PatternDocument
 		{
 			try
 			{
-				switch (command)
+				edit = switch (command)
 				{
-					case UNDO:
-						edit = onUndo();
-						break;
-
-					case REDO:
-						edit = onRedo();
-						break;
-
-					case CLEAR_EDIT_LIST:
-						edit = onClearEditList();
-						break;
-
-					case EDIT_PATTERN_PARAMETERS:
-						edit = onEditPatternParameters();
-						break;
-
-					case EDIT_DESCRIPTION:
-						edit = onEditDescription();
-						break;
-
-					case REGENERATE_PATTERN_WITH_NEW_SEED:
-						edit = onRegeneratePatternWithNewSeed();
-						break;
-
-					case SHOW_IMAGE_RENDERING_TIME:
-						onShowImageRenderingTime();
-						break;
-
-					case START_SLIDE_SHOW:
-						edit = onStartSlideShow();
-						break;
-
-					case START_ANIMATION:
-						edit = onStartAnimation();
-						break;
-
-					case OPTIMISE_ANIMATION:
-						edit = onOptimiseAnimation();
-						break;
-
-					case RESIZE_WINDOW_TO_IMAGE:
-						edit = onResizeWindowToImage();
-						break;
-				}
+					case UNDO                             -> onUndo();
+					case REDO                             -> onRedo();
+					case CLEAR_EDIT_LIST                  -> onClearEditList();
+					case EDIT_PATTERN_PARAMETERS          -> onEditPatternParameters();
+					case EDIT_DESCRIPTION                 -> onEditDescription();
+					case REGENERATE_PATTERN_WITH_NEW_SEED -> onRegeneratePatternWithNewSeed();
+					case SHOW_IMAGE_RENDERING_TIME        -> onShowImageRenderingTime();
+					case START_SLIDE_SHOW                 -> onStartSlideShow();
+					case START_ANIMATION                  -> onStartAnimation();
+					case OPTIMISE_ANIMATION               -> onOptimiseAnimation();
+					case RESIZE_WINDOW_TO_IMAGE           -> onResizeWindowToImage();
+				};
 			}
 			catch (OutOfMemoryError e)
 			{
@@ -1532,10 +1500,11 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private void onShowImageRenderingTime()
+	private Edit onShowImageRenderingTime()
 	{
 		if (renderingTimeDialog == null)
 			renderingTimeDialog = RenderingTimeDialog.showDialog(getWindow());
+		return null;
 	}
 
 	//------------------------------------------------------------------
