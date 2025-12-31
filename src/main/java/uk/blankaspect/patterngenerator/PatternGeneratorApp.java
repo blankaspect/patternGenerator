@@ -44,7 +44,6 @@ import uk.blankaspect.common.build.BuildUtils;
 import uk.blankaspect.common.cls.ClassUtils;
 
 import uk.blankaspect.common.exception.AppException;
-import uk.blankaspect.common.exception.ExceptionUtils;
 
 import uk.blankaspect.common.exception2.LocationException;
 
@@ -631,9 +630,6 @@ public class PatternGeneratorApp
 		AppConfig config = AppConfig.INSTANCE;
 		config.read();
 
-		// Set UNIX style for pathnames in file exceptions
-		ExceptionUtils.setUnixStyle(config.isShowUnixPathnames());
-
 		// Set text antialiasing
 		TextRendering.setAntialiasing(config.getTextAntialiasing());
 
@@ -1164,8 +1160,7 @@ public class PatternGeneratorApp
 
 	private void onEditPreferences()
 	{
-		if (PreferencesDialog.showDialog(mainWindow))
-			ExceptionUtils.setUnixStyle(AppConfig.INSTANCE.isShowUnixPathnames());
+		PreferencesDialog.showDialog(mainWindow);
 	}
 
 	//------------------------------------------------------------------

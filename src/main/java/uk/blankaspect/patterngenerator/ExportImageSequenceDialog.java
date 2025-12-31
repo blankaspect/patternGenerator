@@ -92,8 +92,6 @@ class ExportImageSequenceDialog
 
 	private static final	Insets	IMAGE_BUTTON_MARGINS	= new Insets(2, 6, 2, 6);
 
-	private static final	String	KEY	= ExportImageSequenceDialog.class.getCanonicalName();
-
 	private static final	String	TITLE_STR				= "Export image sequence";
 	private static final	String	DIRECTORY_STR			= "Directory";
 	private static final	String	FILENAME_STEM_STR		= "Filename stem";
@@ -200,7 +198,6 @@ class ExportImageSequenceDialog
 
 		// Panel: directory
 		directoryField = new FPathnameField(params.directory);
-		FPathnameField.addObserver(KEY, directoryField);
 		JPanel directoryPanel = new PathnamePanel(directoryField, Command.CHOOSE_DIRECTORY, this);
 
 		gbc.gridx = 1;
@@ -716,8 +713,6 @@ class ExportImageSequenceDialog
 
 	private void onClose()
 	{
-		FPathnameField.removeObservers(KEY);
-
 		location = getLocation();
 		setVisible(false);
 		dispose();

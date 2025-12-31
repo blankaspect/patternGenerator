@@ -2,7 +2,7 @@
 
 FlatHorizontalSlider.java
 
-Flat horizontal slider class.
+Class: flat horizontal slider.
 
 \*====================================================================*/
 
@@ -33,7 +33,7 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 //----------------------------------------------------------------------
 
 
-// FLAT HORIZONTAL SLIDER CLASS
+// CLASS: FLAT HORIZONTAL SLIDER
 
 
 public class FlatHorizontalSlider
@@ -42,12 +42,20 @@ public class FlatHorizontalSlider
 {
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	Color	valueBarColour;
+	private	boolean	mouseOverKnob;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	public FlatHorizontalSlider(int width,
-								int height,
-								int knobWidth)
+	public FlatHorizontalSlider(
+		int	width,
+		int	height,
+		int	knobWidth)
 	{
 		this(width, height, knobWidth, DEFAULT_VALUE);
 	}
@@ -58,10 +66,11 @@ public class FlatHorizontalSlider
 	 * @throws IllegalArgumentException
 	 */
 
-	public FlatHorizontalSlider(int    width,
-								int    height,
-								int    knobWidth,
-								double value)
+	public FlatHorizontalSlider(
+		int		width,
+		int		height,
+		int		knobWidth,
+		double	value)
 	{
 		super(width, height, knobWidth, value);
 		valueBarColour = FlatSliderColours.DEFAULT_VALUE_BAR_COLOUR;
@@ -74,7 +83,8 @@ public class FlatHorizontalSlider
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void mouseClicked(MouseEvent event)
+	public void mouseClicked(
+		MouseEvent	event)
 	{
 		super.mouseClicked(event);
 	}
@@ -82,7 +92,8 @@ public class FlatHorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseEntered(MouseEvent event)
+	public void mouseEntered(
+		MouseEvent	event)
 	{
 		updateMouseOverKnob(event);
 		super.mouseEntered(event);
@@ -91,7 +102,8 @@ public class FlatHorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseExited(MouseEvent event)
+	public void mouseExited(
+		MouseEvent	event)
 	{
 		updateMouseOverKnob(null);
 		super.mouseExited(event);
@@ -100,7 +112,8 @@ public class FlatHorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mousePressed(MouseEvent event)
+	public void mousePressed(
+		MouseEvent	event)
 	{
 		updateMouseOverKnob(event);
 		super.mousePressed(event);
@@ -109,7 +122,8 @@ public class FlatHorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseReleased(MouseEvent event)
+	public void mouseReleased(
+		MouseEvent	event)
 	{
 		updateMouseOverKnob(event);
 		super.mouseReleased(event);
@@ -118,7 +132,8 @@ public class FlatHorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseDragged(MouseEvent event)
+	public void mouseDragged(
+		MouseEvent	event)
 	{
 		updateMouseOverKnob(event);
 		super.mouseDragged(event);
@@ -127,7 +142,8 @@ public class FlatHorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseMoved(MouseEvent event)
+	public void mouseMoved(
+		MouseEvent	event)
 	{
 		updateMouseOverKnob(event);
 		super.mouseMoved(event);
@@ -136,7 +152,8 @@ public class FlatHorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	protected void paintComponent(Graphics gr)
+	protected void paintComponent(
+		Graphics	gr)
 	{
 		// Create copy of graphics context
 		Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
@@ -162,9 +179,9 @@ public class FlatHorizontalSlider
 			// Draw knob border
 			int y1 = knobRect.y - 1;
 			int y2 = knobRect.y + knobRect.height + 1;
-			if (mouseOverKnob || isAdjusting())
+			if (mouseOverKnob || isDragging())
 			{
-				gr2d.setColor(isAdjusting() ? FlatSliderColours.KNOB_ACTIVE_BORDER_COLOUR
+				gr2d.setColor(isDragging() ? FlatSliderColours.KNOB_ACTIVE_BORDER_COLOUR
 											: FlatSliderColours.KNOB_BORDER_COLOUR);
 				gr2d.drawRect(knobRect.x, knobRect.y, knobRect.width - 1, knobRect.height - 1);
 				gr2d.drawRect(knobRect.x + 1, knobRect.y + 1, knobRect.width - 3, knobRect.height - 3);
@@ -211,7 +228,8 @@ public class FlatHorizontalSlider
 	 * @throws IllegalArgumentException
 	 */
 
-	public void setValueBarColour(Color colour)
+	public void setValueBarColour(
+		Color	colour)
 	{
 		if (colour == null)
 			throw new IllegalArgumentException();
@@ -225,7 +243,8 @@ public class FlatHorizontalSlider
 
 	//------------------------------------------------------------------
 
-	private void updateMouseOverKnob(MouseEvent event)
+	private void updateMouseOverKnob(
+		MouseEvent	event)
 	{
 		boolean isOver = (event != null) && knobRect.contains(event.getPoint());
 		if (mouseOverKnob != isOver)
@@ -236,13 +255,6 @@ public class FlatHorizontalSlider
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	Color	valueBarColour;
-	private	boolean	mouseOverKnob;
 
 }
 

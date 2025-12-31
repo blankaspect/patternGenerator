@@ -46,6 +46,8 @@ import uk.blankaspect.common.exception.FileException;
 
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
+import uk.blankaspect.common.misc.SystemUtils;
+
 import uk.blankaspect.common.property.Property;
 import uk.blankaspect.common.property.PropertySet;
 
@@ -120,7 +122,6 @@ class AppConfig
 		String	SAVE_PATTERN_DIRECTORY			= "savePatternDirectory";
 		String	SELECT_TEXT_ON_FOCUS_GAINED		= "selectTextOnFocusGained";
 		String	SHOW_FULL_PATHNAMES				= "showFullPathnames";
-		String	SHOW_UNIX_PATHNAMES				= "showUnixPathnames";
 		String	SLIDE_SHOW						= "slideShow";
 		String	TEXT_ANTIALIASING				= "textAntialiasing";
 	}
@@ -643,70 +644,6 @@ class AppConfig
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPDefaultDocumentKind	cpDefaultDocumentKind	= new CPDefaultDocumentKind();
-
-	//==================================================================
-
-
-	// PROPERTY CLASS: SHOW UNIX PATHNAMES
-
-
-	private class CPShowUnixPathnames
-		extends Property.BooleanProperty
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private CPShowUnixPathnames()
-		{
-			super(concatenateKeys(Key.GENERAL, Key.SHOW_UNIX_PATHNAMES));
-			value = false;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//------------------------------------------------------------------
-
-//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-//  Instance methods : associated methods in enclosing class
-//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-	public boolean isShowUnixPathnames()
-	{
-		return cpShowUnixPathnames.getValue();
-	}
-
-	//------------------------------------------------------------------
-
-	public void setShowUnixPathnames(boolean value)
-	{
-		cpShowUnixPathnames.setValue(value);
-	}
-
-	//------------------------------------------------------------------
-
-	public void addShowUnixPathnamesObserver(Property.IObserver observer)
-	{
-		cpShowUnixPathnames.addObserver(observer);
-	}
-
-	//------------------------------------------------------------------
-
-	public void removeShowUnixPathnamesObserver(Property.IObserver observer)
-	{
-		cpShowUnixPathnames.removeObserver(observer);
-	}
-
-	//------------------------------------------------------------------
-
-//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-//  Instance variables : associated variables in enclosing class
-//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-	private	CPShowUnixPathnames	cpShowUnixPathnames	= new CPShowUnixPathnames();
 
 	//==================================================================
 
@@ -1244,7 +1181,7 @@ class AppConfig
 		private CPOpenPatternPathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.OPEN_PATTERN_DIRECTORY));
-			value = PathnameUtils.USER_HOME_PREFIX;
+			value = SystemUtils.userHomeDirectoryPathname();
 		}
 
 		//--------------------------------------------------------------
@@ -1301,7 +1238,7 @@ class AppConfig
 		private CPSavePatternPathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.SAVE_PATTERN_DIRECTORY));
-			value = PathnameUtils.USER_HOME_PREFIX;
+			value = SystemUtils.userHomeDirectoryPathname();
 		}
 
 		//--------------------------------------------------------------
@@ -1358,7 +1295,7 @@ class AppConfig
 		private CPExportImagePathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.EXPORT_IMAGE_DIRECTORY));
-			value = PathnameUtils.USER_HOME_PREFIX;
+			value = SystemUtils.userHomeDirectoryPathname();
 		}
 
 		//--------------------------------------------------------------
@@ -1415,7 +1352,7 @@ class AppConfig
 		private CPExportSvgPathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.EXPORT_SVG_DIRECTORY));
-			value = PathnameUtils.USER_HOME_PREFIX;
+			value = SystemUtils.userHomeDirectoryPathname();
 		}
 
 		//--------------------------------------------------------------
@@ -1472,7 +1409,7 @@ class AppConfig
 		private CPExportImageSequencePathname()
 		{
 			super(concatenateKeys(Key.PATH, Key.EXPORT_IMAGE_SEQUENCE_DIRECTORY));
-			value = PathnameUtils.USER_HOME_PREFIX;
+			value = SystemUtils.userHomeDirectoryPathname();
 		}
 
 		//--------------------------------------------------------------

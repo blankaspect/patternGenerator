@@ -2,7 +2,7 @@
 
 HorizontalSlider.java
 
-Horizontal slider class.
+Class: horizontal slider.
 
 \*====================================================================*/
 
@@ -35,7 +35,7 @@ import uk.blankaspect.ui.swing.action.KeyAction;
 //----------------------------------------------------------------------
 
 
-// HORIZONTAL SLIDER CLASS
+// CLASS: HORIZONTAL SLIDER
 
 
 public abstract class HorizontalSlider
@@ -48,7 +48,7 @@ public abstract class HorizontalSlider
 
 	public static final		int	MIN_WIDTH		= 32;
 	public static final		int	MIN_HEIGHT		= 12;
-	public static final		int	MIN_KNOB_WIDTH	= 12;
+	public static final		int	MIN_KNOB_WIDTH	= 10;
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
@@ -67,12 +67,19 @@ public abstract class HorizontalSlider
 	};
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	protected	int	dragDeltaX;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	public HorizontalSlider(int width,
-							int height,
-							int knobWidth)
+	public HorizontalSlider(
+		int	width,
+		int	height,
+		int	knobWidth)
 	{
 		this(width, height, knobWidth, DEFAULT_VALUE);
 	}
@@ -83,10 +90,11 @@ public abstract class HorizontalSlider
 	 * @throws IllegalArgumentException
 	 */
 
-	public HorizontalSlider(int    width,
-							int    height,
-							int    knobWidth,
-							double value)
+	public HorizontalSlider(
+		int		width,
+		int		height,
+		int		knobWidth,
+		double	value)
 	{
 		// Validate arguments
 		if ((value < MIN_VALUE) || (value > MAX_VALUE))
@@ -124,16 +132,18 @@ public abstract class HorizontalSlider
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static int extentToWidth(int extent,
-									int knobWidth)
+	public static int extentToWidth(
+		int	extent,
+		int	knobWidth)
 	{
 		return extent + knobWidth + 2 * BORDER_WIDTH;
 	}
 
 	//------------------------------------------------------------------
 
-	public static int widthToExtent(int width,
-									int knobWidth)
+	public static int widthToExtent(
+		int	width,
+		int	knobWidth)
 	{
 		return width - knobWidth - 2 * BORDER_WIDTH;
 	}
@@ -145,14 +155,6 @@ public abstract class HorizontalSlider
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public boolean isAdjusting()
-	{
-		return (dragDeltaX >= 0);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
 	public Dimension getPreferredSize()
 	{
 		return new Dimension(width, height);
@@ -161,7 +163,16 @@ public abstract class HorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	protected double getValue(MouseEvent event)
+	public boolean isDragging()
+	{
+		return (dragDeltaX >= 0);
+	}
+
+	//------------------------------------------------------------------
+
+	@Override
+	protected double getValue(
+		MouseEvent	event)
 	{
 		return getValue(Math.min(Math.max(BORDER_WIDTH, event.getX() - dragDeltaX),
 								 width - knobRect.width - BORDER_WIDTH));
@@ -170,11 +181,11 @@ public abstract class HorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	protected void forceValue(double value)
+	protected void forceValue(
+		double	value)
 	{
 		this.value = value;
-		knobRect.x = BORDER_WIDTH +
-								(int)Math.round(value * (double)widthToExtent(width, knobRect.width));
+		knobRect.x = BORDER_WIDTH + (int)Math.round(value * (double)widthToExtent(width, knobRect.width));
 		repaint();
 		fireStateChanged();
 	}
@@ -190,11 +201,15 @@ public abstract class HorizontalSlider
 	//------------------------------------------------------------------
 
 	@Override
-	protected void setDragDeltaCoord(Point   point,
-									 boolean centred)
+	protected void setDragDeltaCoord(
+		Point	point,
+		boolean	centred)
 	{
-		dragDeltaX = (point == null) ? -1
-									 : centred ? knobRect.width / 2 : point.x - knobRect.x;
+		dragDeltaX = (point == null)
+						? -1
+						: centred
+								? knobRect.width / 2
+								: point.x - knobRect.x;
 	}
 
 	//------------------------------------------------------------------
@@ -203,18 +218,13 @@ public abstract class HorizontalSlider
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	private double getValue(int x)
+	private double getValue(
+		int	x)
 	{
 		return (double)(x - BORDER_WIDTH) / (double)widthToExtent(width, knobRect.width);
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	protected	int	dragDeltaX;
 
 }
 

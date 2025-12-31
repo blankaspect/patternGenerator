@@ -2,7 +2,7 @@
 
 Slider.java
 
-Slider base class.
+Class: slider base.
 
 \*====================================================================*/
 
@@ -42,7 +42,7 @@ import javax.swing.event.ChangeListener;
 //----------------------------------------------------------------------
 
 
-// SLIDER BASE CLASS
+// CLASS: SLIDER BASE
 
 
 public abstract class Slider
@@ -72,6 +72,19 @@ public abstract class Slider
 	}
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	protected	int						width;
+	protected	int						height;
+	protected	Rectangle				knobRect;
+	protected	double					unitIncrement;
+	protected	double					blockIncrement;
+	protected	List<ChangeListener>	changeListeners;
+	protected	ChangeEvent				changeEvent;
+	protected	double					value;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
@@ -85,7 +98,8 @@ public abstract class Slider
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	protected static double getBoundedValue(double value)
+	protected static double clampValue(
+		double	value)
 	{
 		return Math.min(Math.max(MIN_VALUE, value), MAX_VALUE);
 	}
@@ -96,20 +110,23 @@ public abstract class Slider
 //  Abstract methods
 ////////////////////////////////////////////////////////////////////////
 
-	public abstract boolean isAdjusting();
+	public abstract boolean isDragging();
 
 	//------------------------------------------------------------------
 
 	@Override
-	protected abstract void paintComponent(Graphics gr);
+	protected abstract void paintComponent(
+		Graphics	gr);
 
 	//------------------------------------------------------------------
 
-	protected abstract double getValue(MouseEvent event);
+	protected abstract double getValue(
+		MouseEvent	event);
 
 	//------------------------------------------------------------------
 
-	protected abstract void forceValue(double value);
+	protected abstract void forceValue(
+		double	value);
 
 	//------------------------------------------------------------------
 
@@ -117,8 +134,9 @@ public abstract class Slider
 
 	//------------------------------------------------------------------
 
-	protected abstract void setDragDeltaCoord(Point   point,
-											  boolean centred);
+	protected abstract void setDragDeltaCoord(
+		Point	point,
+		boolean	centred);
 
 	//------------------------------------------------------------------
 
@@ -127,7 +145,8 @@ public abstract class Slider
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void actionPerformed(ActionEvent event)
+	public void actionPerformed(
+		ActionEvent	event)
 	{
 		if (isEnabled())
 		{
@@ -150,7 +169,8 @@ public abstract class Slider
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void focusGained(FocusEvent event)
+	public void focusGained(
+		FocusEvent	event)
 	{
 		repaint();
 	}
@@ -158,7 +178,8 @@ public abstract class Slider
 	//------------------------------------------------------------------
 
 	@Override
-	public void focusLost(FocusEvent event)
+	public void focusLost(
+		FocusEvent	event)
 	{
 		repaint();
 	}
@@ -170,7 +191,8 @@ public abstract class Slider
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void mouseClicked(MouseEvent event)
+	public void mouseClicked(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -178,7 +200,8 @@ public abstract class Slider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseEntered(MouseEvent event)
+	public void mouseEntered(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -186,7 +209,8 @@ public abstract class Slider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseExited(MouseEvent event)
+	public void mouseExited(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -194,7 +218,8 @@ public abstract class Slider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mousePressed(MouseEvent event)
+	public void mousePressed(
+		MouseEvent	event)
 	{
 		if (isEnabled())
 		{
@@ -226,9 +251,10 @@ public abstract class Slider
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseReleased(MouseEvent event)
+	public void mouseReleased(
+		MouseEvent	event)
 	{
-		if (isEnabled() && SwingUtilities.isLeftMouseButton(event) && isAdjusting())
+		if (isEnabled() && SwingUtilities.isLeftMouseButton(event) && isDragging())
 		{
 			setDragDeltaCoord(null, false);
 			double value = getKnobValue();
@@ -245,16 +271,18 @@ public abstract class Slider
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void mouseDragged(MouseEvent event)
+	public void mouseDragged(
+		MouseEvent	event)
 	{
-		if (isEnabled() && SwingUtilities.isLeftMouseButton(event) && isAdjusting())
+		if (isEnabled() && SwingUtilities.isLeftMouseButton(event) && isDragging())
 			setValue(getValue(event));
 	}
 
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseMoved(MouseEvent event)
+	public void mouseMoved(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -298,51 +326,42 @@ public abstract class Slider
 
 	//------------------------------------------------------------------
 
-	public void setValue(double value)
+	public void setValue(
+		double	value)
 	{
-		value = getBoundedValue(value);
+		value = clampValue(value);
 		if (this.value != value)
 			forceValue(value);
 	}
 
 	//------------------------------------------------------------------
 
-	public void setUnitIncrement(double increment)
+	public void setUnitIncrement(
+		double	increment)
 	{
 		unitIncrement = increment;
 	}
 
 	//------------------------------------------------------------------
 
-	public void setBlockIncrement(double increment)
+	public void setBlockIncrement(
+		double	increment)
 	{
 		blockIncrement = increment;
 	}
 
 	//------------------------------------------------------------------
 
-	public void onUnitIncrement(int numUnits)
-	{
-		incrementValue(numUnits * unitIncrement);
-	}
-
-	//------------------------------------------------------------------
-
-	public void onBlockIncrement(int numBlocks)
-	{
-		incrementValue(numBlocks * blockIncrement);
-	}
-
-	//------------------------------------------------------------------
-
-	public void addChangeListener(ChangeListener listener)
+	public void addChangeListener(
+		ChangeListener	listener)
 	{
 		changeListeners.add(listener);
 	}
 
 	//------------------------------------------------------------------
 
-	public void removeChangeListener(ChangeListener listener)
+	public void removeChangeListener(
+		ChangeListener	listener)
 	{
 		changeListeners.remove(listener);
 	}
@@ -368,7 +387,24 @@ public abstract class Slider
 
 	//------------------------------------------------------------------
 
-	private void incrementValue(double increment)
+	public void incrementUnits(
+		int	numUnits)
+	{
+		incrementValue(numUnits * unitIncrement);
+	}
+
+	//------------------------------------------------------------------
+
+	public void incrementBlocks(
+		int	numBlocks)
+	{
+		incrementValue(numBlocks * blockIncrement);
+	}
+
+	//------------------------------------------------------------------
+
+	private void incrementValue(
+		double	increment)
 	{
 		setValue(value + increment);
 	}
@@ -416,19 +452,6 @@ public abstract class Slider
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	protected	int						width;
-	protected	int						height;
-	protected	Rectangle				knobRect;
-	protected	double					unitIncrement;
-	protected	double					blockIncrement;
-	protected	List<ChangeListener>	changeListeners;
-	protected	ChangeEvent				changeEvent;
-	protected	double					value;
 
 }
 
