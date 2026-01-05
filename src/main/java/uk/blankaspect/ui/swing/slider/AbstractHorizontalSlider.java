@@ -1,8 +1,8 @@
 /*====================================================================*\
 
-HorizontalSlider.java
+AbstractHorizontalSlider.java
 
-Class: horizontal slider.
+Class: abstract horizontal slider.
 
 \*====================================================================*/
 
@@ -18,14 +18,8 @@ package uk.blankaspect.ui.swing.slider;
 // IMPORTS
 
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-
-import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
@@ -35,20 +29,19 @@ import uk.blankaspect.ui.swing.action.KeyAction;
 //----------------------------------------------------------------------
 
 
-// CLASS: HORIZONTAL SLIDER
+// CLASS: ABSTRACT HORIZONTAL SLIDER
 
 
-public abstract class HorizontalSlider
-	extends Slider
+public abstract class AbstractHorizontalSlider
+	extends AbstractSlider
 {
 
 ////////////////////////////////////////////////////////////////////////
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		int	MIN_WIDTH		= 32;
-	public static final		int	MIN_HEIGHT		= 12;
-	public static final		int	MIN_KNOB_WIDTH	= 10;
+	public static final		int	MIN_WIDTH	= 32;
+	public static final		int	MIN_HEIGHT	= 12;
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
@@ -70,60 +63,30 @@ public abstract class HorizontalSlider
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-	protected	int	dragDeltaX;
+	protected	int	markerX;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	public HorizontalSlider(
+	public AbstractHorizontalSlider(
 		int	width,
-		int	height,
-		int	knobWidth)
+		int	height)
 	{
-		this(width, height, knobWidth, DEFAULT_VALUE);
-	}
-
-	//------------------------------------------------------------------
-
-	/**
-	 * @throws IllegalArgumentException
-	 */
-
-	public HorizontalSlider(
-		int		width,
-		int		height,
-		int		knobWidth,
-		double	value)
-	{
-		// Validate arguments
-		if ((value < MIN_VALUE) || (value > MAX_VALUE))
-			throw new IllegalArgumentException();
+		// Call superclass constructor
+		super(Math.max(MIN_WIDTH, width), Math.max(MIN_HEIGHT, height));
 
 		// Initialise instance variables
-		this.width = Math.max(MIN_WIDTH, width);
-		this.height = Math.max(MIN_HEIGHT, height);
-		knobRect = new Rectangle(BORDER_WIDTH, BORDER_WIDTH, Math.max(MIN_KNOB_WIDTH, knobWidth),
-								 this.height - 2 * BORDER_WIDTH);
-		unitIncrement = 1.0 / (double)widthToExtent(this.width, knobRect.width);
+		unitIncrement = 1.0 / extent();
 		blockIncrement = 10.0 * unitIncrement;
-		dragDeltaX = -1;
-		changeListeners = new ArrayList<>();
+		markerX = BORDER_WIDTH;
 
 		// Set properties
 		setOpaque(true);
 		setFocusable(true);
 
 		// Add commands to action map
-		KeyAction.create(this, JComponent.WHEN_FOCUSED, this, KEY_COMMANDS);
-
-		// Add listeners
-		addFocusListener(this);
-		addMouseListener(this);
-		addMouseMotionListener(this);
-
-		// Set value
-		forceValue(value);
+		KeyAction.create(this, JComponent.WHEN_FOCUSED, actionListener, KEY_COMMANDS);
 	}
 
 	//------------------------------------------------------------------
@@ -133,19 +96,17 @@ public abstract class HorizontalSlider
 ////////////////////////////////////////////////////////////////////////
 
 	public static int extentToWidth(
-		int	extent,
-		int	knobWidth)
+		int	extent)
 	{
-		return extent + knobWidth + 2 * BORDER_WIDTH;
+		return extent + 2 * BORDER_WIDTH;
 	}
 
 	//------------------------------------------------------------------
 
 	public static int widthToExtent(
-		int	width,
-		int	knobWidth)
+		int	width)
 	{
-		return width - knobWidth - 2 * BORDER_WIDTH;
+		return width - 2 * BORDER_WIDTH;
 	}
 
 	//------------------------------------------------------------------
@@ -155,61 +116,24 @@ public abstract class HorizontalSlider
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(width, height);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	public boolean isDragging()
-	{
-		return (dragDeltaX >= 0);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	protected double getValue(
+	protected double valueFor(
 		MouseEvent	event)
 	{
-		return getValue(Math.min(Math.max(BORDER_WIDTH, event.getX() - dragDeltaX),
-								 width - knobRect.width - BORDER_WIDTH));
+		int x = Math.min(Math.max(BORDER_WIDTH, event.getX()), width - BORDER_WIDTH);
+		return clampValue((double)(x - BORDER_WIDTH) / extent());
 	}
 
 	//------------------------------------------------------------------
 
 	@Override
-	protected void forceValue(
+	protected void setValue(
 		double	value)
 	{
-		this.value = value;
-		knobRect.x = BORDER_WIDTH + (int)Math.round(value * (double)widthToExtent(width, knobRect.width));
+		value = clampValue(value);
+		markerX = BORDER_WIDTH + (int)Math.round(value * extent());
 		repaint();
+		this.value = value;
 		fireStateChanged();
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	protected double getKnobValue()
-	{
-		return getValue(knobRect.x);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	protected void setDragDeltaCoord(
-		Point	point,
-		boolean	centred)
-	{
-		dragDeltaX = (point == null)
-						? -1
-						: centred
-								? knobRect.width / 2
-								: point.x - knobRect.x;
 	}
 
 	//------------------------------------------------------------------
@@ -218,10 +142,9 @@ public abstract class HorizontalSlider
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	private double getValue(
-		int	x)
+	private double extent()
 	{
-		return (double)(x - BORDER_WIDTH) / (double)widthToExtent(width, knobRect.width);
+		return (double)widthToExtent(width);
 	}
 
 	//------------------------------------------------------------------
