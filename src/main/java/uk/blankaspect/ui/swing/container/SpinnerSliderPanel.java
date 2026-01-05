@@ -32,7 +32,7 @@ import java.util.Map;
 import javax.swing.Box;
 import javax.swing.JPanel;
 
-import uk.blankaspect.ui.swing.slider.HorizontalSlider;
+import uk.blankaspect.ui.swing.slider.FlatHorizontalSlider;
 
 //----------------------------------------------------------------------
 
@@ -187,7 +187,7 @@ public abstract class SpinnerSliderPanel
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	public HorizontalSlider getSlider()
+	public FlatHorizontalSlider getSlider()
 	{
 		return slider;
 	}
@@ -196,14 +196,14 @@ public abstract class SpinnerSliderPanel
 
 	public void setUnitIncrement(double increment)
 	{
-		slider.setUnitIncrement(increment);
+		slider.unitIncrement(increment);
 	}
 
 	//------------------------------------------------------------------
 
 	public void setBlockIncrement(double increment)
 	{
-		slider.setBlockIncrement(increment);
+		slider.blockIncrement(increment);
 	}
 
 	//------------------------------------------------------------------
@@ -239,10 +239,10 @@ public abstract class SpinnerSliderPanel
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-	protected	boolean				adjusting;
-	protected	Box.Filler			filler;
-	protected	HorizontalSlider	slider;
-	protected	List<Component>		components;
+	protected	boolean					adjusting;
+	protected	Box.Filler				filler;
+	protected	FlatHorizontalSlider	slider;
+	protected	List<Component>			components;
 
 }
 

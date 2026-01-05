@@ -177,1489 +177,57 @@ class Pattern2Image
 	private static final	Map<Direction, Double>	CUMULATIVE_EQUAL_PROBABILITIES;
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// ORIENTATION
-
-
-	enum Orientation
-		implements IStringKeyed
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		UP
-		(
-			"up"
-		),
-
-		DOWN
-		(
-			"down"
-		),
-
-		LEFT
-		(
-			"left"
-		),
-
-		RIGHT
-		(
-			"right"
-		);
-
-		//--------------------------------------------------------------
-
-		private static final	Set<Orientation>	VERTICAL_ORIENTATIONS	= EnumSet.of
-		(
-			UP,
-			DOWN
-		);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Orientation(String key)
-		{
-			this.key = key;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		public static Orientation forKey(String key)
-		{
-			for (Orientation value : values())
-			{
-				if (value.key.equals(key))
-					return value;
-			}
-			return null;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : IStringKeyed interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getKey()
-		{
-			return key;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public String toString()
-		{
-			return StringUtils.firstCharToUpperCase(key);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public boolean isVertical()
-		{
-			return VERTICAL_ORIENTATIONS.contains(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	key;
-
-	}
-
-	//==================================================================
-
-
-	// DIRECTION
-
-
-	enum Direction
-		implements IStringKeyed
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		FORE
-		(
-			"fore",
-			"F",
-			2, 0
-		),
-
-		FORE_RIGHT
-		(
-			"foreRight",
-			"FR",
-			1, 1
-		),
-
-		BACK_RIGHT
-		(
-			"backRight",
-			"BR",
-			-1, 1
-		),
-
-		BACK
-		(
-			"back",
-			"B",
-			-2, 0
-		),
-
-		BACK_LEFT
-		(
-			"backLeft",
-			"BL",
-			-1, -1
-		),
-
-		FORE_LEFT
-		(
-			"foreLeft",
-			"FL",
-			1, -1
-		);
-
-		//--------------------------------------------------------------
-
-		public static final	int	NUM_VALUES	= values().length;
-
-	////////////////////////////////////////////////////////////////////
-	//  Enumerated types
-	////////////////////////////////////////////////////////////////////
-
-
-		// DIRECTION MODE
-
-
-		enum Mode
-			implements IStringKeyed
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			ABSOLUTE
-			(
-				"absolute"
-			),
-
-			RELATIVE
-			(
-				"relative"
-			);
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Mode(String key)
-			{
-				this.key = key;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : IStringKeyed interface
-		////////////////////////////////////////////////////////////////
-
-			public String getKey()
-			{
-				return key;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			public String toString()
-			{
-				return StringUtils.firstCharToUpperCase(key);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	String	key;
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Direction(String key,
-						  String shortText,
-						  int    delta0,
-						  int    delta1)
-		{
-			this.key = key;
-			this.shortText = shortText;
-			this.delta0 = delta0;
-			this.delta1 = delta1;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		public static Direction forKey(String key)
-		{
-			for (Direction value : values())
-			{
-				if (value.key.equals(key))
-					return value;
-			}
-			return null;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : IStringKeyed interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getKey()
-		{
-			return key;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public String getShortText()
-		{
-			return shortText;
-		}
-
-		//--------------------------------------------------------------
-
-		public int incrementIndex0(int i0)
-		{
-			return i0 + delta0;
-		}
-
-		//--------------------------------------------------------------
-
-		public int incrementIndex1(int i1)
-		{
-			return i1 + delta1;
-		}
-
-		//--------------------------------------------------------------
-
-		public Direction getReflection()
-		{
-			Direction direction = null;
-			switch (this)
-			{
-				case FORE:
-					// do nothing
-					break;
-
-				case FORE_RIGHT:
-					direction = FORE_LEFT;
-					break;
-
-				case BACK_RIGHT:
-					direction = BACK_LEFT;
-					break;
-
-				case BACK:
-					// do nothing
-					break;
-
-				case BACK_LEFT:
-					direction = BACK_RIGHT;
-					break;
-
-				case FORE_LEFT:
-					direction = FORE_RIGHT;
-					break;
-			}
-			return direction;
-		}
-
-		//--------------------------------------------------------------
-
-		public Direction getInverse()
-		{
-			return values()[(ordinal() + NUM_VALUES / 2) % NUM_VALUES];
-		}
-
-		//--------------------------------------------------------------
-
-		public Direction add(Direction direction)
-		{
-			return values()[(ordinal() + direction.ordinal()) % NUM_VALUES];
-		}
-
-		//--------------------------------------------------------------
-
-		public Direction subtract(Direction direction)
-		{
-			return values()[(ordinal() + (NUM_VALUES - direction.ordinal())) % NUM_VALUES];
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	key;
-		private	String	shortText;
-		private	int		delta0;
-		private	int		delta1;
-
-	}
-
-	//==================================================================
-
-
-	// TERMINAL EMPHASIS
-
-
-	enum TerminalEmphasis
-		implements IStringKeyed
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		NONE
-		(
-			"none",
-			"None"
-		),
-
-		START
-		(
-			"start",
-			"Start"
-		),
-
-		END
-		(
-			"end",
-			"End"
-		),
-
-		START_AND_END
-		(
-			"startAndEnd",
-			"Start and end"
-		),
-
-		RANDOM
-		(
-			"random",
-			"Random"
-		),
-
-		RANDOM_ONE_ONLY
-		(
-			"randomOneOnly",
-			"Random, one only"
-		),
-
-		RANDOM_AT_LEAST_ONE
-		(
-			"randomAtLeastOne",
-			"Random, at least one"
-		);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private TerminalEmphasis(String key,
-								 String text)
-		{
-			this.key = key;
-			this.text = text;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : IStringKeyed interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getKey()
-		{
-			return key;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public String toString()
-		{
-			return text;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	key;
-		private	String	text;
-
-	}
-
-	//==================================================================
-
-
-	// PATH RENDERING
-
-
-	enum PathRendering
-		implements IStringKeyed
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		PURE
-		(
-			"pure",
-			RenderingHints.VALUE_STROKE_PURE
-		),
-
-		NORMALISED
-		(
-			"normalised",
-			RenderingHints.VALUE_STROKE_NORMALIZE
-		);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private PathRendering(String key,
-							  Object renderingHintValue)
-		{
-			this.key = key;
-			this.renderingHintValue = renderingHintValue;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : IStringKeyed interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getKey()
-		{
-			return key;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public String toString()
-		{
-			return StringUtils.firstCharToUpperCase(key);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	key;
-		private	Object	renderingHintValue;
-
-	}
-
-	//==================================================================
-
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		UNSUPPORTED_VERSION
-		("The version of %1 is not supported by this version of " + PatternGeneratorApp.SHORT_NAME + "."),
-
-		NO_ATTRIBUTE
-		("The required attribute is missing."),
-
-		INVALID_ATTRIBUTE
-		("The attribute is invalid."),
-
-		ATTRIBUTE_OUT_OF_BOUNDS
-		("The attribute value is out of bounds."),
-
-		INVALID_DIRECTION
-		("The direction is invalid."),
-
-		INCONSISTENT_NUMBER_OF_PATHS
-		("The attribute value is not consistent with the number of path elements.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private static	Map<Integer, List<Double>>	pathLengthCumulativeProbabilities	= new HashMap<>();
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
+	private	Pattern2Document						document;
+	private	Orientation								orientation;
+	private	double									xInterval;
+	private	double									yInterval;
+	private	double									xMargin;
+	private	double									yMargin;
+	private	int										numIndices0;
+	private	int										numIndices1;
+	private	double									pathThickness;
+	private	double									terminalDiameter;
+	private	int										expectedPathLength;
+	private	Map<Direction, Integer>					directionProbabilities;
+	private	Direction.Mode							directionMode;
+	private	TerminalEmphasis						terminalEmphasis;
+	private	boolean									showEmptyPaths;
+	private	Color									transparencyColour;
+	private	Color									backgroundColour;
+	private	List<Color>								pathColours;
+	private	int										activeFraction;
+	private	IntegerRange							transitionIntervalRange;
+	private	List<Path>								paths;
+	private	Map<Direction, Double>					cumulativeProbabilities;
+	private	Map<Direction, Map<Direction, Double>>	cumulativeRelativeInverseProbabilitiesCache;
+	private	byte[][]								vertices;
+	private	BufferedImage							image;
+	private	long									animationSeed;
+	private	Prng01									prngGeneral;
+	private	Prng01									prngTerminalEmphasis;
+	private	Prng01									prngColour;
+	private	Prng01									prngTransitionLength;
 
-	// CLASS: PATH
+////////////////////////////////////////////////////////////////////////
+//  Static initialiser
+////////////////////////////////////////////////////////////////////////
 
-
-	private static class Path
-		implements Cloneable
+	static
 	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	MIN_I0	= 0;
-		private static final	int	MAX_I0	= 10000;
-
-		private static final	int	MIN_I1	= 0;
-		private static final	int	MAX_I1	= 10000;
-
-		private static final	Comparator<Path>	LENGTH_COMPARATOR =
-				Comparator.comparingInt(Path::getLength).thenComparing(Comparator.<Path>comparingInt(path ->
-								Math.max(path.start.lengthenFrameIndex, path.end.lengthenFrameIndex)).reversed());
-
-		private enum Change
-		{
-			NONE,
-			LENGTHEN,
-			SHORTEN
-		}
-
-		private interface ElementName
-		{
-			String	DIRECTION	= "direction";
-		}
-
-		private interface AttrName
-		{
-			String	COLOUR			= "colour";
-			String	EMPHASISE_END	= "emphasiseEnd";
-			String	EMPHASISE_START	= "emphasiseStart";
-			String	I0				= "i0";
-			String	I1				= "i1";
-		}
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// TERMINAL CLASS
-
-
-		private static class Terminal
-			implements Cloneable
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private enum Kind
-			{
-				START,
-				END
-			}
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Terminal(Path path,
-							 Kind kind,
-							 int  i0,
-							 int  i1)
-			{
-				this.path = path;
-				this.kind = kind;
-				this.i0 = i0;
-				this.i1 = i1;
-				change = Change.NONE;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			public Terminal clone()
-			{
-				try
-				{
-					return (Terminal)super.clone();
-				}
-				catch (CloneNotSupportedException e)
-				{
-					throw new UnexpectedRuntimeException(e);
-				}
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods
-		////////////////////////////////////////////////////////////////
-
-			private boolean isAt(int i0,
-								 int i1)
-			{
-				return (this.i0 == i0) && (this.i1 == i1);
-			}
-
-			//----------------------------------------------------------
-
-			private void applyDirection(Direction direction)
-			{
-				i0 = direction.incrementIndex0(i0);
-				i1 = direction.incrementIndex1(i1);
-			}
-
-			//----------------------------------------------------------
-
-			private Change update(int frameIndex)
-			{
-				Change oldChange = null;
-				if (change != Change.NONE)
-				{
-					if (frameIndex < startFrameIndex + transitionLength)
-					{
-						changeFraction = (double)(frameIndex - startFrameIndex) / (double)transitionLength;
-						switch (change)
-						{
-							case NONE:
-								// do nothing
-								break;
-
-							case LENGTHEN:
-								if0 = (double)j0 + (double)(i0 - j0) * changeFraction;
-								if1 = (double)j1 + (double)(i1 - j1) * changeFraction;
-								break;
-
-							case SHORTEN:
-								if0 = (double)i0 + (double)(j0 - i0) * changeFraction;
-								if1 = (double)i1 + (double)(j1 - i1) * changeFraction;
-								break;
-						}
-					}
-					else
-					{
-						oldChange = change;
-						if (change == Change.SHORTEN)
-						{
-							i0 = j0;
-							i1 = j1;
-						}
-						change = Change.NONE;
-					}
-				}
-				return oldChange;
-			}
-
-			//----------------------------------------------------------
-
-			private void create(int frameIndex,
-								int transitionLength)
-			{
-				change = Path.Change.LENGTHEN;
-				startFrameIndex = frameIndex;
-				this.transitionLength = transitionLength;
-				j0 = i0;
-				j1 = i1;
-				update(frameIndex);
-			}
-
-			//----------------------------------------------------------
-
-			private void destroy(int frameIndex,
-								 int transitionLength)
-			{
-				change = Path.Change.SHORTEN;
-				startFrameIndex = frameIndex;
-				this.transitionLength = transitionLength;
-				j0 = i0;
-				j1 = i1;
-				update(frameIndex);
-			}
-
-			//----------------------------------------------------------
-
-			private void lengthen(int       frameIndex,
-								  int       transitionLength,
-								  Direction direction)
-			{
-				change = Path.Change.LENGTHEN;
-				startFrameIndex = frameIndex;
-				lengthenFrameIndex = frameIndex;
-				this.transitionLength = transitionLength;
-				j0 = i0;
-				j1 = i1;
-				i0 = direction.incrementIndex0(i0);
-				i1 = direction.incrementIndex1(i1);
-				update(frameIndex);
-			}
-
-			//----------------------------------------------------------
-
-			private void shorten(int       frameIndex,
-								 int       transitionLength,
-								 Direction direction)
-			{
-				change = Path.Change.SHORTEN;
-				startFrameIndex = frameIndex;
-				this.transitionLength = transitionLength;
-				j0 = direction.incrementIndex0(i0);
-				j1 = direction.incrementIndex1(i1);
-				update(frameIndex);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	Path	path;
-			private	Kind	kind;
-			private	int		i0;
-			private	int		i1;
-			private	boolean	emphasise;
-			private	Change	change;
-			private	int		startFrameIndex;
-			private	int		lengthenFrameIndex;
-			private	int		transitionLength;
-			private	int		j0;
-			private	int		j1;
-			private	double	changeFraction;
-			private	double	if0;
-			private	double	if1;
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Path(int i0,
-					 int i1)
-		{
-			start = new Terminal(this, Terminal.Kind.START, i0, i1);
-			end = new Terminal(this, Terminal.Kind.END, i0, i1);
-			directions = new ArrayList<>();
-		}
-
-		//--------------------------------------------------------------
-
-		private Path(Element element)
-			throws XmlParseException
-		{
-			// Get element path
-			String elementPath = XmlUtils.getElementPath(element);
-
-			// Attribute: i0
-			String attrName = AttrName.I0;
-			String attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
-			String attrValue = XmlUtils.getAttribute(element, attrName);
-			if (attrValue == null)
-				throw new XmlParseException(ErrorId.NO_ATTRIBUTE, attrKey);
-			int i0 = 0;
-			try
-			{
-				i0 = Integer.parseInt(attrValue);
-				if ((i0 < MIN_I0) || (i0 > MAX_I0))
-					throw new XmlParseException(ErrorId.ATTRIBUTE_OUT_OF_BOUNDS, attrKey, attrValue);
-			}
-			catch (NumberFormatException e)
-			{
-				throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
-			}
-
-			// Attribute: i1
-			attrName = AttrName.I1;
-			attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
-			attrValue = XmlUtils.getAttribute(element, attrName);
-			if (attrValue == null)
-				throw new XmlParseException(ErrorId.NO_ATTRIBUTE, attrKey);
-			int i1 = 0;
-			try
-			{
-				i1 = Integer.parseInt(attrValue);
-				if ((i1 < MIN_I1) || (i1 > MAX_I1))
-					throw new XmlParseException(ErrorId.ATTRIBUTE_OUT_OF_BOUNDS, attrKey, attrValue);
-			}
-			catch (NumberFormatException e)
-			{
-				throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
-			}
-
-			// Initialise start and end
-			start = new Terminal(this, Terminal.Kind.START, i0, i1);
-			end = new Terminal(this, Terminal.Kind.END, i0, i1);
-
-			// Attribute: emphasise start
-			attrName = AttrName.EMPHASISE_START;
-			attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
-			attrValue = XmlUtils.getAttribute(element, attrName);
-			if (attrValue != null)
-			{
-				NoYes ny = NoYes.forKey(attrValue);
-				if (ny == null)
-					throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
-				start.emphasise = ny.toBoolean();
-			}
-
-			// Attribute: emphasise end
-			attrName = AttrName.EMPHASISE_END;
-			attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
-			attrValue = XmlUtils.getAttribute(element, attrName);
-			if (attrValue != null)
-			{
-				NoYes ny = NoYes.forKey(attrValue);
-				if (ny == null)
-					throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
-				end.emphasise = ny.toBoolean();
-			}
-
-			// Attribute: colour
-			attrName = AttrName.COLOUR;
-			attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
-			attrValue = XmlUtils.getAttribute(element, attrName);
-			if (attrValue == null)
-				throw new XmlParseException(ErrorId.NO_ATTRIBUTE, attrKey);
-			try
-			{
-				colour = ColourUtils.parseColour(attrValue);
-			}
-			catch (IllegalArgumentException e)
-			{
-				throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
-			}
-			catch (ValueOutOfBoundsException e)
-			{
-				throw new XmlParseException(ErrorId.ATTRIBUTE_OUT_OF_BOUNDS, attrKey, attrValue);
-			}
-
-			// Parse direction elements
-			directions = new ArrayList<>();
-			NodeList childNodes = element.getChildNodes();
-			for (int i = 0; i < childNodes.getLength(); i++)
-			{
-				Node node = childNodes.item(i);
-				if (node.getNodeType() == Node.ELEMENT_NODE)
-				{
-					Element element1 = (Element)node;
-					if (element1.getTagName().equals(ElementName.DIRECTION))
-					{
-						String str = element1.getTextContent();
-						Direction direction = Direction.forKey(str);
-						if (direction == null)
-							throw new XmlParseException(ErrorId.INVALID_DIRECTION,
-														XmlUtils.getElementPath(element1), str);
-						addDirection(direction);
-					}
-				}
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Path clone()
-		{
-			try
-			{
-				Path copy = (Path)super.clone();
-
-				copy.start = start.clone();
-				copy.start.path = copy;
-
-				copy.end = end.clone();
-				copy.end.path = copy;
-
-				copy.colour = ColourUtils.copy(colour);
-
-				copy.directions = new ArrayList<>(directions);
-
-				return copy;
-			}
-			catch (CloneNotSupportedException e)
-			{
-				throw new UnexpectedRuntimeException(e);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private boolean isEmpty()
-		{
-			return directions.isEmpty();
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean isChanging()
-		{
-			return (start.change != Change.NONE) || (end.change != Change.NONE);
-		}
-
-		//--------------------------------------------------------------
-
-		private int getLength()
-		{
-			return directions.size();
-		}
-
-		//--------------------------------------------------------------
-
-		private Direction getFirstDirection()
-		{
-			return directions.get(0);
-		}
-
-		//--------------------------------------------------------------
-
-		private Direction getLastDirection()
-		{
-			return directions.get(directions.size() - 1);
-		}
-
-		//--------------------------------------------------------------
-
-		private void addDirection(Direction direction)
-		{
-			directions.add(direction);
-			end.applyDirection(direction);
-		}
-
-		//--------------------------------------------------------------
-
-		private void setTerminalEmphasis(TerminalEmphasis terminalEmphasis,
-										 Prng01           prng)
-		{
-			switch (terminalEmphasis)
-			{
-				case NONE:
-					// do nothing
-					break;
-
-				case START:
-					start.emphasise = true;
-					break;
-
-				case END:
-					end.emphasise = true;
-					break;
-
-				case START_AND_END:
-					start.emphasise = true;
-					end.emphasise = true;
-					break;
-
-				case RANDOM:
-					if (prng.nextBoolean())
-						start.emphasise = true;
-					if (prng.nextBoolean())
-						end.emphasise = true;
-					break;
-
-				case RANDOM_ONE_ONLY:
-					if (prng.nextBoolean())
-						start.emphasise = true;
-					else
-						end.emphasise = true;
-					break;
-
-				case RANDOM_AT_LEAST_ONE:
-					if (prng.nextBoolean())
-					{
-						start.emphasise = true;
-						end.emphasise = true;
-					}
-					else if (prng.nextBoolean())
-						start.emphasise = true;
-					else
-						end.emphasise = true;
-					break;
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private void setColour(List<Color> colours,
-							   Prng01      prng)
-		{
-			colour = colours.get(prng.nextInt(colours.size()));
-		}
-
-		//--------------------------------------------------------------
-
-		private Element createElement(Document document)
-		{
-			Element element = document.createElement(Pattern2Image.ElementName.PATH);
-			for (Attribute attribute : getAttributes())
-				attribute.set(element);
-
-			for (Direction direction : directions)
-			{
-				Element directionElement = document.createElement(ElementName.DIRECTION);
-				directionElement.setTextContent(direction.getKey());
-				element.appendChild(directionElement);
-			}
-
-			return element;
-		}
-
-		//--------------------------------------------------------------
-
-		private void write(XmlWriter writer,
-						   int       indent)
-			throws IOException
-		{
-			if (directions.isEmpty())
-				writer.writeEmptyElement(Pattern2Image.ElementName.PATH, getAttributes(), indent, true);
-			else
-			{
-				writer.writeElementStart(Pattern2Image.ElementName.PATH, getAttributes(), indent, true,
-										 true);
-				indent += XmlWriter.INDENT_INCREMENT;
-
-				for (Direction direction : directions)
-				{
-					writer.writeElementStart(ElementName.DIRECTION, null, indent, false, false);
-					writer.write(direction.getKey());
-					writer.writeElementEnd(ElementName.DIRECTION, 0);
-				}
-
-				indent -= XmlWriter.INDENT_INCREMENT;
-				writer.writeElementEnd(Pattern2Image.ElementName.PATH, indent);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private AttributeList getAttributes()
-		{
-			AttributeList attributes = new AttributeList();
-			attributes.add(AttrName.I0, start.i0);
-			attributes.add(AttrName.I1, start.i1);
-			attributes.add(AttrName.EMPHASISE_START, start.emphasise);
-			attributes.add(AttrName.EMPHASISE_END, end.emphasise);
-			attributes.add(AttrName.COLOUR, ColourUtils.colourToRgbString(colour));
-			return attributes;
-		}
-
-		//--------------------------------------------------------------
-
-		private void create(int frameIndex,
-							int transitionLength)
-		{
-			start.create(frameIndex, transitionLength);
-			end.create(frameIndex, transitionLength);
-		}
-
-		//--------------------------------------------------------------
-
-		private void destroy(int frameIndex,
-							 int transitionLength)
-		{
-			start.destroy(frameIndex, transitionLength);
-			end.destroy(frameIndex, transitionLength);
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean update(int frameIndex)
-		{
-			boolean empty = directions.isEmpty();
-			boolean destroyed = false;
-			if (start.update(frameIndex) == Change.SHORTEN)
-			{
-				if (empty)
-					destroyed = true;
-				else
-					directions.remove(0);
-			}
-			if (end.update(frameIndex) == Change.SHORTEN)
-			{
-				if (empty)
-					destroyed = true;
-				else
-					directions.remove(directions.size() - 1);
-			}
-			return destroyed;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	Terminal		start;
-		private	Terminal		end;
-		private	Color			colour;
-		private	List<Direction>	directions;
-
+		Map<Direction, Integer> probabilities = new EnumMap<>(Direction.class);
+		for (Direction direction : Direction.values())
+			probabilities.put(direction, 1);
+		CUMULATIVE_EQUAL_PROBABILITIES = getCumulativeProbabilities(probabilities);
 	}
-
-	//==================================================================
-
-
-	// OUTPUT SHAPE CLASS
-
-
-	private static abstract class OutputShape
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	MAX_NUM_VERTICES_PER_LINE	= 4;
-
-		private static final	String	MOVETO_PREFIX	= "M";
-		private static final	String	LINETO_PREFIX	= "L";
-
-		private static final	DecimalFormat	FORMAT	= AppConstants.FORMAT_1_8;
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// POLYLINE CLASS
-
-
-		private static class Polyline
-			extends OutputShape
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Polyline(Color  colour,
-							 double x,
-							 double y)
-			{
-				this.colour = colour;
-				path = new Path2D.Double();
-				path.moveTo(x, y);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			protected void draw(Graphics2D gr)
-			{
-				gr.setColor(colour);
-				gr.draw(path);
-			}
-
-			//----------------------------------------------------------
-
-			protected void transform(AffineTransform transform)
-			{
-				path.transform(transform);
-			}
-
-			//----------------------------------------------------------
-
-			protected void writeSvg(XmlWriter writer,
-									int       indent)
-				throws IOException
-			{
-				StringBuilder buffer = new StringBuilder(256);
-				int numSpaces = indent + 1 + ElementName.PATH.length() + 1 + Svg.AttrName.D.length() + 2;
-				String spaces = " ".repeat(numSpaces);
-				PathIterator it = path.getPathIterator(null);
-				double[] coords = new double[6];
-				int vertexCount = 0;
-				while (!it.isDone())
-				{
-					switch (it.currentSegment(coords))
-					{
-						case PathIterator.SEG_MOVETO:
-							buffer.append(MOVETO_PREFIX);
-							break;
-
-						case PathIterator.SEG_LINETO:
-							if (vertexCount < MAX_NUM_VERTICES_PER_LINE)
-								buffer.append(' ');
-							else
-							{
-								buffer.append('\n');
-								buffer.append(spaces);
-								vertexCount = 0;
-							}
-							buffer.append(LINETO_PREFIX);
-							break;
-					}
-					buffer.append(' ');
-					buffer.append(FORMAT.format(coords[0]));
-					buffer.append(' ');
-					buffer.append(FORMAT.format(coords[1]));
-
-					++vertexCount;
-					it.next();
-				}
-
-				AttributeList attributes = new AttributeList();
-				attributes.add(Svg.AttrName.STROKE, ColourUtils.colourToHexString(colour));
-				if (ColourUtils.isTransparent(colour))
-					attributes.add(Svg.AttrName.STROKE_OPACITY, ColourUtils.getOpacity(colour),
-								   ColourUtils.OPACITY_FORMAT);
-				attributes.add(Svg.AttrName.D, buffer);
-				writer.writeEmptyElement(ElementName.PATH, attributes, indent, true);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods
-		////////////////////////////////////////////////////////////////
-
-			private void add(double x,
-							 double y)
-			{
-				path.lineTo(x, y);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	Path2D.Double	path;
-
-		}
-
-		//==============================================================
-
-
-		// DISC CLASS
-
-
-		private static class Disc
-			extends OutputShape
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Disc(Color  colour,
-						 double x,
-						 double y,
-						 double diameter)
-			{
-				this.colour = colour;
-				double radius = 0.5 * diameter;
-				disc = new Ellipse2D.Double(x - radius, y - radius, diameter, diameter);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			protected void draw(Graphics2D gr)
-			{
-				gr.setColor(colour);
-				gr.fill(disc);
-			}
-
-			//----------------------------------------------------------
-
-			protected void transform(AffineTransform transform)
-			{
-				double radius = 0.5 * disc.width;
-				Point2D.Double point = new Point2D.Double(disc.x + radius, disc.y + radius);
-				transform.transform(point, point);
-				disc.x = point.x - radius;
-				disc.y = point.y - radius;
-			}
-
-			//----------------------------------------------------------
-
-			protected void writeSvg(XmlWriter writer,
-									int       indent)
-				throws IOException
-			{
-				double radius = 0.5 * disc.width;
-
-				AttributeList attributes = new AttributeList();
-				attributes.add(Svg.AttrName.FILL, ColourUtils.colourToHexString(colour));
-				attributes.add(Svg.AttrName.CX, FORMAT.format(disc.x + radius));
-				attributes.add(Svg.AttrName.CY, FORMAT.format(disc.y + radius));
-				attributes.add(Svg.AttrName.R, FORMAT.format(radius));
-				writer.writeEmptyElement(Svg.ElementName.CIRCLE, attributes, indent, true);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	Ellipse2D.Double	disc;
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		protected OutputShape()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Abstract methods
-	////////////////////////////////////////////////////////////////////
-
-		protected abstract void draw(Graphics2D gr);
-
-		//--------------------------------------------------------------
-
-		protected abstract void transform(AffineTransform transform)
-			throws IOException;
-
-		//--------------------------------------------------------------
-
-		protected abstract void writeSvg(XmlWriter writer,
-										 int       indent)
-			throws IOException;
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	Color	colour;
-
-	}
-
-	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -1997,9 +565,9 @@ class Pattern2Image
 
 		// Fix up margins
 		xMargin = 0.5 * ((double)((orientation.isVertical() ? numIndices1 : numIndices0) - 1)
-																						* xInterval - (double)width);
+							* xInterval - (double)width);
 		yMargin = 0.5 * ((double)((orientation.isVertical() ? numIndices0 : numIndices1) - 1)
-																						* yInterval - (double)height);
+							* yInterval - (double)height);
 
 		// Initialise arrays of grid indices and vertices
 		int[] indices0 = new int[numIndices0];
@@ -2604,14 +1172,14 @@ class Pattern2Image
 				// Split the path if its length is more than twice the expected path length or it extends
 				// across the whole grid
 				int pathLength = path.getLength();
-				if ((path.end.change == Path.Change.NONE) && (pathLength > 2) &&
-					 ((pathLength > 2 * expectedPathLength) ||
-					  ((path.start.i0 == getFirstIndex0(path.start.i1)) &&
-														(path.end.i0 == getLastIndex0(path.end.i1))) ||
-					  ((path.end.i0 == getFirstIndex0(path.end.i1)) &&
-													(path.start.i0 == getLastIndex0(path.start.i1))) ||
-					  ((path.start.i1 == 0) && (path.end.i1 == numIndices1 - 1)) ||
-					  ((path.end.i1 == 0) && (path.start.i1 == numIndices1 - 1))))
+				if ((path.end.change == Path.Change.NONE) && (pathLength > 2)
+						&& ((pathLength > 2 * expectedPathLength)
+							|| ((path.start.i0 == getFirstIndex0(path.start.i1))
+								&& (path.end.i0 == getLastIndex0(path.end.i1)))
+							|| ((path.end.i0 == getFirstIndex0(path.end.i1))
+								&& (path.start.i0 == getLastIndex0(path.start.i1)))
+							|| ((path.start.i1 == 0) && (path.end.i1 == numIndices1 - 1))
+							|| ((path.end.i1 == 0) && (path.start.i1 == numIndices1 - 1))))
 				{
 					// Generate a variate from a triangular distribution to use as the split point
 					int splitLength = 1;
@@ -2738,22 +1306,22 @@ class Pattern2Image
 	private AttributeList getAttributes()
 	{
 		AttributeList attributes = new AttributeList();
-		attributes.add(AttrName.VERSION, VERSION);
+		attributes.add(AttrName.VERSION,             VERSION);
 		if (description != null)
-			attributes.add(AttrName.DESCRIPTION, description, true);
-		attributes.add(AttrName.WIDTH, width);
-		attributes.add(AttrName.HEIGHT, height);
-		attributes.add(AttrName.ORIENTATION, orientation.getKey());
-		attributes.add(AttrName.X_INTERVAL, xInterval, AppConstants.FORMAT_1_8);
-		attributes.add(AttrName.Y_INTERVAL, yInterval, AppConstants.FORMAT_1_8);
-		attributes.add(AttrName.X_MARGIN, xMargin, AppConstants.FORMAT_1_8);
-		attributes.add(AttrName.Y_MARGIN, yMargin, AppConstants.FORMAT_1_8);
-		attributes.add(AttrName.PATH_THICKNESS, pathThickness, AppConstants.FORMAT_1_8);
-		attributes.add(AttrName.TERMINAL_DIAMETER, terminalDiameter, AppConstants.FORMAT_1_8);
-		attributes.add(AttrName.SHOW_EMPTY_PATHS, showEmptyPaths);
+			attributes.add(AttrName.DESCRIPTION,     description,      true);
+		attributes.add(AttrName.WIDTH,               width);
+		attributes.add(AttrName.HEIGHT,              height);
+		attributes.add(AttrName.ORIENTATION,         orientation.getKey());
+		attributes.add(AttrName.X_INTERVAL,          xInterval,        AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.Y_INTERVAL,          yInterval,        AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.X_MARGIN,            xMargin,          AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.Y_MARGIN,            yMargin,          AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.PATH_THICKNESS,      pathThickness,    AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.TERMINAL_DIAMETER,   terminalDiameter, AppConstants.FORMAT_1_8);
+		attributes.add(AttrName.SHOW_EMPTY_PATHS,    showEmptyPaths);
 		attributes.add(AttrName.TRANSPARENCY_COLOUR, ColourUtils.colourToRgbString(transparencyColour));
-		attributes.add(AttrName.BACKGROUND_COLOUR, ColourUtils.colourToRgbString(backgroundColour));
-		attributes.add(AttrName.NUM_PATHS, paths.size());
+		attributes.add(AttrName.BACKGROUND_COLOUR,   ColourUtils.colourToRgbString(backgroundColour));
+		attributes.add(AttrName.NUM_PATHS,           paths.size());
 		return attributes;
 	}
 
@@ -3105,57 +1673,1475 @@ class Pattern2Image
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Map<Integer, List<Double>>	pathLengthCumulativeProbabilities	= new HashMap<>();
 
-////////////////////////////////////////////////////////////////////////
-//  Static initialiser
-////////////////////////////////////////////////////////////////////////
+	// ENUMERATION: ORIENTATION
 
-	static
+
+	enum Orientation
+		implements IStringKeyed
 	{
-		Map<Direction, Integer> probabilities = new EnumMap<>(Direction.class);
-		for (Direction direction : Direction.values())
-			probabilities.put(direction, 1);
-		CUMULATIVE_EQUAL_PROBABILITIES = getCumulativeProbabilities(probabilities);
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		UP
+		(
+			"up"
+		),
+
+		DOWN
+		(
+			"down"
+		),
+
+		LEFT
+		(
+			"left"
+		),
+
+		RIGHT
+		(
+			"right"
+		);
+
+		//--------------------------------------------------------------
+
+		private static final	Set<Orientation>	VERTICAL_ORIENTATIONS	= EnumSet.of
+		(
+			UP,
+			DOWN
+		);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	key;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Orientation(String key)
+		{
+			this.key = key;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		public static Orientation forKey(String key)
+		{
+			for (Orientation value : values())
+			{
+				if (value.key.equals(key))
+					return value;
+			}
+			return null;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : IStringKeyed interface
+	////////////////////////////////////////////////////////////////////
+
+		public String getKey()
+		{
+			return key;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String toString()
+		{
+			return StringUtils.firstCharToUpperCase(key);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public boolean isVertical()
+		{
+			return VERTICAL_ORIENTATIONS.contains(this);
+		}
+
+		//--------------------------------------------------------------
+
 	}
 
+	//==================================================================
+
+
+	// ENUMERATION: DIRECTION
+
+
+	enum Direction
+		implements IStringKeyed
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		FORE
+		(
+			"fore",
+			"F",
+			2, 0
+		),
+
+		FORE_RIGHT
+		(
+			"foreRight",
+			"FR",
+			1, 1
+		),
+
+		BACK_RIGHT
+		(
+			"backRight",
+			"BR",
+			-1, 1
+		),
+
+		BACK
+		(
+			"back",
+			"B",
+			-2, 0
+		),
+
+		BACK_LEFT
+		(
+			"backLeft",
+			"BL",
+			-1, -1
+		),
+
+		FORE_LEFT
+		(
+			"foreLeft",
+			"FL",
+			1, -1
+		);
+
+		//--------------------------------------------------------------
+
+		public static final	int	NUM_VALUES	= values().length;
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	key;
+		private	String	shortText;
+		private	int		delta0;
+		private	int		delta1;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Direction(String key,
+						  String shortText,
+						  int    delta0,
+						  int    delta1)
+		{
+			this.key = key;
+			this.shortText = shortText;
+			this.delta0 = delta0;
+			this.delta1 = delta1;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		public static Direction forKey(String key)
+		{
+			for (Direction value : values())
+			{
+				if (value.key.equals(key))
+					return value;
+			}
+			return null;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : IStringKeyed interface
+	////////////////////////////////////////////////////////////////////
+
+		public String getKey()
+		{
+			return key;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public String getShortText()
+		{
+			return shortText;
+		}
+
+		//--------------------------------------------------------------
+
+		public int incrementIndex0(int i0)
+		{
+			return i0 + delta0;
+		}
+
+		//--------------------------------------------------------------
+
+		public int incrementIndex1(int i1)
+		{
+			return i1 + delta1;
+		}
+
+		//--------------------------------------------------------------
+
+		public Direction getReflection()
+		{
+			return switch (this)
+			{
+				case FORE       -> null;
+				case FORE_RIGHT -> FORE_LEFT;
+				case BACK_RIGHT -> BACK_LEFT;
+				case BACK       -> null;
+				case BACK_LEFT  -> BACK_RIGHT;
+				case FORE_LEFT  -> FORE_RIGHT;
+			};
+		}
+
+		//--------------------------------------------------------------
+
+		public Direction getInverse()
+		{
+			return values()[(ordinal() + NUM_VALUES / 2) % NUM_VALUES];
+		}
+
+		//--------------------------------------------------------------
+
+		public Direction add(Direction direction)
+		{
+			return values()[(ordinal() + direction.ordinal()) % NUM_VALUES];
+		}
+
+		//--------------------------------------------------------------
+
+		public Direction subtract(Direction direction)
+		{
+			return values()[(ordinal() + (NUM_VALUES - direction.ordinal())) % NUM_VALUES];
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Enumerated types
+	////////////////////////////////////////////////////////////////////
+
+
+		// ENUMERATION: DIRECTION MODE
+
+
+		enum Mode
+			implements IStringKeyed
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			ABSOLUTE
+			(
+				"absolute"
+			),
+
+			RELATIVE
+			(
+				"relative"
+			);
+
+		////////////////////////////////////////////////////////////////
+		//  Instance variables
+		////////////////////////////////////////////////////////////////
+
+			private	String	key;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Mode(String key)
+			{
+				this.key = key;
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : IStringKeyed interface
+		////////////////////////////////////////////////////////////////
+
+			public String getKey()
+			{
+				return key;
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			@Override
+			public String toString()
+			{
+				return StringUtils.firstCharToUpperCase(key);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	}
+
+	//==================================================================
+
+
+	// ENUMERATION: TERMINAL EMPHASIS
+
+
+	enum TerminalEmphasis
+		implements IStringKeyed
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		NONE
+		(
+			"none",
+			"None"
+		),
+
+		START
+		(
+			"start",
+			"Start"
+		),
+
+		END
+		(
+			"end",
+			"End"
+		),
+
+		START_AND_END
+		(
+			"startAndEnd",
+			"Start and end"
+		),
+
+		RANDOM
+		(
+			"random",
+			"Random"
+		),
+
+		RANDOM_ONE_ONLY
+		(
+			"randomOneOnly",
+			"Random, one only"
+		),
+
+		RANDOM_AT_LEAST_ONE
+		(
+			"randomAtLeastOne",
+			"Random, at least one"
+		);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	key;
+		private	String	text;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private TerminalEmphasis(String key,
+								 String text)
+		{
+			this.key = key;
+			this.text = text;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : IStringKeyed interface
+	////////////////////////////////////////////////////////////////////
+
+		public String getKey()
+		{
+			return key;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String toString()
+		{
+			return text;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// ENUMERATION: PATH RENDERING
+
+
+	enum PathRendering
+		implements IStringKeyed
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		PURE
+		(
+			"pure",
+			RenderingHints.VALUE_STROKE_PURE
+		),
+
+		NORMALISED
+		(
+			"normalised",
+			RenderingHints.VALUE_STROKE_NORMALIZE
+		);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	key;
+		private	Object	renderingHintValue;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private PathRendering(String key,
+							  Object renderingHintValue)
+		{
+			this.key = key;
+			this.renderingHintValue = renderingHintValue;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : IStringKeyed interface
+	////////////////////////////////////////////////////////////////////
+
+		public String getKey()
+		{
+			return key;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String toString()
+		{
+			return StringUtils.firstCharToUpperCase(key);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// ENUMERATION: ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		UNSUPPORTED_VERSION
+		("The version of %1 is not supported by this version of " + PatternGeneratorApp.SHORT_NAME + "."),
+
+		NO_ATTRIBUTE
+		("The required attribute is missing."),
+
+		INVALID_ATTRIBUTE
+		("The attribute is invalid."),
+
+		ATTRIBUTE_OUT_OF_BOUNDS
+		("The attribute value is out of bounds."),
+
+		INVALID_DIRECTION
+		("The direction is invalid."),
+
+		INCONSISTENT_NUMBER_OF_PATHS
+		("The attribute value is not consistent with the number of path elements.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	Pattern2Document						document;
-	private	Orientation								orientation;
-	private	double									xInterval;
-	private	double									yInterval;
-	private	double									xMargin;
-	private	double									yMargin;
-	private	int										numIndices0;
-	private	int										numIndices1;
-	private	double									pathThickness;
-	private	double									terminalDiameter;
-	private	int										expectedPathLength;
-	private	Map<Direction, Integer>					directionProbabilities;
-	private	Direction.Mode							directionMode;
-	private	TerminalEmphasis						terminalEmphasis;
-	private	boolean									showEmptyPaths;
-	private	Color									transparencyColour;
-	private	Color									backgroundColour;
-	private	List<Color>								pathColours;
-	private	int										activeFraction;
-	private	IntegerRange							transitionIntervalRange;
-	private	List<Path>								paths;
-	private	Map<Direction, Double>					cumulativeProbabilities;
-	private	Map<Direction, Map<Direction, Double>>	cumulativeRelativeInverseProbabilitiesCache;
-	private	byte[][]								vertices;
-	private	BufferedImage							image;
-	private	long									animationSeed;
-	private	Prng01									prngGeneral;
-	private	Prng01									prngTerminalEmphasis;
-	private	Prng01									prngColour;
-	private	Prng01									prngTransitionLength;
+
+	// CLASS: PATH
+
+
+	private static class Path
+		implements Cloneable
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	MIN_I0	= 0;
+		private static final	int	MAX_I0	= 10000;
+
+		private static final	int	MIN_I1	= 0;
+		private static final	int	MAX_I1	= 10000;
+
+		private static final	Comparator<Path>	LENGTH_COMPARATOR =
+				Comparator.comparingInt(Path::getLength).thenComparing(Comparator.<Path>comparingInt(path ->
+								Math.max(path.start.lengthenFrameIndex, path.end.lengthenFrameIndex)).reversed());
+
+		private enum Change
+		{
+			NONE,
+			LENGTHEN,
+			SHORTEN
+		}
+
+		private interface ElementName
+		{
+			String	DIRECTION	= "direction";
+		}
+
+		private interface AttrName
+		{
+			String	COLOUR			= "colour";
+			String	EMPHASISE_END	= "emphasiseEnd";
+			String	EMPHASISE_START	= "emphasiseStart";
+			String	I0				= "i0";
+			String	I1				= "i1";
+		}
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	Terminal		start;
+		private	Terminal		end;
+		private	Color			colour;
+		private	List<Direction>	directions;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Path(int i0,
+					 int i1)
+		{
+			start = new Terminal(this, Terminal.Kind.START, i0, i1);
+			end = new Terminal(this, Terminal.Kind.END, i0, i1);
+			directions = new ArrayList<>();
+		}
+
+		//--------------------------------------------------------------
+
+		private Path(Element element)
+			throws XmlParseException
+		{
+			// Get element path
+			String elementPath = XmlUtils.getElementPath(element);
+
+			// Attribute: i0
+			String attrName = AttrName.I0;
+			String attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
+			String attrValue = XmlUtils.getAttribute(element, attrName);
+			if (attrValue == null)
+				throw new XmlParseException(ErrorId.NO_ATTRIBUTE, attrKey);
+			int i0 = 0;
+			try
+			{
+				i0 = Integer.parseInt(attrValue);
+				if ((i0 < MIN_I0) || (i0 > MAX_I0))
+					throw new XmlParseException(ErrorId.ATTRIBUTE_OUT_OF_BOUNDS, attrKey, attrValue);
+			}
+			catch (NumberFormatException e)
+			{
+				throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
+			}
+
+			// Attribute: i1
+			attrName = AttrName.I1;
+			attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
+			attrValue = XmlUtils.getAttribute(element, attrName);
+			if (attrValue == null)
+				throw new XmlParseException(ErrorId.NO_ATTRIBUTE, attrKey);
+			int i1 = 0;
+			try
+			{
+				i1 = Integer.parseInt(attrValue);
+				if ((i1 < MIN_I1) || (i1 > MAX_I1))
+					throw new XmlParseException(ErrorId.ATTRIBUTE_OUT_OF_BOUNDS, attrKey, attrValue);
+			}
+			catch (NumberFormatException e)
+			{
+				throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
+			}
+
+			// Initialise start and end
+			start = new Terminal(this, Terminal.Kind.START, i0, i1);
+			end = new Terminal(this, Terminal.Kind.END, i0, i1);
+
+			// Attribute: emphasise start
+			attrName = AttrName.EMPHASISE_START;
+			attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
+			attrValue = XmlUtils.getAttribute(element, attrName);
+			if (attrValue != null)
+			{
+				NoYes ny = NoYes.forKey(attrValue);
+				if (ny == null)
+					throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
+				start.emphasise = ny.toBoolean();
+			}
+
+			// Attribute: emphasise end
+			attrName = AttrName.EMPHASISE_END;
+			attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
+			attrValue = XmlUtils.getAttribute(element, attrName);
+			if (attrValue != null)
+			{
+				NoYes ny = NoYes.forKey(attrValue);
+				if (ny == null)
+					throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
+				end.emphasise = ny.toBoolean();
+			}
+
+			// Attribute: colour
+			attrName = AttrName.COLOUR;
+			attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
+			attrValue = XmlUtils.getAttribute(element, attrName);
+			if (attrValue == null)
+				throw new XmlParseException(ErrorId.NO_ATTRIBUTE, attrKey);
+			try
+			{
+				colour = ColourUtils.parseColour(attrValue);
+			}
+			catch (IllegalArgumentException e)
+			{
+				throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, attrKey, attrValue);
+			}
+			catch (ValueOutOfBoundsException e)
+			{
+				throw new XmlParseException(ErrorId.ATTRIBUTE_OUT_OF_BOUNDS, attrKey, attrValue);
+			}
+
+			// Parse direction elements
+			directions = new ArrayList<>();
+			NodeList childNodes = element.getChildNodes();
+			for (int i = 0; i < childNodes.getLength(); i++)
+			{
+				Node node = childNodes.item(i);
+				if (node.getNodeType() == Node.ELEMENT_NODE)
+				{
+					Element element1 = (Element)node;
+					if (element1.getTagName().equals(ElementName.DIRECTION))
+					{
+						String str = element1.getTextContent();
+						Direction direction = Direction.forKey(str);
+						if (direction == null)
+						{
+							throw new XmlParseException(ErrorId.INVALID_DIRECTION,
+														XmlUtils.getElementPath(element1), str);
+						}
+						addDirection(direction);
+					}
+				}
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Path clone()
+		{
+			try
+			{
+				Path copy = (Path)super.clone();
+
+				copy.start = start.clone();
+				copy.start.path = copy;
+
+				copy.end = end.clone();
+				copy.end.path = copy;
+
+				copy.colour = ColourUtils.copy(colour);
+
+				copy.directions = new ArrayList<>(directions);
+
+				return copy;
+			}
+			catch (CloneNotSupportedException e)
+			{
+				throw new UnexpectedRuntimeException(e);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private boolean isEmpty()
+		{
+			return directions.isEmpty();
+		}
+
+		//--------------------------------------------------------------
+
+		private boolean isChanging()
+		{
+			return (start.change != Change.NONE) || (end.change != Change.NONE);
+		}
+
+		//--------------------------------------------------------------
+
+		private int getLength()
+		{
+			return directions.size();
+		}
+
+		//--------------------------------------------------------------
+
+		private Direction getFirstDirection()
+		{
+			return directions.get(0);
+		}
+
+		//--------------------------------------------------------------
+
+		private Direction getLastDirection()
+		{
+			return directions.get(directions.size() - 1);
+		}
+
+		//--------------------------------------------------------------
+
+		private void addDirection(Direction direction)
+		{
+			directions.add(direction);
+			end.applyDirection(direction);
+		}
+
+		//--------------------------------------------------------------
+
+		private void setTerminalEmphasis(TerminalEmphasis terminalEmphasis,
+										 Prng01           prng)
+		{
+			switch (terminalEmphasis)
+			{
+				case NONE:
+					// do nothing
+					break;
+
+				case START:
+					start.emphasise = true;
+					break;
+
+				case END:
+					end.emphasise = true;
+					break;
+
+				case START_AND_END:
+					start.emphasise = true;
+					end.emphasise = true;
+					break;
+
+				case RANDOM:
+					if (prng.nextBoolean())
+						start.emphasise = true;
+					if (prng.nextBoolean())
+						end.emphasise = true;
+					break;
+
+				case RANDOM_ONE_ONLY:
+					if (prng.nextBoolean())
+						start.emphasise = true;
+					else
+						end.emphasise = true;
+					break;
+
+				case RANDOM_AT_LEAST_ONE:
+					if (prng.nextBoolean())
+					{
+						start.emphasise = true;
+						end.emphasise = true;
+					}
+					else if (prng.nextBoolean())
+						start.emphasise = true;
+					else
+						end.emphasise = true;
+					break;
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private void setColour(List<Color> colours,
+							   Prng01      prng)
+		{
+			colour = colours.get(prng.nextInt(colours.size()));
+		}
+
+		//--------------------------------------------------------------
+
+		private Element createElement(Document document)
+		{
+			Element element = document.createElement(Pattern2Image.ElementName.PATH);
+			for (Attribute attribute : getAttributes())
+				attribute.set(element);
+
+			for (Direction direction : directions)
+			{
+				Element directionElement = document.createElement(ElementName.DIRECTION);
+				directionElement.setTextContent(direction.getKey());
+				element.appendChild(directionElement);
+			}
+
+			return element;
+		}
+
+		//--------------------------------------------------------------
+
+		private void write(XmlWriter writer,
+						   int       indent)
+			throws IOException
+		{
+			if (directions.isEmpty())
+				writer.writeEmptyElement(Pattern2Image.ElementName.PATH, getAttributes(), indent, true);
+			else
+			{
+				writer.writeElementStart(Pattern2Image.ElementName.PATH, getAttributes(), indent, true,
+										 true);
+				indent += XmlWriter.INDENT_INCREMENT;
+
+				for (Direction direction : directions)
+				{
+					writer.writeElementStart(ElementName.DIRECTION, null, indent, false, false);
+					writer.write(direction.getKey());
+					writer.writeElementEnd(ElementName.DIRECTION, 0);
+				}
+
+				indent -= XmlWriter.INDENT_INCREMENT;
+				writer.writeElementEnd(Pattern2Image.ElementName.PATH, indent);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private AttributeList getAttributes()
+		{
+			AttributeList attributes = new AttributeList();
+			attributes.add(AttrName.I0,              start.i0);
+			attributes.add(AttrName.I1,              start.i1);
+			attributes.add(AttrName.EMPHASISE_START, start.emphasise);
+			attributes.add(AttrName.EMPHASISE_END,   end.emphasise);
+			attributes.add(AttrName.COLOUR,          ColourUtils.colourToRgbString(colour));
+			return attributes;
+		}
+
+		//--------------------------------------------------------------
+
+		private void create(int frameIndex,
+							int transitionLength)
+		{
+			start.create(frameIndex, transitionLength);
+			end.create(frameIndex, transitionLength);
+		}
+
+		//--------------------------------------------------------------
+
+		private void destroy(int frameIndex,
+							 int transitionLength)
+		{
+			start.destroy(frameIndex, transitionLength);
+			end.destroy(frameIndex, transitionLength);
+		}
+
+		//--------------------------------------------------------------
+
+		private boolean update(int frameIndex)
+		{
+			boolean empty = directions.isEmpty();
+			boolean destroyed = false;
+			if (start.update(frameIndex) == Change.SHORTEN)
+			{
+				if (empty)
+					destroyed = true;
+				else
+					directions.remove(0);
+			}
+			if (end.update(frameIndex) == Change.SHORTEN)
+			{
+				if (empty)
+					destroyed = true;
+				else
+					directions.remove(directions.size() - 1);
+			}
+			return destroyed;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// CLASS: TERMINAL
+
+
+		private static class Terminal
+			implements Cloneable
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private enum Kind
+			{
+				START,
+				END
+			}
+
+		////////////////////////////////////////////////////////////////
+		//  Instance variables
+		////////////////////////////////////////////////////////////////
+
+			private	Path	path;
+			private	Kind	kind;
+			private	int		i0;
+			private	int		i1;
+			private	boolean	emphasise;
+			private	Change	change;
+			private	int		startFrameIndex;
+			private	int		lengthenFrameIndex;
+			private	int		transitionLength;
+			private	int		j0;
+			private	int		j1;
+			private	double	changeFraction;
+			private	double	if0;
+			private	double	if1;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Terminal(Path path,
+							 Kind kind,
+							 int  i0,
+							 int  i1)
+			{
+				this.path = path;
+				this.kind = kind;
+				this.i0 = i0;
+				this.i1 = i1;
+				change = Change.NONE;
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			@Override
+			public Terminal clone()
+			{
+				try
+				{
+					return (Terminal)super.clone();
+				}
+				catch (CloneNotSupportedException e)
+				{
+					throw new UnexpectedRuntimeException(e);
+				}
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods
+		////////////////////////////////////////////////////////////////
+
+			private boolean isAt(int i0,
+								 int i1)
+			{
+				return (this.i0 == i0) && (this.i1 == i1);
+			}
+
+			//----------------------------------------------------------
+
+			private void applyDirection(Direction direction)
+			{
+				i0 = direction.incrementIndex0(i0);
+				i1 = direction.incrementIndex1(i1);
+			}
+
+			//----------------------------------------------------------
+
+			private Change update(int frameIndex)
+			{
+				Change oldChange = null;
+				if (change != Change.NONE)
+				{
+					if (frameIndex < startFrameIndex + transitionLength)
+					{
+						changeFraction = (double)(frameIndex - startFrameIndex) / (double)transitionLength;
+						switch (change)
+						{
+							case NONE:
+								// do nothing
+								break;
+
+							case LENGTHEN:
+								if0 = (double)j0 + (double)(i0 - j0) * changeFraction;
+								if1 = (double)j1 + (double)(i1 - j1) * changeFraction;
+								break;
+
+							case SHORTEN:
+								if0 = (double)i0 + (double)(j0 - i0) * changeFraction;
+								if1 = (double)i1 + (double)(j1 - i1) * changeFraction;
+								break;
+						}
+					}
+					else
+					{
+						oldChange = change;
+						if (change == Change.SHORTEN)
+						{
+							i0 = j0;
+							i1 = j1;
+						}
+						change = Change.NONE;
+					}
+				}
+				return oldChange;
+			}
+
+			//----------------------------------------------------------
+
+			private void create(int frameIndex,
+								int transitionLength)
+			{
+				change = Path.Change.LENGTHEN;
+				startFrameIndex = frameIndex;
+				this.transitionLength = transitionLength;
+				j0 = i0;
+				j1 = i1;
+				update(frameIndex);
+			}
+
+			//----------------------------------------------------------
+
+			private void destroy(int frameIndex,
+								 int transitionLength)
+			{
+				change = Path.Change.SHORTEN;
+				startFrameIndex = frameIndex;
+				this.transitionLength = transitionLength;
+				j0 = i0;
+				j1 = i1;
+				update(frameIndex);
+			}
+
+			//----------------------------------------------------------
+
+			private void lengthen(int       frameIndex,
+								  int       transitionLength,
+								  Direction direction)
+			{
+				change = Path.Change.LENGTHEN;
+				startFrameIndex = frameIndex;
+				lengthenFrameIndex = frameIndex;
+				this.transitionLength = transitionLength;
+				j0 = i0;
+				j1 = i1;
+				i0 = direction.incrementIndex0(i0);
+				i1 = direction.incrementIndex1(i1);
+				update(frameIndex);
+			}
+
+			//----------------------------------------------------------
+
+			private void shorten(int       frameIndex,
+								 int       transitionLength,
+								 Direction direction)
+			{
+				change = Path.Change.SHORTEN;
+				startFrameIndex = frameIndex;
+				this.transitionLength = transitionLength;
+				j0 = direction.incrementIndex0(i0);
+				j1 = direction.incrementIndex1(i1);
+				update(frameIndex);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: OUTPUT SHAPE
+
+
+	private static abstract class OutputShape
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		MAX_NUM_VERTICES_PER_LINE	= 4;
+
+		private static final	String	MOVETO_PREFIX	= "M";
+		private static final	String	LINETO_PREFIX	= "L";
+
+		private static final	DecimalFormat	FORMAT	= AppConstants.FORMAT_1_8;
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	Color	colour;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		protected OutputShape()
+		{
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Abstract methods
+	////////////////////////////////////////////////////////////////////
+
+		protected abstract void draw(Graphics2D gr);
+
+		//--------------------------------------------------------------
+
+		protected abstract void transform(AffineTransform transform)
+			throws IOException;
+
+		//--------------------------------------------------------------
+
+		protected abstract void writeSvg(XmlWriter writer,
+										 int       indent)
+			throws IOException;
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// CLASS: POLYLINE
+
+
+		private static class Polyline
+			extends OutputShape
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Instance variables
+		////////////////////////////////////////////////////////////////
+
+			private	Path2D.Double	path;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Polyline(Color  colour,
+							 double x,
+							 double y)
+			{
+				this.colour = colour;
+				path = new Path2D.Double();
+				path.moveTo(x, y);
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			protected void draw(Graphics2D gr)
+			{
+				gr.setColor(colour);
+				gr.draw(path);
+			}
+
+			//----------------------------------------------------------
+
+			protected void transform(AffineTransform transform)
+			{
+				path.transform(transform);
+			}
+
+			//----------------------------------------------------------
+
+			protected void writeSvg(XmlWriter writer,
+									int       indent)
+				throws IOException
+			{
+				StringBuilder buffer = new StringBuilder(256);
+				int numSpaces = indent + 1 + ElementName.PATH.length() + 1 + Svg.AttrName.D.length() + 2;
+				String spaces = " ".repeat(numSpaces);
+				PathIterator it = path.getPathIterator(null);
+				double[] coords = new double[6];
+				int vertexCount = 0;
+				while (!it.isDone())
+				{
+					switch (it.currentSegment(coords))
+					{
+						case PathIterator.SEG_MOVETO:
+							buffer.append(MOVETO_PREFIX);
+							break;
+
+						case PathIterator.SEG_LINETO:
+							if (vertexCount < MAX_NUM_VERTICES_PER_LINE)
+								buffer.append(' ');
+							else
+							{
+								buffer.append('\n');
+								buffer.append(spaces);
+								vertexCount = 0;
+							}
+							buffer.append(LINETO_PREFIX);
+							break;
+					}
+					buffer.append(' ');
+					buffer.append(FORMAT.format(coords[0]));
+					buffer.append(' ');
+					buffer.append(FORMAT.format(coords[1]));
+
+					++vertexCount;
+					it.next();
+				}
+
+				AttributeList attributes = new AttributeList();
+				attributes.add(Svg.AttrName.STROKE, ColourUtils.colourToHexString(colour));
+				if (ColourUtils.isTransparent(colour))
+				{
+					attributes.add(Svg.AttrName.STROKE_OPACITY, ColourUtils.getOpacity(colour),
+								   ColourUtils.OPACITY_FORMAT);
+				}
+				attributes.add(Svg.AttrName.D, buffer);
+				writer.writeEmptyElement(ElementName.PATH, attributes, indent, true);
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods
+		////////////////////////////////////////////////////////////////
+
+			private void add(double x,
+							 double y)
+			{
+				path.lineTo(x, y);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+
+		// CLASS: DISC
+
+
+		private static class Disc
+			extends OutputShape
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Instance variables
+		////////////////////////////////////////////////////////////////
+
+			private	Ellipse2D.Double	disc;
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private Disc(Color  colour,
+						 double x,
+						 double y,
+						 double diameter)
+			{
+				this.colour = colour;
+				double radius = 0.5 * diameter;
+				disc = new Ellipse2D.Double(x - radius, y - radius, diameter, diameter);
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			protected void draw(Graphics2D gr)
+			{
+				gr.setColor(colour);
+				gr.fill(disc);
+			}
+
+			//----------------------------------------------------------
+
+			protected void transform(AffineTransform transform)
+			{
+				double radius = 0.5 * disc.width;
+				Point2D.Double point = new Point2D.Double(disc.x + radius, disc.y + radius);
+				transform.transform(point, point);
+				disc.x = point.x - radius;
+				disc.y = point.y - radius;
+			}
+
+			//----------------------------------------------------------
+
+			protected void writeSvg(XmlWriter writer,
+									int       indent)
+				throws IOException
+			{
+				double radius = 0.5 * disc.width;
+
+				AttributeList attributes = new AttributeList();
+				attributes.add(Svg.AttrName.FILL, ColourUtils.colourToHexString(colour));
+				attributes.add(Svg.AttrName.CX,   FORMAT.format(disc.x + radius));
+				attributes.add(Svg.AttrName.CY,   FORMAT.format(disc.y + radius));
+				attributes.add(Svg.AttrName.R,    FORMAT.format(radius));
+				writer.writeEmptyElement(Svg.ElementName.CIRCLE, attributes, indent, true);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	}
+
+	//==================================================================
 
 }
 

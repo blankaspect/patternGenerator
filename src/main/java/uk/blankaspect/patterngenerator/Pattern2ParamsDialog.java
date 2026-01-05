@@ -88,7 +88,7 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.range.IntegerRangeBarPanel;
 
-import uk.blankaspect.ui.swing.slider.HorizontalSlider;
+import uk.blankaspect.ui.swing.slider.FlatHorizontalSlider;
 
 import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
@@ -123,8 +123,7 @@ class Pattern2ParamsDialog
 	private static final	int		ACTIVE_FRACTION_FIELD_LENGTH		= 3;
 	private static final	int		DIRECTION_PROBABILITY_FIELD_LENGTH	= 3;
 
-	private static final	int		SLIDER_KNOB_WIDTH	= 24;
-	private static final	int		SLIDER_HEIGHT		= 18;
+	private static final	int		SLIDER_HEIGHT	= 18;
 
 	private static final	double	DELTA_GRID_INTERVAL		= 0.01;
 	private static final	double	DELTA_PATH_THICKNESS	= 0.01;
@@ -395,7 +394,7 @@ class Pattern2ParamsDialog
 
 		// Spinner-slider panel: grid interval
 		int sliderExtent = (int)Math.round(Pattern2Params.MAX_GRID_INTERVAL - Pattern2Params.MIN_GRID_INTERVAL);
-		int sliderWidth = HorizontalSlider.extentToWidth(sliderExtent, SLIDER_KNOB_WIDTH);
+		int sliderWidth = FlatHorizontalSlider.extentToWidth(sliderExtent);
 
 		gridIntervalSpinnerSlider = new SpinnerSliderPanel(params.getGridInterval(), Pattern2Params.MIN_GRID_INTERVAL,
 														   Pattern2Params.MAX_GRID_INTERVAL, DELTA_GRID_INTERVAL,
@@ -431,7 +430,7 @@ class Pattern2ParamsDialog
 
 		// Spinner-slider panel: path thickness
 		sliderExtent = (int)Math.round(Pattern2Params.MAX_PATH_THICKNESS - Pattern2Params.MIN_PATH_THICKNESS);
-		sliderWidth = HorizontalSlider.extentToWidth(2 * sliderExtent, SLIDER_KNOB_WIDTH);
+		sliderWidth = FlatHorizontalSlider.extentToWidth(2 * sliderExtent);
 
 		pathThicknessSpinnerSlider = new SpinnerSliderPanel(params.getPathThickness(),
 															Pattern2Params.MIN_PATH_THICKNESS,
@@ -550,7 +549,7 @@ class Pattern2ParamsDialog
 
 		// Spinner-slider panel: terminal diameter
 		sliderExtent = (int)Math.round(Pattern2Params.MAX_TERMINAL_DIAMETER - Pattern2Params.MIN_TERMINAL_DIAMETER);
-		sliderWidth = HorizontalSlider.extentToWidth(sliderExtent, SLIDER_KNOB_WIDTH);
+		sliderWidth = FlatHorizontalSlider.extentToWidth(sliderExtent);
 
 		terminalDiameterSpinnerSlider = new SpinnerSliderPanel(params.getTerminalDiameter(),
 															   Pattern2Params.MIN_TERMINAL_DIAMETER,
@@ -1666,7 +1665,7 @@ class Pattern2ParamsDialog
 								   double       defaultValue)
 		{
 			super(value, minValue, maxValue, deltaValue, fieldLength, format, false, sliderWidth, SLIDER_HEIGHT,
-				  SLIDER_KNOB_WIDTH, defaultValue, SPINNER_SLIDER_PANEL_KEY);
+				  defaultValue, SPINNER_SLIDER_PANEL_KEY);
 		}
 
 		//--------------------------------------------------------------

@@ -18,7 +18,7 @@ package uk.blankaspect.ui.swing.slider;
 // IMPORTS
 
 
-import java.awt.Color;
+import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -27,8 +27,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import uk.blankaspect.ui.swing.misc.GuiConstants;
+import java.util.List;
+
 import uk.blankaspect.ui.swing.misc.GuiUtils;
+
+import uk.blankaspect.ui.swing.workaround.Workarounds01;
 
 //----------------------------------------------------------------------
 
@@ -37,16 +40,28 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 
 public class FlatHorizontalSlider
-	extends HorizontalSlider
-	implements MouseListener, MouseMotionListener
+	extends AbstractHorizontalSlider
 {
+
+////////////////////////////////////////////////////////////////////////
+//  Constants
+////////////////////////////////////////////////////////////////////////
+
+	private static final	BasicStroke	STROKE_WIDTH1	=
+			new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+
+	private static final	BasicStroke	STROKE_WIDTH2	=
+			new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+
+	private static final	BasicStroke	STROKE_DASHED	=
+			new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] { 1.5f, 1.5f },
+							0.0f);
 
 ////////////////////////////////////////////////////////////////////////
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-	private	Color	valueBarColour;
-	private	boolean	mouseOverKnob;
+	private	boolean	mouseOver;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -54,26 +69,83 @@ public class FlatHorizontalSlider
 
 	public FlatHorizontalSlider(
 		int	width,
-		int	height,
-		int	knobWidth)
+		int	height)
 	{
-		this(width, height, knobWidth, DEFAULT_VALUE);
+		// Call alternative constructor
+		this(width, height, DEFAULT_VALUE);
 	}
 
 	//------------------------------------------------------------------
 
-	/**
-	 * @throws IllegalArgumentException
-	 */
-
 	public FlatHorizontalSlider(
 		int		width,
 		int		height,
-		int		knobWidth,
 		double	value)
 	{
-		super(width, height, knobWidth, value);
-		valueBarColour = FlatSliderColours.DEFAULT_VALUE_BAR_COLOUR;
+		// Call superclass constructor
+		super(width, height);
+
+		// Validate arguments
+		if ((value < MIN_VALUE) || (value > MAX_VALUE))
+			throw new IllegalArgumentException("Value out of bounds");
+
+		// Redraw slider in response to mouse event
+		addMouseListener(new MouseListener()
+		{
+			@Override
+			public void mouseEntered(
+				MouseEvent	event)
+			{
+				updateMouseOver(event);
+			}
+
+			@Override
+			public void mouseExited(
+				MouseEvent	event)
+			{
+				updateMouseOver(event);
+			}
+
+			@Override
+			public void mousePressed(
+				MouseEvent	event)
+			{
+				updateMouseOver(event);
+			}
+
+			@Override
+			public void mouseReleased(
+				MouseEvent	event)
+			{
+				updateMouseOver(event);
+			}
+
+			@Override
+			public void mouseClicked(
+				MouseEvent	event)
+			{
+				// do nothing
+			}
+		});
+		addMouseMotionListener(new MouseMotionListener()
+		{
+			@Override
+			public void mouseDragged(
+				MouseEvent	event)
+			{
+				updateMouseOver(event);
+			}
+
+			@Override
+			public void mouseMoved(
+				MouseEvent	event)
+			{
+				// do nothing
+			}
+		});
+
+		// Set value
+		setValue(value);
 	}
 
 	//------------------------------------------------------------------
@@ -83,75 +155,6 @@ public class FlatHorizontalSlider
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void mouseClicked(
-		MouseEvent	event)
-	{
-		super.mouseClicked(event);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	public void mouseEntered(
-		MouseEvent	event)
-	{
-		updateMouseOverKnob(event);
-		super.mouseEntered(event);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	public void mouseExited(
-		MouseEvent	event)
-	{
-		updateMouseOverKnob(null);
-		super.mouseExited(event);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	public void mousePressed(
-		MouseEvent	event)
-	{
-		updateMouseOverKnob(event);
-		super.mousePressed(event);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	public void mouseReleased(
-		MouseEvent	event)
-	{
-		updateMouseOverKnob(event);
-		super.mouseReleased(event);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	public void mouseDragged(
-		MouseEvent	event)
-	{
-		updateMouseOverKnob(event);
-		super.mouseDragged(event);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	public void mouseMoved(
-		MouseEvent	event)
-	{
-		updateMouseOverKnob(event);
-		super.mouseMoved(event);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
 	protected void paintComponent(
 		Graphics	gr)
 	{
@@ -159,56 +162,57 @@ public class FlatHorizontalSlider
 		Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 		// Draw background
-		Rectangle rect = gr2d.getClipBounds();
-		gr2d.setColor(isEnabled() ? FlatSliderColours.BACKGROUND_COLOUR : getBackground());
-		gr2d.fillRect(rect.x, rect.y, rect.width, rect.height);
+		boolean enabled = isEnabled();
+		gr2d.setColor(FlatSliderColours.BACKGROUND);
+		gr2d.fillRect(0, 0, width, height);
 
-		// Draw end regions
-		int endRegionWidth = knobRect.width / 2 - 1;
-		gr2d.setColor(FlatSliderColours.END_REGION_COLOUR);
-		gr2d.fillRect(1, 1, endRegionWidth + 1, height - 2);
-		gr2d.fillRect(width - BORDER_WIDTH - endRegionWidth, 1, endRegionWidth + 1, height - 2);
-
-		if (isEnabled())
-		{
-			// Draw value bar
-			int x1 = BORDER_WIDTH + endRegionWidth;
-			gr2d.setColor(valueBarColour);
-			gr2d.fillRect(x1, BORDER_WIDTH + 2, knobRect.x - BORDER_WIDTH, height - 2 * BORDER_WIDTH - 4);
-
-			// Draw knob border
-			int y1 = knobRect.y - 1;
-			int y2 = knobRect.y + knobRect.height + 1;
-			if (mouseOverKnob || isDragging())
-			{
-				gr2d.setColor(isDragging() ? FlatSliderColours.KNOB_ACTIVE_BORDER_COLOUR
-											: FlatSliderColours.KNOB_BORDER_COLOUR);
-				gr2d.drawRect(knobRect.x, knobRect.y, knobRect.width - 1, knobRect.height - 1);
-				gr2d.drawRect(knobRect.x + 1, knobRect.y + 1, knobRect.width - 3, knobRect.height - 3);
-				++y1;
-				y2 -= 2;
-			}
-
-			// Draw knob centre line
-			gr2d.setColor(FlatSliderColours.KNOB_LINE_COLOUR);
-			int x = knobRect.x + knobRect.width / 2 - 1;
-			gr2d.drawLine(x, y1, x, y2);
-			++x;
-			gr2d.drawLine(x, y1, x, y2);
-		}
+		// Draw value bar
+		gr2d.setColor(enabled
+						? dragging
+								? FlatSliderColours.VALUE_BAR_ACTIVE
+								: FlatSliderColours.VALUE_BAR
+						: FlatSliderColours.DISABLED);
+		gr2d.fillRect(BORDER_WIDTH, BORDER_WIDTH + 2, markerX - BORDER_WIDTH, height - 2 * BORDER_WIDTH - 4);
 
 		// Draw border
-		gr2d.setColor(FlatSliderColours.BORDER_COLOUR);
-		gr2d.drawRect(0, 0, width - 1, height - 1);
-		if (isFocusOwner())
+		if (mouseOver || dragging)
 		{
-			gr2d.setColor(FlatSliderColours.FOCUSED_BORDER_COLOUR1);
-			gr2d.drawRect(1, 1, width - 3, height - 3);
-
-			gr2d.setStroke(GuiConstants.BASIC_DASH);
-			gr2d.setColor(FlatSliderColours.FOCUSED_BORDER_COLOUR2);
-			gr2d.drawRect(1, 1, width - 3, height - 3);
+			gr2d.setStroke(STROKE_WIDTH2);
+			gr2d.setColor(enabled ? FlatSliderColours.BORDER_HIGHLIGHTED : FlatSliderColours.DISABLED);
+			gr2d.drawRect(1, 1, width - 2, height - 2);
 		}
+		else
+		{
+			// Draw outer border
+			gr2d.setColor(enabled ? FlatSliderColours.BORDER : FlatSliderColours.DISABLED);
+// WORKAROUND : AWT/Swing doesn't scale the stroke width for a high-DPI display with a scale factor of 2
+//			gr2d.drawRect(0, 0, width - 1, height - 1);
+			Workarounds01.drawRect(gr2d, 0, 0, width, height, 1);
+
+			// If slider has focus, draw focus indicator ...
+			if (isFocusOwner())
+			{
+				gr2d.setColor(FlatSliderColours.BORDER_FOCUSED_0);
+				gr2d.drawRect(1, 1, width - 2, height - 2);
+
+				gr2d.setStroke(STROKE_DASHED);
+				gr2d.setColor(FlatSliderColours.BORDER_FOCUSED_1);
+				gr2d.drawRect(1, 1, width - 2, height - 2);
+			}
+
+			// ... otherwise, extend border inwards at ends of slider
+			else
+			{
+				gr2d.setStroke(STROKE_WIDTH1);
+				for (int x : List.of(1, width - 2))
+					gr2d.fillRect(x, 1, 1, height - 2);
+			}
+		}
+
+		// Draw marker
+		gr2d.setStroke(STROKE_WIDTH2);
+		gr2d.setColor(enabled ? FlatSliderColours.MARKER : FlatSliderColours.DISABLED);
+		gr2d.drawLine(markerX, 1, markerX, height - 1);
 	}
 
 	//------------------------------------------------------------------
@@ -217,39 +221,13 @@ public class FlatHorizontalSlider
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	public Color getValueBarColour()
-	{
-		return valueBarColour;
-	}
-
-	//------------------------------------------------------------------
-
-	/**
-	 * @throws IllegalArgumentException
-	 */
-
-	public void setValueBarColour(
-		Color	colour)
-	{
-		if (colour == null)
-			throw new IllegalArgumentException();
-
-		if (!valueBarColour.equals(colour))
-		{
-			valueBarColour = colour;
-			repaint();
-		}
-	}
-
-	//------------------------------------------------------------------
-
-	private void updateMouseOverKnob(
+	private void updateMouseOver(
 		MouseEvent	event)
 	{
-		boolean isOver = (event != null) && knobRect.contains(event.getPoint());
-		if (mouseOverKnob != isOver)
+		boolean over = isEnabled() ? new Rectangle(0, 0, width, height).contains(event.getX(), event.getY()) : false;
+		if (mouseOver != over)
 		{
-			mouseOverKnob = isOver;
+			mouseOver = over;
 			repaint();
 		}
 	}

@@ -68,11 +68,9 @@ public class IntegerSpinnerSliderPanel
 									 boolean signed,
 									 int     sliderWidth,
 									 int     sliderHeight,
-									 int     sliderKnobWidth,
 									 Integer defaultValue)
 	{
-		this(value, minValue, maxValue, maxLength, signed, sliderWidth, sliderHeight, sliderKnobWidth,
-			 defaultValue, null);
+		this(value, minValue, maxValue, maxLength, signed, sliderWidth, sliderHeight, defaultValue, null);
 	}
 
 	//------------------------------------------------------------------
@@ -88,7 +86,6 @@ public class IntegerSpinnerSliderPanel
 									 boolean signed,
 									 int     sliderWidth,
 									 int     sliderHeight,
-									 int     sliderKnobWidth,
 									 Integer defaultValue,
 									 String  key)
 	{
@@ -137,7 +134,7 @@ public class IntegerSpinnerSliderPanel
 		add(filler);
 
 		// Horizontal slider
-		slider = new FlatHorizontalSlider(sliderWidth, sliderHeight, sliderKnobWidth, normaliseValue(value));
+		slider = new FlatHorizontalSlider(sliderWidth, sliderHeight, normaliseValue(value));
 		components.add(slider);
 		slider.addChangeListener(this);
 
@@ -218,7 +215,7 @@ public class IntegerSpinnerSliderPanel
 		else if (eventSource == slider)
 		{
 			if (!adjusting)
-				updateValue(denormaliseValue(slider.getValue()));
+				updateValue(denormaliseValue(slider.value()));
 		}
 	}
 
@@ -303,7 +300,7 @@ public class IntegerSpinnerSliderPanel
 	{
 		adjusting = true;
 		spinner.setIntValue(value);
-		slider.setValue(normaliseValue(value));
+		slider.value(normaliseValue(value));
 		valueUpdated(value);
 		adjusting = false;
 	}

@@ -70,7 +70,7 @@ import uk.blankaspect.ui.swing.label.FixedWidthLabel;
 
 import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.ui.swing.slider.HorizontalSlider;
+import uk.blankaspect.ui.swing.slider.FlatHorizontalSlider;
 
 import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
 
@@ -92,8 +92,7 @@ class Pattern1SourceDialog
 	private static final	int		WAVE_COEFF_FIELD_LENGTH			= 3;
 	private static final	int		ATTENUATION_COEFF_FIELD_LENGTH	= 3;
 
-	private static final	int		SLIDER_KNOB_WIDTH	= 24;
-	private static final	int		SLIDER_HEIGHT		= 18;
+	private static final	int		SLIDER_HEIGHT	= 18;
 
 	private static final	String	ADD_STR					= "Add";
 	private static final	String	EDIT_STR				= "Edit";
@@ -302,17 +301,13 @@ class Pattern1SourceDialog
 		waveControlPanel.add(waveCoeffLabel);
 
 		// Spinner-slider panel: wave coefficient
-		int sliderExtent = Pattern1Image.Source.MAX_WAVE_COEFFICIENT -
-															Pattern1Image.Source.MIN_WAVE_COEFFICIENT + 1;
-		int sliderWidth = HorizontalSlider.extentToWidth(sliderExtent, SLIDER_KNOB_WIDTH);
+		int sliderExtent = Pattern1Image.Source.MAX_WAVE_COEFFICIENT - Pattern1Image.Source.MIN_WAVE_COEFFICIENT + 1;
+		int sliderWidth = FlatHorizontalSlider.extentToWidth(sliderExtent);
 		waveCoeffSpinnerSlider =
-							new IntegerSpinnerSliderPanel(params.getWaveCoefficient(),
-														  Pattern1Image.Source.MIN_WAVE_COEFFICIENT,
-														  Pattern1Image.Source.MAX_WAVE_COEFFICIENT,
-														  WAVE_COEFF_FIELD_LENGTH, false, sliderWidth,
-														  SLIDER_HEIGHT, SLIDER_KNOB_WIDTH,
-														  params.getWaveform().getDefaultCoefficient(),
-														  SPINNER_SLIDER_PANEL_KEY);
+				new IntegerSpinnerSliderPanel(params.getWaveCoefficient(), Pattern1Image.Source.MIN_WAVE_COEFFICIENT,
+											  Pattern1Image.Source.MAX_WAVE_COEFFICIENT, WAVE_COEFF_FIELD_LENGTH, false,
+											  sliderWidth, SLIDER_HEIGHT,  params.getWaveform().getDefaultCoefficient(),
+											  SPINNER_SLIDER_PANEL_KEY);
 		waveCoeffSpinnerSlider.getSpinner().addChangeListener(this);
 
 		gbc.gridx = 1;
@@ -381,18 +376,17 @@ class Pattern1SourceDialog
 		controlPanel.add(attenuationCoeffLabel);
 
 		// Spinner-slider panel: attenuation coefficient
-		sliderExtent = Pattern1Image.Source.MAX_ATTENUATION_COEFFICIENT -
-													Pattern1Image.Source.MIN_ATTENUATION_COEFFICIENT + 1;
-		sliderWidth = HorizontalSlider.extentToWidth(sliderExtent, SLIDER_KNOB_WIDTH);
+		sliderExtent = Pattern1Image.Source.MAX_ATTENUATION_COEFFICIENT
+							- Pattern1Image.Source.MIN_ATTENUATION_COEFFICIENT + 1;
+		sliderWidth = FlatHorizontalSlider.extentToWidth(sliderExtent);
 
 		attenuationCoeffSpinnerSlider =
-									new IntegerSpinnerSliderPanel(params.getAttenuationCoefficient(),
-																  Pattern1Image.Source.MIN_ATTENUATION_COEFFICIENT,
-																  Pattern1Image.Source.MAX_ATTENUATION_COEFFICIENT,
-																  ATTENUATION_COEFF_FIELD_LENGTH, false,
-																  sliderWidth, SLIDER_HEIGHT, SLIDER_KNOB_WIDTH,
-																  Pattern1Image.Source.DEFAULT_ATTENUATION_COEFFICIENT,
-																  SPINNER_SLIDER_PANEL_KEY);
+				new IntegerSpinnerSliderPanel(params.getAttenuationCoefficient(),
+											  Pattern1Image.Source.MIN_ATTENUATION_COEFFICIENT,
+											  Pattern1Image.Source.MAX_ATTENUATION_COEFFICIENT,
+											  ATTENUATION_COEFF_FIELD_LENGTH, false, sliderWidth, SLIDER_HEIGHT,
+											  Pattern1Image.Source.DEFAULT_ATTENUATION_COEFFICIENT,
+											  SPINNER_SLIDER_PANEL_KEY);
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;

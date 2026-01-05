@@ -72,11 +72,10 @@ public class DoubleSpinnerSliderPanel
 									boolean      signed,
 									int          sliderWidth,
 									int          sliderHeight,
-									int          sliderKnobWidth,
 									Double       defaultValue)
 	{
-		this(value, minValue, maxValue, stepSize, maxLength, format, signed, sliderWidth, sliderHeight,
-			 sliderKnobWidth, defaultValue, null);
+		this(value, minValue, maxValue, stepSize, maxLength, format, signed, sliderWidth, sliderHeight, defaultValue,
+			 null);
 	}
 
 	//------------------------------------------------------------------
@@ -94,7 +93,6 @@ public class DoubleSpinnerSliderPanel
 									boolean      signed,
 									int          sliderWidth,
 									int          sliderHeight,
-									int          sliderKnobWidth,
 									Double       defaultValue,
 									String       key)
 	{
@@ -143,7 +141,7 @@ public class DoubleSpinnerSliderPanel
 		add(filler);
 
 		// Horizontal slider
-		slider = new FlatHorizontalSlider(sliderWidth, sliderHeight, sliderKnobWidth, normaliseValue(value));
+		slider = new FlatHorizontalSlider(sliderWidth, sliderHeight, normaliseValue(value));
 		components.add(slider);
 		slider.addChangeListener(this);
 
@@ -224,7 +222,7 @@ public class DoubleSpinnerSliderPanel
 		else if (eventSource == slider)
 		{
 			if (!adjusting)
-				updateValue(denormaliseValue(slider.getValue()));
+				updateValue(denormaliseValue(slider.value()));
 		}
 	}
 
@@ -309,7 +307,7 @@ public class DoubleSpinnerSliderPanel
 	{
 		adjusting = true;
 		spinner.setDoubleValue(value);
-		slider.setValue(normaliseValue(value));
+		slider.value(normaliseValue(value));
 		valueUpdated(value);
 		adjusting = false;
 	}

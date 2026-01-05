@@ -58,7 +58,7 @@ import uk.blankaspect.ui.swing.label.FLabel;
 
 import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.ui.swing.slider.HorizontalSlider;
+import uk.blankaspect.ui.swing.slider.FlatHorizontalSlider;
 
 import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
@@ -102,8 +102,7 @@ class HueSaturationRangePanel
 	private static final	int		BRIGHTNESS_FIELD_LENGTH	= 3;
 	private static final	int		OPACITY_FIELD_LENGTH	= 3;
 
-	private static final	int		SLIDER_KNOB_WIDTH	= 24;
-	private static final	int		SLIDER_HEIGHT		= 18;
+	private static final	int		SLIDER_HEIGHT	= 18;
 
 	private static final	String	HUE_STR			= "Hue";
 	private static final	String	SATURATION_STR	= "Saturation";
@@ -385,11 +384,11 @@ class HueSaturationRangePanel
 
 		// Spinner-slider panel: brightness
 		int sliderExtent = 2 * (MAX_BRIGHTNESS - MIN_BRIGHTNESS + 1);
-		int sliderWidth = HorizontalSlider.extentToWidth(sliderExtent, SLIDER_KNOB_WIDTH);
-		brightnessSpinnerSlider = new IntegerSpinnerSliderPanel(params.brightness, MIN_BRIGHTNESS, MAX_BRIGHTNESS,
-																BRIGHTNESS_FIELD_LENGTH, false, sliderWidth,
-																SLIDER_HEIGHT, SLIDER_KNOB_WIDTH, MAX_BRIGHTNESS,
-																SPINNER_SLIDER_PANEL_KEY);
+		int sliderWidth = FlatHorizontalSlider.extentToWidth(sliderExtent);
+		brightnessSpinnerSlider =
+				new IntegerSpinnerSliderPanel(params.brightness, MIN_BRIGHTNESS, MAX_BRIGHTNESS,
+											  BRIGHTNESS_FIELD_LENGTH, false, sliderWidth, SLIDER_HEIGHT,
+											  MAX_BRIGHTNESS, SPINNER_SLIDER_PANEL_KEY);
 		brightnessSpinnerSlider.getSpinner().addChangeListener(this);
 
 		gbc.gridx = 1;
