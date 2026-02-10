@@ -76,56 +76,11 @@ class PatternView
 	};
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// NO IMAGE PANEL CLASS
-
-
-	private static class NoImagePanel
-		extends JPanel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	VERTICAL_PADDING	= 2;
-		private static final	int	HORIZONTAL_PADDING	= 8;
-
-		private static final	Color	BACKGROUND_COLOUR	= new Color(248, 240, 184);
-		private static final	Color	BORDER_COLOUR		= new Color(224, 216, 168);
-
-		private static final	String	NO_IMAGE_STR	= "No image";
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private NoImagePanel(Dimension size)
-		{
-			// Call superclass constructor
-			super(new FlowLayout(FlowLayout.LEADING));
-
-			// Set properties
-			if (size != null)
-				setPreferredSize(size);
-
-			// Label: no image
-			FLabel noImageLabel = new FLabel(NO_IMAGE_STR);
-			noImageLabel.setOpaque(true);
-			noImageLabel.setBackground(BACKGROUND_COLOUR);
-			GuiUtils.setPaddedLineBorder(noImageLabel, VERTICAL_PADDING, HORIZONTAL_PADDING,
-										 BORDER_COLOUR);
-			add(noImageLabel);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	PatternDocument	document;
+	private	ImagePanel		imagePanel;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -286,30 +241,27 @@ class PatternView
 		if ((event == null) || event.isPopupTrigger())
 		{
 			// Create context menu
-			if (contextMenu == null)
-			{
-				contextMenu = new JPopupMenu();
-				contextMenu.add(new FMenuItem(PatternDocument.Command.EDIT_PATTERN_PARAMETERS));
-				contextMenu.add(new FMenuItem(PatternDocument.Command.EDIT_DESCRIPTION));
-				contextMenu.addSeparator();
-				contextMenu.add(new FMenuItem(PatternDocument.Command.REGENERATE_PATTERN_WITH_NEW_SEED));
-				contextMenu.addSeparator();
-				contextMenu.add(new FMenuItem(PatternDocument.Command.SHOW_IMAGE_RENDERING_TIME));
-				contextMenu.addSeparator();
-				contextMenu.add(new FMenuItem(PatternDocument.Command.START_SLIDE_SHOW));
-				contextMenu.add(new FMenuItem(PatternDocument.Command.START_ANIMATION));
-				contextMenu.addSeparator();
-				contextMenu.add(new FMenuItem(PatternDocument.Command.RESIZE_WINDOW_TO_IMAGE));
-			}
+			JPopupMenu menu = new JPopupMenu();
+			menu.add(new FMenuItem(PatternDocument.Command.EDIT_PATTERN_PARAMETERS));
+			menu.add(new FMenuItem(PatternDocument.Command.EDIT_DESCRIPTION));
+			menu.addSeparator();
+			menu.add(new FMenuItem(PatternDocument.Command.REGENERATE_PATTERN_WITH_NEW_SEED));
+			menu.addSeparator();
+			menu.add(new FMenuItem(PatternDocument.Command.SHOW_IMAGE_RENDERING_TIME));
+			menu.addSeparator();
+			menu.add(new FMenuItem(PatternDocument.Command.START_SLIDE_SHOW));
+			menu.add(new FMenuItem(PatternDocument.Command.START_ANIMATION));
+			menu.addSeparator();
+			menu.add(new FMenuItem(PatternDocument.Command.RESIZE_WINDOW_TO_IMAGE));
 
 			// Update commands for menu items
 			document.updateCommands();
 
 			// Display menu
 			if (event == null)
-				contextMenu.show(this, 0, 0);
+				menu.show(this, 0, 0);
 			else
-				contextMenu.show(event.getComponent(), event.getX(), event.getY());
+				menu.show(event.getComponent(), event.getX(), event.getY());
 		}
 	}
 
@@ -331,12 +283,55 @@ class PatternView
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	PatternDocument	document;
-	private	ImagePanel		imagePanel;
-	private	JPopupMenu		contextMenu;
+
+	// NO IMAGE PANEL CLASS
+
+
+	private static class NoImagePanel
+		extends JPanel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		VERTICAL_PADDING	= 2;
+		private static final	int		HORIZONTAL_PADDING	= 8;
+
+		private static final	Color	BACKGROUND_COLOUR	= new Color(248, 240, 184);
+		private static final	Color	BORDER_COLOUR		= new Color(224, 216, 168);
+
+		private static final	String	NO_IMAGE_STR	= "No image";
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private NoImagePanel(Dimension size)
+		{
+			// Call superclass constructor
+			super(new FlowLayout(FlowLayout.LEADING));
+
+			// Set properties
+			if (size != null)
+				setPreferredSize(size);
+
+			// Label: no image
+			FLabel noImageLabel = new FLabel(NO_IMAGE_STR);
+			noImageLabel.setOpaque(true);
+			noImageLabel.setBackground(BACKGROUND_COLOUR);
+			GuiUtils.setPaddedLineBorder(noImageLabel, VERTICAL_PADDING, HORIZONTAL_PADDING, BORDER_COLOUR);
+			add(noImageLabel);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

@@ -49,7 +49,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLayeredPane;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -120,8 +119,6 @@ class SequenceDialog
 	private	ImagePanel			imagePanel;
 	private	JPanel				buttonPanel;
 	private	JButton				playPauseButton;
-	private	JPopupMenu			contextMenu;
-	private	JMenuItem			playPauseMenuItem;
 	private	Popup				frameIndexPopUp;
 
 ////////////////////////////////////////////////////////////////////////
@@ -155,13 +152,6 @@ class SequenceDialog
 				command.action.put();
 		}
 		updateCommands();
-
-		// Initialise context menu
-		contextMenu = new JPopupMenu();
-		playPauseMenuItem = contextMenu.add(new FMenuItem(Command.PAUSE.action));
-		contextMenu.add(new FMenuItem(Command.STOP.action));
-		contextMenu.addSeparator();
-		contextMenu.add(new FMenuItem(Command.CREATE_DOCUMENT.action));
 
 
 		//----  Image panel
@@ -428,7 +418,6 @@ class SequenceDialog
 		CommandAction action = paused ? Command.PLAY.action : Command.PAUSE.action;
 		action.put();
 		playPauseButton.setAction(action);
-		playPauseMenuItem.setAction(action);
 
 		// Update commands
 		updateCommands();
@@ -467,14 +456,20 @@ class SequenceDialog
 	{
 		if ((event == null) || event.isPopupTrigger())
 		{
+			JPopupMenu menu = new JPopupMenu();
+			menu.add(new FMenuItem(paused ? Command.PLAY.action : Command.PAUSE.action));
+			menu.add(new FMenuItem(Command.STOP.action));
+			menu.addSeparator();
+			menu.add(new FMenuItem(Command.CREATE_DOCUMENT.action));
+
 			// Update commands for menu items
 			updateCommands();
 
 			// Display menu
 			if (event == null)
-				contextMenu.show(this, 0, 0);
+				menu.show(this, 0, 0);
 			else
-				contextMenu.show(event.getComponent(), event.getX(), event.getY());
+				menu.show(event.getComponent(), event.getX(), event.getY());
 		}
 	}
 

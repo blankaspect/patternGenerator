@@ -218,12 +218,6 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 	};
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	JPopupMenu	contextMenu;
-
-////////////////////////////////////////////////////////////////////////
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
@@ -2028,18 +2022,17 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 	private void showContextMenu(int x,
 								 int y)
 	{
-		if (contextMenu == null)
-			contextMenu = new JPopupMenu();
-		else
-			contextMenu.removeAll();
+		JPopupMenu menu = new JPopupMenu();
 
-		contextMenu.add(new FMenuItem(new CommandAction(Command.MODE_SELECT, Mode.SELECT.toString(),
-														Mode.SELECT.getMenuIcon())));
+		menu.add(new FMenuItem(new CommandAction(Command.MODE_SELECT, Mode.SELECT.toString(),
+												 Mode.SELECT.getMenuIcon())));
 
 		if (getNumEnvelopeBands() == 1)
-			contextMenu.add(new FMenuItem(new CommandAction(Command.MODE_DRAW + 0, Mode.DRAW.toString(),
-															Mode.DRAW.getMenuIcon()),
-										  getMask() != 0));
+		{
+			menu.add(new FMenuItem(
+					new CommandAction(Command.MODE_DRAW + 0, Mode.DRAW.toString(), Mode.DRAW.getMenuIcon()),
+					getMask() != 0));
+		}
 		else
 		{
 			JMenu submenu = new FMenu(Mode.DRAW.toString());
@@ -2052,22 +2045,20 @@ public class EnvelopeView<S extends AbstractNode & IViewNode, T extends Abstract
 				{
 					Icon icon = new ColourSampleIcon(COLOUR_SAMPLE_WIDTH, COLOUR_SAMPLE_HEIGHT,
 													 envelope.getSegmentColour(j));
-					submenu.add(new FRadioButtonMenuItem(new CommandAction(Command.MODE_DRAW + index,
-																		   envelope.getName(j), icon),
-														 (mode == Mode.DRAW) && (index == drawIndex),
-														 (envelope.getBandMask() & 1 << j) != 0));
+					submenu.add(new FRadioButtonMenuItem(
+							new CommandAction(Command.MODE_DRAW + index, envelope.getName(j), icon),
+							(mode == Mode.DRAW) && (index == drawIndex),
+							(envelope.getBandMask() & 1 << j) != 0));
 					++index;
 				}
 			}
-			contextMenu.add(submenu);
+			menu.add(submenu);
 		}
 
-		contextMenu.add(new FMenuItem(new CommandAction(Command.MODE_ERASE, Mode.ERASE.toString(),
-														Mode.ERASE.getMenuIcon())));
-		contextMenu.add(new FMenuItem(new CommandAction(Command.MODE_EDIT, Mode.EDIT.toString(),
-														Mode.EDIT.getMenuIcon())));
+		menu.add(new FMenuItem(new CommandAction(Command.MODE_ERASE, Mode.ERASE.toString(), Mode.ERASE.getMenuIcon())));
+		menu.add(new FMenuItem(new CommandAction(Command.MODE_EDIT, Mode.EDIT.toString(), Mode.EDIT.getMenuIcon())));
 
-		contextMenu.show(this, x, y);
+		menu.show(this, x, y);
 	}
 
 	//------------------------------------------------------------------

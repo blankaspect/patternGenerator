@@ -94,8 +94,8 @@ public class SimpleNode
 		List<SimpleNode> outNodes = new ArrayList<>();
 		for (AbstractNode node : nodes)
 		{
-			if (node instanceof SimpleNode)
-				outNodes.add((SimpleNode)node);
+			if (node instanceof SimpleNode simpleNode)
+				outNodes.add(simpleNode);
 		}
 		return outNodes;
 	}

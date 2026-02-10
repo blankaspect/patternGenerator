@@ -107,8 +107,8 @@ public class CompoundNode
 		List<CompoundNode> outNodes = new ArrayList<>();
 		for (AbstractNode node : nodes)
 		{
-			if (node instanceof CompoundNode)
-				outNodes.add((CompoundNode)node);
+			if (node instanceof CompoundNode compoundNode)
+				outNodes.add(compoundNode);
 		}
 		return outNodes;
 	}

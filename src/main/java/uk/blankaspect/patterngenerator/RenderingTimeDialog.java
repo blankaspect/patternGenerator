@@ -81,7 +81,7 @@ class RenderingTimeDialog
 	private static final	String	NS_PER_PIXEL_STR	= "nanoseconds/pixel";
 	private static final	String	RESET_STR			= "Reset";
 
-	private static final	String	TIME_PROTOTYPE_STR	= "0000000.0";
+	private static final	String	TIME_PROTOTYPE_TEXT	= "0000000.0";
 
 	// Commands
 	private interface Command
@@ -156,7 +156,7 @@ class RenderingTimeDialog
 		controlPanel.add(renderingTimePanel);
 
 		// Field: rendering time
-		renderingTimeField = new TimeField(TIME_PROTOTYPE_STR);
+		renderingTimeField = new TimeField(TIME_PROTOTYPE_TEXT);
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
