@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import java.util.concurrent.Executors;
@@ -60,6 +59,7 @@ import uk.blankaspect.common.exception.TempFileException;
 
 import uk.blankaspect.common.filesystem.FilenameUtils;
 
+import uk.blankaspect.common.misc.EditList;
 import uk.blankaspect.common.misc.FileWritingMode;
 
 import uk.blankaspect.common.number.NumberUtils;
@@ -180,7 +180,7 @@ abstract class PatternDocument
 		if ((file == null) && !temporary)
 			unnamedIndex = ++newFileIndex;
 		imageSequenceParams = new ImageSequenceParams();
-		editList = new EditList();
+		editList = new EditList(AppConfig.INSTANCE.getMaxEditListLength());
 		renderingTime = new RenderingTime();
 	}
 
@@ -922,7 +922,7 @@ abstract class PatternDocument
 		executingCommand = true;
 
 		// Perform command
-		Edit edit = null;
+		EditList.IEdit edit = null;
 		try
 		{
 			try
@@ -954,7 +954,7 @@ abstract class PatternDocument
 
 		// Add edit to undo list
 		if (edit != null)
-			editList.addEdit(edit);
+			editList.add(edit);
 
 		// Update tab text and title and menus in main window
 		PatternGeneratorApp.INSTANCE.updateTabText(this);
@@ -1366,12 +1366,12 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onUndo()
+	private EditList.IEdit onUndo()
 	{
-		Edit edit = editList.removeUndo();
+		EditList.IEdit edit = editList.removeUndo();
 		if (edit != null)
 		{
-			edit.undo(this);
+			edit.undo();
 			updateView();
 		}
 		return null;
@@ -1379,12 +1379,12 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onRedo()
+	private EditList.IEdit onRedo()
 	{
-		Edit edit = editList.removeRedo();
+		EditList.IEdit edit = editList.removeRedo();
 		if (edit != null)
 		{
-			edit.redo(this);
+			edit.redo();
 			updateView();
 		}
 		return null;
@@ -1392,64 +1392,61 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onClearEditList()
+	private EditList.IEdit onClearEditList()
 	{
 		String[] optionStrs = Utils.getOptionStrings(AppConstants.CLEAR_STR);
 		if (JOptionPane.showOptionDialog(PatternGeneratorApp.INSTANCE.getMainWindow(), CLEAR_EDIT_LIST_STR,
 										 PatternGeneratorApp.SHORT_NAME, JOptionPane.OK_CANCEL_OPTION,
 										 JOptionPane.QUESTION_MESSAGE, null, optionStrs,
 										 optionStrs[1]) == JOptionPane.OK_OPTION)
-		{
 			editList.clear();
-			System.gc();
-		}
 		return null;
 	}
 
 	//------------------------------------------------------------------
 
-	private Edit onEditPatternParameters()
+	private ParametersEdit onEditPatternParameters()
 		throws AppException
 	{
-		Edit edit = null;
+		ParametersEdit edit = null;
 		PatternParams oldParams = getParameters();
 		if (editParameters())
 		{
 			updateView();
-			edit = new Edit.Parameters(oldParams, getParameters());
+			edit = new ParametersEdit(oldParams, getParameters());
 		}
 		return edit;
 	}
 
 	//------------------------------------------------------------------
 
-	private Edit onEditDescription()
+	private DescriptionEdit onEditDescription()
 	{
-		Edit edit = null;
+		DescriptionEdit edit = null;
 		String oldDescription = getDescription();
 		String description = DescriptionDialog.showDialog(getWindow(), getPatternKind().getName(), oldDescription);
 		if (description != null)
 		{
 			setDescription(description);
-			edit = new Edit.Description(oldDescription, description);
+			edit = new DescriptionEdit(oldDescription, description);
 		}
 		return edit;
 	}
 
 	//------------------------------------------------------------------
 
-	private Edit onRegeneratePatternWithNewSeed()
+	private SeedEdit onRegeneratePatternWithNewSeed()
 		throws AppException
 	{
 		long oldSeed = getParameters().getSeed();
 		setSeed(PatternGeneratorApp.INSTANCE.getNextRandomSeed());
 		updateView();
-		return new Edit.Seed(oldSeed, getParameters().getSeed());
+		return new SeedEdit(oldSeed, getParameters().getSeed());
 	}
 
 	//------------------------------------------------------------------
 
-	private Edit onStartSlideShow()
+	private EditList.IEdit onStartSlideShow()
 	{
 		// Display dialog for slide-show parameters
 		if (SlideShowParamsDialog.showDialog(getWindow()))
@@ -1485,7 +1482,7 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onStartAnimation()
+	private EditList.IEdit onStartAnimation()
 		throws AppException
 	{
 		// Select animation
@@ -1500,7 +1497,7 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onShowImageRenderingTime()
+	private EditList.IEdit onShowImageRenderingTime()
 	{
 		if (renderingTimeDialog == null)
 			renderingTimeDialog = RenderingTimeDialog.showDialog(getWindow());
@@ -1509,7 +1506,7 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onOptimiseAnimation()
+	private EditList.IEdit onOptimiseAnimation()
 		throws AppException
 	{
 		optimiseAnimation();
@@ -1518,7 +1515,7 @@ abstract class PatternDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onResizeWindowToImage()
+	private EditList.IEdit onResizeWindowToImage()
 	{
 		PatternView view = getView();
 		if (view != null)
@@ -1931,359 +1928,6 @@ abstract class PatternDocument
 ////////////////////////////////////////////////////////////////////////
 
 
-	// CLASS: EDIT
-
-
-	private static abstract class Edit
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Edit()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Abstract methods
-	////////////////////////////////////////////////////////////////////
-
-		protected abstract void undo(
-			PatternDocument	document);
-
-		//--------------------------------------------------------------
-
-		protected abstract void redo(
-			PatternDocument	document);
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// CLASS: DESCRIPTION EDIT
-
-
-		private static class Description
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	String	oldDescription;
-			private	String	newDescription;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Description(
-				String	oldDescription,
-				String	newDescription)
-			{
-				this.oldDescription = oldDescription;
-				this.newDescription = newDescription;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(
-				PatternDocument	document)
-			{
-				document.setDescription(oldDescription);
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(
-				PatternDocument	document)
-			{
-				document.setDescription(newDescription);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-
-		// CLASS: SEED EDIT
-
-
-		private static class Seed
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	long	oldSeed;
-			private	long	newSeed;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Seed(
-				long	oldSeed,
-				long	newSeed)
-			{
-				this.oldSeed = oldSeed;
-				this.newSeed = newSeed;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(
-				PatternDocument	document)
-			{
-				try
-				{
-					document.setSeed(oldSeed);
-				}
-				catch (AppException e)
-				{
-					PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
-				}
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(
-				PatternDocument	document)
-			{
-				try
-				{
-					document.setSeed(newSeed);
-				}
-				catch (AppException e)
-				{
-					PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
-				}
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-
-		// CLASS: PARAMETERS EDIT
-
-
-		private static class Parameters
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	PatternParams	oldParams;
-			private	PatternParams	newParams;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Parameters(
-				PatternParams	oldParams,
-				PatternParams	newParams)
-			{
-				this.oldParams = oldParams;
-				this.newParams = newParams;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(
-				PatternDocument	document)
-			{
-				try
-				{
-					document.setParameters(oldParams);
-				}
-				catch (AppException e)
-				{
-					PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
-				}
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(
-				PatternDocument	document)
-			{
-				try
-				{
-					document.setParameters(newParams);
-				}
-				catch (AppException e)
-				{
-					PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
-				}
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	}
-
-	//==================================================================
-
-
-	// CLASS: EDIT LIST
-
-
-	private static class EditList
-		extends LinkedList<Edit>
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int	maxLength;
-		private	int	currentIndex;
-		private	int	unchangedIndex;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private EditList()
-		{
-			maxLength = AppConfig.INSTANCE.getMaxEditListLength();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void clear()
-		{
-			super.clear();
-			unchangedIndex = currentIndex = 0;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private Edit removeUndo()
-		{
-			return canUndo() ? get(--currentIndex) : null;
-		}
-
-		//--------------------------------------------------------------
-
-		private Edit removeRedo()
-		{
-			return canRedo() ? get(currentIndex++) : null;
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean canUndo()
-		{
-			return (currentIndex > 0);
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean canRedo()
-		{
-			return (currentIndex < size());
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean isChanged()
-		{
-			return (currentIndex != unchangedIndex);
-		}
-
-		//--------------------------------------------------------------
-
-		private void addEdit(
-			Edit	edit)
-		{
-			// Remove redos
-			while (size() > currentIndex)
-				removeLast();
-
-			// Preserve changed status if unchanged state cannot be recovered
-			if (unchangedIndex > currentIndex)
-				unchangedIndex = -1;
-
-			// Remove oldest edits while list is full
-			while (size() >= maxLength)
-			{
-				removeFirst();
-				if (--unchangedIndex < 0)
-					unchangedIndex = -1;
-				if (--currentIndex < 0)
-					currentIndex = 0;
-			}
-
-			// Add new edit
-			add(edit);
-			++currentIndex;
-		}
-
-		//--------------------------------------------------------------
-
-		private void reset()
-		{
-			while (size() > currentIndex)
-				removeLast();
-
-			unchangedIndex = currentIndex;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
 	// CLASS: RENDERING TIME
 
 
@@ -2332,6 +1976,197 @@ abstract class PatternDocument
 		public double getMeanNanosecondsPerPixel()
 		{
 			return (numPixels == 0) ? 0.0 : (double)nanoseconds / (double)numPixels;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: AN EDIT OF THE DESCRIPTION
+
+
+	private class DescriptionEdit
+		implements EditList.IEdit
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	oldDescription;
+		private	String	newDescription;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private DescriptionEdit(
+			String	oldDescription,
+			String	newDescription)
+		{
+			this.oldDescription = oldDescription;
+			this.newDescription = newDescription;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : EditList.IEdit interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void undo()
+		{
+			setDescription(oldDescription);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void redo()
+		{
+			setDescription(newDescription);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: SEED EDIT
+
+
+	private class SeedEdit
+		implements EditList.IEdit
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	long	oldSeed;
+		private	long	newSeed;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private SeedEdit(
+			long	oldSeed,
+			long	newSeed)
+		{
+			this.oldSeed = oldSeed;
+			this.newSeed = newSeed;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : EditList.IEdit interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void undo()
+		{
+			try
+			{
+				setSeed(oldSeed);
+			}
+			catch (AppException e)
+			{
+				PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void redo()
+		{
+			try
+			{
+				setSeed(newSeed);
+			}
+			catch (AppException e)
+			{
+				PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: PARAMETERS EDIT
+
+
+	private class ParametersEdit
+		implements EditList.IEdit
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	PatternParams	oldParams;
+		private	PatternParams	newParams;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ParametersEdit(
+			PatternParams	oldParams,
+			PatternParams	newParams)
+		{
+			this.oldParams = oldParams;
+			this.newParams = newParams;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : EditList.IEdit interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void undo()
+		{
+			try
+			{
+				setParameters(oldParams);
+			}
+			catch (AppException e)
+			{
+				PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void redo()
+		{
+			try
+			{
+				setParameters(newParams);
+			}
+			catch (AppException e)
+			{
+				PatternGeneratorApp.INSTANCE.showErrorMessage(PatternGeneratorApp.SHORT_NAME, e);
+			}
 		}
 
 		//--------------------------------------------------------------
@@ -2438,7 +2273,7 @@ abstract class PatternDocument
 
 							// Add change of seed to list of edits
 							long oldSeed = getParameters().getSeed();
-							editList.addEdit(new Edit.Seed(oldSeed, result.params.getSeed()));
+							editList.add(new SeedEdit(oldSeed, result.params.getSeed()));
 
 							// Set parameters and pattern image
 							setParametersAndPatternImage(result.params, result.patternImage);
