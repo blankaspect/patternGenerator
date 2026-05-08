@@ -260,12 +260,14 @@
         was written by the installer.  If you create a properties file, it should have the
         following form, with the example pathname replaced by the actual pathname:
       </p>
+      <div>
       <pre class="codeFragment">
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;
 &lt;!DOCTYPE properties SYSTEM &quot;http://java.sun.com/dtd/properties.dtd&quot;&gt;
 &lt;properties&gt;
-&lt;entry key=&quot;app.configDir&quot;&gt;/home/slothrop/.blankaspect/patternGenerator&lt;/entry&gt;
+  &lt;entry key=&quot;app.configDir&quot;&gt;/home/slothrop/.blankaspect/patternGenerator&lt;/entry&gt;
 &lt;/properties&gt;</pre>
+      </div>
 
       <p class="wrap">
         If the <span class="configProperty">app.configDir</span> property is set both on the
@@ -299,19 +301,20 @@
               <div><i>The current working directory</i></div>
               <div class="wrap">
                 The current working directory, which is denoted by the environment variable
-                <code>$PWD</code> on Linux/UNIX systems, depends on the system and the way in
+                <code>PWD</code> on Unix-like systems, depends on the system and the way in
                 which PatternGenerator was run.
               </div>
             </li>
             <li class="spaced" id="defaultDirectory">
               <div><i>The default directory</i></div>
               <div class="wrap">
-                On Linux/UNIX systems, the default directory is
-                <code>$HOME/.blankaspect/patternGenerator</code>, where <code>$HOME</code> is
-                the environment variable that denotes the user&apos;s home directory.  On
-                Windows systems, the default directory is
-                <code>%APPDATA%\blankaspect\patternGenerator</code>, where
-                <code>%APPDATA%</code> is an environment variable.
+                On Unix-like systems, the default directory is
+                <code>$HOME/.blankaspect/patternGenerator</code>, where <code>HOME</code> is the
+                environment variable that denotes the user&apos;s home directory.  On Windows
+                systems, the default directory is
+                <code>%APPDATA%\blankaspect\patternGenerator</code>, where <code>APPDATA</code>
+                is an environment variable that denotes a subdirectory of the user&apos;s home
+                directory named <code>AppData</code>.
               </div>
             </li>
           </ol>
@@ -2553,8 +2556,8 @@
         <dd class="wrap">
           A leading <code>~</code> in a pathname is expanded into the user&apos;s home directory
           using the <code>user.home</code> system property, which is usually equivalent to the
-          environment variable <code>$HOME</code> on Linux/UNIX systems or
-          <code>%USERPROFILE%</code> on Windows systems.
+          environment variable <code>HOME</code> on Unix-like systems or
+          <code>USERPROFILE</code> on Windows systems.
         </dd>
         <dd class="wrap">
           &bull; Example: <code>~/projects</code>
@@ -2787,7 +2790,7 @@
     <div id="lastModified">
       <div>
         <div>
-          Last modified: 2026-02-15
+          Last modified: 2026-04-19
         </div>
         <div class="image">
           <a class="hideHover" href="http://validator.w3.org/check?uri=referer">
